@@ -1,0 +1,10 @@
+{
+    "BGC0000352 (surfactin)": ["srfaa", "srfab", "srfac", "srfad"],
+    "BGC0000350 (fengycin)": ["fena", "fenb", "fenc", "fend", "fene"],
+    "BGC0000377 (plipastatin)": ["ppsa", "ppsb", "ppsc", "ppsd", "ppse"],
+    "BGC0000325 (bacillibactin)": ["dhba", "dhbb", "dhbc", "dhbe", "dhbf"],
+    "BGC0000412 (macrolactin)": ["mlna", "mlnb", "mlnc", "mlnd", "mlne"],
+    "BGC0000511 (nisin)": ["nisa", "nisb", "nisc", "nisp", "nist"],
+    "BGC0000520 (subtilin)": ["spas", "spab", "spac", "spat"],
+    "BGC0000251 (iturins)": ["itua", "itub", "ituc", "itud"]
+}

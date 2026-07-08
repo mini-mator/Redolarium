@@ -1,0 +1,18 @@
+{
+    "pathways.tsv": {
+        "fetch_date": "2026-07-01T16:59:25.746288",
+        "kegg_release": "Unknown KEGG Release"
+    },
+    "ec_links.tsv": {
+        "fetch_date": "2026-07-01T16:59:28.924153",
+        "kegg_release": "Unknown KEGG Release"
+    },
+    "ko_links.tsv": {
+        "fetch_date": "2026-07-01T16:59:54.679067",
+        "kegg_release": "Unknown KEGG Release"
+    },
+    "brite_ko00001.keg": {
+        "fetch_date": "2026-07-01T17:00:18.038586",
+        "kegg_release": "Unknown KEGG Release"
+    }
+}

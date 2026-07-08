@@ -1,0 +1,73 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+.env
+.venv
+env.bak/
+venv.bak/
+
+# Streamlit
+.streamlit/
+
+# Bioinformatics & Pipeline Outputs
+*.fasta
+*.fna
+*.ffn
+*.faa
+*.frn
+*.fastq
+*.fq
+*.bam
+*.sam
+*.vcf
+*.bcf
+*.pdb
+*.cif
+*.gb
+*.gbk
+*.exe
+*.dll
+*.phr
+*.pin
+*.pjs
+*.pot
+*.psq
+*.ptf
+*.pto
+results/
+tmp/
+redo_tmp*/
+*_BGC_Analysis_*.xlsx
+*_BGC_Report.docx
+ncbi-blast-*/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Allow example data to be tracked despite global extension ignores
+!example_data/
+!example_data/*

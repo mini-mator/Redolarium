@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE BlastOutput PUBLIC "-//NCBI//NCBI BlastOutput/EN" "http://www.ncbi.nlm.nih.gov/dtd/NCBI_BlastOutput.dtd">
+<BlastOutput>
+  <BlastOutput_program>blastp</BlastOutput_program>
+  <BlastOutput_version>BLASTP 2.17.0+</BlastOutput_version>
+  <BlastOutput_reference>Stephen F. Altschul, Thomas L. Madden, Alejandro A. Sch&amp;auml;ffer, Jinghui Zhang, Zheng Zhang, Webb Miller, and David J. Lipman (1997), &quot;Gapped BLAST and PSI-BLAST: a new generation of protein database search programs&quot;, Nucleic Acids Res. 25:3389-3402.</BlastOutput_reference>
+  <BlastOutput_db>ref_markers_db</BlastOutput_db>
+  <BlastOutput_query-ID>Query_1</BlastOutput_query-ID>
+  <BlastOutput_query-def>query_gyrB</BlastOutput_query-def>
+  <BlastOutput_query-len>638</BlastOutput_query-len>
+  <BlastOutput_param>
+    <Parameters>
+      <Parameters_matrix>BLOSUM62</Parameters_matrix>
+      <Parameters_expect>10</Parameters_expect>
+      <Parameters_gap-open>11</Parameters_gap-open>
+      <Parameters_gap-extend>1</Parameters_gap-extend>
+      <Parameters_filter>F</Parameters_filter>
+    </Parameters>
+  </BlastOutput_param>
+<BlastOutput_iterations>
+<Iteration>
+  <Iteration_iter-num>1</Iteration_iter-num>
+  <Iteration_query-ID>Query_1</Iteration_query-ID>
+  <Iteration_query-def>query_gyrB</Iteration_query-def>
+  <Iteration_query-len>638</Iteration_query-len>
+<Iteration_hits>
+<Hit>
+  <Hit_num>1</Hit_num>
+  <Hit_id>gnl|BL_ORD_ID|5</Hit_id>
+  <Hit_def>AL009126.3_gyrB [Bacillus subtilis subsp. subtilis str. 168]</Hit_def>
+  <Hit_accession>5</Hit_accession>
+  <Hit_len>638</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>1314.67</Hsp_bit-score>
+      <Hsp_score>3401</Hsp_score>
+      <Hsp_evalue>0</Hsp_evalue>
+      <Hsp_query-from>1</Hsp_query-from>
+      <Hsp_query-to>638</Hsp_query-to>
+      <Hsp_hit-from>1</Hsp_hit-from>
+      <Hsp_hit-to>638</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>638</Hsp_identity>
+      <Hsp_positive>638</Hsp_positive>
+      <Hsp_gaps>0</Hsp_gaps>
+      <Hsp_align-len>638</Hsp_align-len>
+      <Hsp_qseq>MEQQQNSYDENQIQVLEGLEAVRKRPGMYIGSTNSKGLHHLVWEIVDNSIDEALAGYCTDINIQIEKDNSITVVDNGRGIPVGIHEKMGRPAVEVIMTVLHAGGKFDGSGYKVSGGLHGVGASVVNALSTELDVTVHRDGKIHRQTYKRGVPVTDLEIIGETDHTGTTTHFVPDPEIFSETTEYDYDLLANRVRELAFLTKGVNITIEDKREGQERKNEYHYEGGIKSYVEYLNRSKEVVHEEPIYIEGEKDGITVEVALQYNDSYTSNIYSFTNNINTYEGGTHEAGFKTGLTRVINDYARKKGLIKENDPNLSGDDVREGLTAIISIKHPDPQFEGQTKTKLGNSEARTITDTLFSTAMETFMLENPDAAKKIVDKGLMAARARMAAKKARELTRRKSALEISNLPGKLADCSSKDPSISELYIVEGDSAGGSAKQGRDRHFQAILPLRGKILNVEKARLDKILSNNEVRSMITALGTGIGEDFNLEKARYHKVVIMTDADVDGAHIRTLLLTFFYRYMRQIIENGYVYIAQPPLYKVQQGKRVEYAYNDKELEELLKTLPQTPKPGLQRYKGLGEMNATQLWETTMDPSSRTLLQVTLEDAMDADETFEMLMGDKVEPRRNFIEANARYVKNLDI</Hsp_qseq>
+      <Hsp_hseq>MEQQQNSYDENQIQVLEGLEAVRKRPGMYIGSTNSKGLHHLVWEIVDNSIDEALAGYCTDINIQIEKDNSITVVDNGRGIPVGIHEKMGRPAVEVIMTVLHAGGKFDGSGYKVSGGLHGVGASVVNALSTELDVTVHRDGKIHRQTYKRGVPVTDLEIIGETDHTGTTTHFVPDPEIFSETTEYDYDLLANRVRELAFLTKGVNITIEDKREGQERKNEYHYEGGIKSYVEYLNRSKEVVHEEPIYIEGEKDGITVEVALQYNDSYTSNIYSFTNNINTYEGGTHEAGFKTGLTRVINDYARKKGLIKENDPNLSGDDVREGLTAIISIKHPDPQFEGQTKTKLGNSEARTITDTLFSTAMETFMLENPDAAKKIVDKGLMAARARMAAKKARELTRRKSALEISNLPGKLADCSSKDPSISELYIVEGDSAGGSAKQGRDRHFQAILPLRGKILNVEKARLDKILSNNEVRSMITALGTGIGEDFNLEKARYHKVVIMTDADVDGAHIRTLLLTFFYRYMRQIIENGYVYIAQPPLYKVQQGKRVEYAYNDKELEELLKTLPQTPKPGLQRYKGLGEMNATQLWETTMDPSSRTLLQVTLEDAMDADETFEMLMGDKVEPRRNFIEANARYVKNLDI</Hsp_hseq>
+      <Hsp_midline>MEQQQNSYDENQIQVLEGLEAVRKRPGMYIGSTNSKGLHHLVWEIVDNSIDEALAGYCTDINIQIEKDNSITVVDNGRGIPVGIHEKMGRPAVEVIMTVLHAGGKFDGSGYKVSGGLHGVGASVVNALSTELDVTVHRDGKIHRQTYKRGVPVTDLEIIGETDHTGTTTHFVPDPEIFSETTEYDYDLLANRVRELAFLTKGVNITIEDKREGQERKNEYHYEGGIKSYVEYLNRSKEVVHEEPIYIEGEKDGITVEVALQYNDSYTSNIYSFTNNINTYEGGTHEAGFKTGLTRVINDYARKKGLIKENDPNLSGDDVREGLTAIISIKHPDPQFEGQTKTKLGNSEARTITDTLFSTAMETFMLENPDAAKKIVDKGLMAARARMAAKKARELTRRKSALEISNLPGKLADCSSKDPSISELYIVEGDSAGGSAKQGRDRHFQAILPLRGKILNVEKARLDKILSNNEVRSMITALGTGIGEDFNLEKARYHKVVIMTDADVDGAHIRTLLLTFFYRYMRQIIENGYVYIAQPPLYKVQQGKRVEYAYNDKELEELLKTLPQTPKPGLQRYKGLGEMNATQLWETTMDPSSRTLLQVTLEDAMDADETFEMLMGDKVEPRRNFIEANARYVKNLDI</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>2</Hit_num>
+  <Hit_id>gnl|BL_ORD_ID|4431</Hit_id>
+  <Hit_def>CP031675.1_parE [Bacillus subtilis subsp. subtilis]</Hit_def>
+  <Hit_accession>4431</Hit_accession>
+  <Hit_len>655</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>710.679</Hsp_bit-score>
+      <Hsp_score>1833</Hsp_score>
+      <Hsp_evalue>0</Hsp_evalue>
+      <Hsp_query-from>3</Hsp_query-from>
+      <Hsp_query-to>632</Hsp_query-to>
+      <Hsp_hit-from>4</Hsp_hit-from>
+      <Hsp_hit-to>635</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>359</Hsp_identity>
+      <Hsp_positive>470</Hsp_positive>
+      <Hsp_gaps>16</Hsp_gaps>
+      <Hsp_align-len>639</Hsp_align-len>
+      <Hsp_qseq>QQQNSYDENQIQVLEGLEAVRKRPGMYIGSTNSKGLHHLVWEIVDNSIDEALAGYCTDINIQIEKDNSITVVDNGRGIPVGIHEKMGRPAVEVIMTVLHAGGKFDGSGYKVSGGLHGVGASVVNALSTELDVTVHRDGKIHRQTYKRG-VPVTDLEIIGETDHTGTTTHFVPDPEIFSETTEYDYDLLANRVRELAFLTKGVNITIEDKREGQERKNEYHYEGGIKSYVEYLNRSKEVVHEEPIYIEGEKDGITVEVALQYNDSYTSNIYSFTNNINTYEGGTHEAGFKTGLTRVINDYARKKGLIKENDPNLSGDDVREGLTAIISIKHPDP--QFEGQTKTKLGNSEARTITDTLFSTAMETFMLENPDAAKKIVDKGLMAARARMAAKKARELTR--RKSALEISNLPGKLADCSSKDPSISELYIVEGDSAGGSAKQGRDRHFQAILPLRGKILNVEKARLDKILSNNEVRSMITALGTGIGEDFNLEKARYHKVVIMTDADVDGAHIRTLLLTFFYRYMRQIIENGYVYIAQPPLYKVQQG----KRVEYAYNDKELEELLKTLPQTPKPGLQRYKGLGEMNATQLWETTMDPSSRTLLQVTLEDAMDADETFEMLMGDKVEPRRNFIEANARY</Hsp_qseq>
+      <Hsp_hseq>KQQFDYNEDAIQVLEGLEAVRKRPGMYIGSTDARGLHHLVYEIVDNSVDEVLAGHGDHIIVKIHKDNSISVQDRGRGMPTGMH-KLGKPTPEVILTVLHAGGKFGQGGYKTSGGLHGVGASVVNALSEWLTVTIERDGFVYQQRFENGGKPVTSLEKIGKTKKTGTLTHFKPDPTMFSTTT-YNFETLSERLRESAFLLKGLKIELIDERNDQ--REVFYYENGIEAFVAYLNEEKDVL-SEVVSFEGEHHSIEVDFAFQFNDGYSENILSFVNNVRTKDGGTHESGAKTAMTRAFNEYARKVALLKEKDKNLEGTDIREGLSAIISVRIPEELLQFEGQTKGKLGTSEARSAVDAIVSEQLAYFLEENRDTATLLVKKAIKASQAREAARKAREEARSGKKRKKSEATLSGKLTPAGSRNPAKNELYLVEGDSAGGSAKQGRDRRFQAVLPLRGKVINTEKAKLADIFKNEEINTIIHAIGGGVGADFSIDDINYDKIIIMTDADTDGAHIQVLLLTFFYRYMKPLIEHGKVFIALPPLYKVSKGSGKKEIIEYAWSDEEMGDVLKKVGKGYT--IQRYKGLGEMNADQLWETTMNPESRTLVRVKIDDAARVERRVTTLMGDKVEPRRKWIEKNVAF</Hsp_hseq>
+      <Hsp_midline>+QQ  Y+E+ IQVLEGLEAVRKRPGMYIGST+++GLHHLV+EIVDNS+DE LAG+   I ++I KDNSI+V D GRG+P G+H K+G+P  EVI+TVLHAGGKF   GYK SGGLHGVGASVVNALS  L VT+ RDG +++Q ++ G  PVT LE IG+T  TGT THF PDP +FS TT Y+++ L+ R+RE AFL KG+ I + D+R  Q  +  ++YE GI+++V YLN  K+V+  E +  EGE   I V+ A Q+ND Y+ NI SF NN+ T +GGTHE+G KT +TR  N+YARK  L+KE D NL G D+REGL+AIIS++ P+   QFEGQTK KLG SEAR+  D + S  +  F+ EN D A  +V K + A++AR AA+KARE  R  +K     + L GKL    S++P+ +ELY+VEGDSAGGSAKQGRDR FQA+LPLRGK++N EKA+L  I  N E+ ++I A+G G+G DF+++   Y K++IMTDAD DGAHI+ LLLTFFYRYM+ +IE+G V+IA PPLYKV +G    + +EYA++D+E+ ++LK + +     +QRYKGLGEMNA QLWETTM+P SRTL++V ++DA   +     LMGDKVEPRR +IE N  +</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>3</Hit_num>
+  <Hit_id>gnl|BL_ORD_ID|1846</Hit_id>
+  <Hit_def>AL009126.3_parE [Bacillus subtilis subsp. subtilis str. 168]</Hit_def>
+  <Hit_accession>1846</Hit_accession>
+  <Hit_len>655</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>710.679</Hsp_bit-score>
+      <Hsp_score>1833</Hsp_score>
+      <Hsp_evalue>0</Hsp_evalue>
+      <Hsp_query-from>3</Hsp_query-from>
+      <Hsp_query-to>632</Hsp_query-to>
+      <Hsp_hit-from>4</Hsp_hit-from>
+      <Hsp_hit-to>635</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>359</Hsp_identity>
+      <Hsp_positive>470</Hsp_positive>
+      <Hsp_gaps>16</Hsp_gaps>
+      <Hsp_align-len>639</Hsp_align-len>
+      <Hsp_qseq>QQQNSYDENQIQVLEGLEAVRKRPGMYIGSTNSKGLHHLVWEIVDNSIDEALAGYCTDINIQIEKDNSITVVDNGRGIPVGIHEKMGRPAVEVIMTVLHAGGKFDGSGYKVSGGLHGVGASVVNALSTELDVTVHRDGKIHRQTYKRG-VPVTDLEIIGETDHTGTTTHFVPDPEIFSETTEYDYDLLANRVRELAFLTKGVNITIEDKREGQERKNEYHYEGGIKSYVEYLNRSKEVVHEEPIYIEGEKDGITVEVALQYNDSYTSNIYSFTNNINTYEGGTHEAGFKTGLTRVINDYARKKGLIKENDPNLSGDDVREGLTAIISIKHPDP--QFEGQTKTKLGNSEARTITDTLFSTAMETFMLENPDAAKKIVDKGLMAARARMAAKKARELTR--RKSALEISNLPGKLADCSSKDPSISELYIVEGDSAGGSAKQGRDRHFQAILPLRGKILNVEKARLDKILSNNEVRSMITALGTGIGEDFNLEKARYHKVVIMTDADVDGAHIRTLLLTFFYRYMRQIIENGYVYIAQPPLYKVQQG----KRVEYAYNDKELEELLKTLPQTPKPGLQRYKGLGEMNATQLWETTMDPSSRTLLQVTLEDAMDADETFEMLMGDKVEPRRNFIEANARY</Hsp_qseq>
+      <Hsp_hseq>KQQFDYNEDAIQVLEGLEAVRKRPGMYIGSTDARGLHHLVYEIVDNSVDEVLAGHGDHIIVKIHKDNSISVQDRGRGMPTGMH-KLGKPTPEVILTVLHAGGKFGQGGYKTSGGLHGVGASVVNALSEWLTVTIERDGFVYQQRFENGGKPVTSLEKIGKTKKTGTLTHFKPDPTMFSTTT-YNFETLSERLRESAFLLKGLKIELIDERNDQ--REVFYYENGIEAFVAYLNEEKDVL-SEVVSFEGEHHSIEVDFAFQFNDGYSENILSFVNNVRTKDGGTHESGAKTAMTRAFNEYARKVALLKEKDKNLEGTDIREGLSAIISVRIPEELLQFEGQTKGKLGTSEARSAVDAIVSEQLAYFLEENRDTATLLVKKAIKASQAREAARKAREEARSGKKRKKSEATLSGKLTPAGSRNPAKNELYLVEGDSAGGSAKQGRDRRFQAVLPLRGKVINTEKAKLADIFKNEEINTIIHAIGGGVGADFSIDDINYDKIIIMTDADTDGAHIQVLLLTFFYRYMKPLIEHGKVFIALPPLYKVSKGSGKKEIIEYAWSDEEMGDVLKKVGKGYT--IQRYKGLGEMNADQLWETTMNPESRTLVRVKIDDAARVERRVTTLMGDKVEPRRKWIEKNVAF</Hsp_hseq>
+      <Hsp_midline>+QQ  Y+E+ IQVLEGLEAVRKRPGMYIGST+++GLHHLV+EIVDNS+DE LAG+   I ++I KDNSI+V D GRG+P G+H K+G+P  EVI+TVLHAGGKF   GYK SGGLHGVGASVVNALS  L VT+ RDG +++Q ++ G  PVT LE IG+T  TGT THF PDP +FS TT Y+++ L+ R+RE AFL KG+ I + D+R  Q  +  ++YE GI+++V YLN  K+V+  E +  EGE   I V+ A Q+ND Y+ NI SF NN+ T +GGTHE+G KT +TR  N+YARK  L+KE D NL G D+REGL+AIIS++ P+   QFEGQTK KLG SEAR+  D + S  +  F+ EN D A  +V K + A++AR AA+KARE  R  +K     + L GKL    S++P+ +ELY+VEGDSAGGSAKQGRDR FQA+LPLRGK++N EKA+L  I  N E+ ++I A+G G+G DF+++   Y K++IMTDAD DGAHI+ LLLTFFYRYM+ +IE+G V+IA PPLYKV +G    + +EYA++D+E+ ++LK + +     +QRYKGLGEMNA QLWETTM+P SRTL++V ++DA   +     LMGDKVEPRR +IE N  +</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>4</Hit_num>
+  <Hit_id>gnl|BL_ORD_ID|4247</Hit_id>
+  <Hit_def>CP031675.1_topB [Bacillus subtilis subsp. subtilis]</Hit_def>
+  <Hit_accession>4247</Hit_accession>
+  <Hit_len>727</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>27.7202</Hsp_bit-score>
+      <Hsp_score>60</Hsp_score>
+      <Hsp_evalue>2.82868</Hsp_evalue>
+      <Hsp_query-from>198</Hsp_query-from>
+      <Hsp_query-to>252</Hsp_query-to>
+      <Hsp_hit-from>317</Hsp_hit-from>
+      <Hsp_hit-to>382</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>21</Hsp_identity>
+      <Hsp_positive>32</Hsp_positive>
+      <Hsp_gaps>11</Hsp_gaps>
+      <Hsp_align-len>66</Hsp_align-len>
+      <Hsp_qseq>FLTKGVNITIEDKREGQERKNEYHY-----EGGIKSYVEYLNRSKEVVH------EEPIYIEGEKD</Hsp_qseq>
+      <Hsp_hseq>FLSSDIVPTLKDRLEGMEVKPYAQYVSQIKKRGIKSHKGYVNDAKVSDHHAIIPTEEPLVLSSLSD</Hsp_hseq>
+      <Hsp_midline>FL+  +  T++D+ EG E K    Y     + GIKS+  Y+N +K   H      EEP+ +    D</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>5</Hit_num>
+  <Hit_id>gnl|BL_ORD_ID|430</Hit_id>
+  <Hit_def>AL009126.3_topB [Bacillus subtilis subsp. subtilis str. 168]</Hit_def>
+  <Hit_accession>430</Hit_accession>
+  <Hit_len>727</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>27.7202</Hsp_bit-score>
+      <Hsp_score>60</Hsp_score>
+      <Hsp_evalue>2.85294</Hsp_evalue>
+      <Hsp_query-from>198</Hsp_query-from>
+      <Hsp_query-to>252</Hsp_query-to>
+      <Hsp_hit-from>317</Hsp_hit-from>
+      <Hsp_hit-to>382</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>21</Hsp_identity>
+      <Hsp_positive>32</Hsp_positive>
+      <Hsp_gaps>11</Hsp_gaps>
+      <Hsp_align-len>66</Hsp_align-len>
+      <Hsp_qseq>FLTKGVNITIEDKREGQERKNEYHY-----EGGIKSYVEYLNRSKEVVH------EEPIYIEGEKD</Hsp_qseq>
+      <Hsp_hseq>FLSSDIVPTLKDRLEGMEVKPYAQYVSQIKKRGIKSHKGYVNDAKVSDHHAIIPTEEPLVLSSLSD</Hsp_hseq>
+      <Hsp_midline>FL+  +  T++D+ EG E K    Y     + GIKS+  Y+N +K   H      EEP+ +    D</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>6</Hit_num>
+  <Hit_id>gnl|BL_ORD_ID|1287</Hit_id>
+  <Hit_def>AL009126.3_xkdJ [Bacillus subtilis subsp. subtilis str. 168]</Hit_def>
+  <Hit_accession>1287</Hit_accession>
+  <Hit_len>146</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>26.5646</Hsp_bit-score>
+      <Hsp_score>57</Hsp_score>
+      <Hsp_evalue>3.73866</Hsp_evalue>
+      <Hsp_query-from>140</Hsp_query-from>
+      <Hsp_query-to>181</Hsp_query-to>
+      <Hsp_hit-from>6</Hsp_hit-from>
+      <Hsp_hit-to>45</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>15</Hsp_identity>
+      <Hsp_positive>21</Hsp_positive>
+      <Hsp_gaps>4</Hsp_gaps>
+      <Hsp_align-len>43</Hsp_align-len>
+      <Hsp_qseq>GKIHRQTYKR-GVPVTDLEIIGETDHTGTTTHFVPDPEIFSET</Hsp_qseq>
+      <Hsp_hseq>GSIMAFLYSRWSVPIYEREL---PDHFQVPSLYVPPPSVFEET</Hsp_hseq>
+      <Hsp_midline>G I    Y R  VP+ + E+    DH    + +VP P +F ET</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>7</Hit_num>
+  <Hit_id>gnl|BL_ORD_ID|4622</Hit_id>
+  <Hit_def>CP031675.1_essC [Bacillus subtilis subsp. subtilis]</Hit_def>
+  <Hit_accession>4622</Hit_accession>
+  <Hit_len>1495</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>27.335</Hsp_bit-score>
+      <Hsp_score>59</Hsp_score>
+      <Hsp_evalue>4.58002</Hsp_evalue>
+      <Hsp_query-from>226</Hsp_query-from>
+      <Hsp_query-to>282</Hsp_query-to>
+      <Hsp_hit-from>515</Hsp_hit-from>
+      <Hsp_hit-to>575</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>17</Hsp_identity>
+      <Hsp_positive>34</Hsp_positive>
+      <Hsp_gaps>4</Hsp_gaps>
+      <Hsp_align-len>61</Hsp_align-len>
+      <Hsp_qseq>IKSYVEYLNRSKEVVHEEPI--YIEGEKD--GITVEVALQYNDSYTSNIYSFTNNINTYEG</Hsp_qseq>
+      <Hsp_hseq>FKPHFVFVITNQQLISEHVILEYLEGQHEHLGISTIVAAETKESLSENITTLVRYINEHEG</Hsp_hseq>
+      <Hsp_midline> K +  ++  +++++ E  I  Y+EG+ +  GI+  VA +  +S + NI +    IN +EG</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>8</Hit_num>
+  <Hit_id>gnl|BL_ORD_ID|3254</Hit_id>
+  <Hit_def>AL009126.3_tgsBA [Bacillus subtilis subsp. subtilis str. 168]</Hit_def>
+  <Hit_accession>3254</Hit_accession>
+  <Hit_len>1495</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>27.335</Hsp_bit-score>
+      <Hsp_score>59</Hsp_score>
+      <Hsp_evalue>4.73825</Hsp_evalue>
+      <Hsp_query-from>226</Hsp_query-from>
+      <Hsp_query-to>282</Hsp_query-to>
+      <Hsp_hit-from>515</Hsp_hit-from>
+      <Hsp_hit-to>575</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>17</Hsp_identity>
+      <Hsp_positive>34</Hsp_positive>
+      <Hsp_gaps>4</Hsp_gaps>
+      <Hsp_align-len>61</Hsp_align-len>
+      <Hsp_qseq>IKSYVEYLNRSKEVVHEEPI--YIEGEKD--GITVEVALQYNDSYTSNIYSFTNNINTYEG</Hsp_qseq>
+      <Hsp_hseq>FKPHFVFVITNQQLISEHVILEYLEGQHEHLGISTIVAAETKESLSENITTLVRYINEHEG</Hsp_hseq>
+      <Hsp_midline> K +  ++  +++++ E  I  Y+EG+ +  GI+  VA +  +S + NI +    IN +EG</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>9</Hit_num>
+  <Hit_id>gnl|BL_ORD_ID|1429</Hit_id>
+  <Hit_def>AL009126.3_kinA [Bacillus subtilis subsp. subtilis str. 168]</Hit_def>
+  <Hit_accession>1429</Hit_accession>
+  <Hit_len>606</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>26.9498</Hsp_bit-score>
+      <Hsp_score>58</Hsp_score>
+      <Hsp_evalue>5.74954</Hsp_evalue>
+      <Hsp_query-from>24</Hsp_query-from>
+      <Hsp_query-to>91</Hsp_query-to>
+      <Hsp_hit-from>493</Hsp_hit-from>
+      <Hsp_hit-to>560</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>18</Hsp_identity>
+      <Hsp_positive>34</Hsp_positive>
+      <Hsp_gaps>2</Hsp_gaps>
+      <Hsp_align-len>69</Hsp_align-len>
+      <Hsp_qseq>KRPGMYIGSTNSKGLHHLVWEIVDNSIDEALAGYCTDINI-QIEKDNSITVVDNGRGIPVGIHEKMGRP</Hsp_qseq>
+      <Hsp_hseq>EKDSIYINGDQNQ-LKQVFINLIKNAVESMPDGGTVDIIITEDEHSVHVTVKDEGEGIPEKVLNRIGEP</Hsp_hseq>
+      <Hsp_midline>++  +YI    ++ L  +   ++ N+++    G   DI I + E    +TV D G GIP  +  ++G P</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>10</Hit_num>
+  <Hit_id>gnl|BL_ORD_ID|1945</Hit_id>
+  <Hit_def>AL009126.3_yobO [Bacillus subtilis subsp. subtilis str. 168]</Hit_def>
+  <Hit_accession>1945</Hit_accession>
+  <Hit_len>806</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>26.5646</Hsp_bit-score>
+      <Hsp_score>57</Hsp_score>
+      <Hsp_evalue>7.44825</Hsp_evalue>
+      <Hsp_query-from>590</Hsp_query-from>
+      <Hsp_query-to>628</Hsp_query-to>
+      <Hsp_hit-from>351</Hsp_hit-from>
+      <Hsp_hit-to>388</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>16</Hsp_identity>
+      <Hsp_positive>17</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>39</Hsp_align-len>
+      <Hsp_qseq>DPSSRTLLQVTLEDAMDADETFEMLMGDKVEPRRNFIEA</Hsp_qseq>
+      <Hsp_hseq>DPESTTAYDVTLIDCSAVEPVFNSLY-DAVTPRALVISA</Hsp_hseq>
+      <Hsp_midline>DP S T   VTL D    +  F  L  D V PR   I A</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+</Iteration_hits>
+  <Iteration_stat>
+    <Statistics>
+      <Statistics_db-num>4755</Statistics_db-num>
+      <Statistics_db-len>1423676</Statistics_db-len>
+      <Statistics_hsp-len>90</Statistics_hsp-len>
+      <Statistics_eff-space>545657848</Statistics_eff-space>
+      <Statistics_kappa>0.041</Statistics_kappa>
+      <Statistics_lambda>0.267</Statistics_lambda>
+      <Statistics_entropy>0.14</Statistics_entropy>
+    </Statistics>
+  </Iteration_stat>
+</Iteration>
+</BlastOutput_iterations>
+</BlastOutput>
+

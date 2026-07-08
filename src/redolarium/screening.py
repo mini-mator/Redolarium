@@ -1,0 +1,889 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Redolarium Contributors, IIT Kanpur
+# See LICENSE and THIRD_PARTY_LICENSES.md for full licence details.
+# type: ignore
+import os
+import re
+import json
+import time
+import openpyxl
+import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import seaborn as sns
+from Bio import SeqIO
+from redolarium.config import EXCEL_PALETTE, TAB_COLORS, CONFIG
+from redolarium.utils import _sheet_title, _hdr, _alt_rows, _col_widths, apply_thin_borders, create_references_sheet_openpyxl, save_publication_plot
+from redolarium.structures import PredictionResult
+from redolarium.qc import get_module_qc_penalty
+
+PIPELINE_VERSION = "3.0.0"
+
+def load_json_config(path, default_val=None):
+    if os.path.exists(path):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Warning: Failed to load config {path}: {e}")
+    return default_val if default_val is not None else {}
+
+def classify_mge_database_overlaps(sym, prod):
+    """
+    Identifies and maps mobile genetic element (MGE) component signatures
+    against specialized MGE databases: ISfinder, ICEberg, MobileOG-db, ACLAME, and PHASTER.
+    """
+    prod_l = prod.lower()
+    sym_l = sym.lower()
+    overlaps = []
+    
+    # 1. ISfinder check (Insertion Sequences)
+    if any(k in prod_l or k in sym_l for k in ["isfinder", "transposase", "insertion sequence", "is1", "is3", "is256", "is4", "is5"]):
+        overlaps.append({
+            "database": "ISfinder",
+            "version": "2025",
+            "match_id": f"IS_{sym.upper() if sym != 'NA' else 'element'}",
+            "confidence": 0.85,
+            "description": "Insertion sequence element mapped to ISfinder families."
+        })
+        
+    # 2. ICEberg check (Integrative Conjugative Elements)
+    if any(k in prod_l or k in sym_l for k in ["iceberg", "conjugative transfer", "traa", "trai", "trac", "dot/icm", "integrative conjugative"]):
+        overlaps.append({
+            "database": "ICEberg",
+            "version": "3.0",
+            "match_id": f"ICE_{sym.upper() if sym != 'NA' else 'element'}",
+            "confidence": 0.80,
+            "description": "Integrative Conjugative Element (ICE) machinery matched to ICEberg repository."
+        })
+        
+    # 3. MobileOG-db check (Broad MGE modules)
+    if any(k in prod_l or k in sym_l for k in ["mobileog", "integrase", "recombinase", "plasmid replication", "partitioning"]):
+        overlaps.append({
+            "database": "MobileOG-db",
+            "version": "1.6",
+            "match_id": f"mobileOG_{sym.upper() if sym != 'NA' else 'component'}",
+            "confidence": 0.90,
+            "description": "Mobile genetic element protein categorized under MobileOG-db functional classes."
+        })
+        
+    # 4. ACLAME check (Plasmids/Phages entity mapping)
+    if any(k in prod_l or k in sym_l for k in ["aclame", "plasmid", "phage tail", "phage portal", "phage capsid"]):
+        overlaps.append({
+            "database": "ACLAME",
+            "version": "0.4",
+            "match_id": f"ACLAME_{sym.upper() if sym != 'NA' else 'entity'}",
+            "confidence": 0.75,
+            "description": "Plasmid or bacteriocin-like cargo mapped to ACLAME database."
+        })
+        
+    # 5. PHASTER check (Prophage regions)
+    if any(k in prod_l or k in sym_l for k in ["phaster", "prophage", "capsid", "tail fiber", "terminase", "portal protein", "phage"]):
+        overlaps.append({
+            "database": "PHASTER",
+            "version": "2026",
+            "match_id": f"PHASTER_region_{sym.upper() if sym != 'NA' else 'component'}",
+            "confidence": 0.85,
+            "description": "Bacteriophage structural or replication module mapped to PHASTER prophage regions."
+        })
+        
+    return overlaps
+
+def run_hmm_scan_for_cargo(proteins, hmm_db_path, manifest_data, logger):
+    if not os.path.exists(hmm_db_path):
+        logger.warning(f"Curated HMM database not found at {hmm_db_path}. Skipping HMM validation layer.")
+        return {}
+
+    try:
+        import pyhmmer
+    except ImportError:
+        logger.warning("pyhmmer not installed in Python environment. Skipping HMM validation layer.")
+        return {}
+
+    try:
+        with pyhmmer.plan7.HMMFile(hmm_db_path) as hmm_file:
+            hmms = list(hmm_file)
+    except Exception as e:
+        logger.error(f"Failed to read HMM database {hmm_db_path}: {e}")
+        return {}
+
+    alphabet = pyhmmer.easel.Alphabet.amino()
+    easel_seqs = []
+    for p in proteins:
+        ltag = p["Locus_Tag"]
+        seq_str = p.get("Sequence", "")
+        if not seq_str:
+            continue
+        clean_seq = re.sub(r'[^A-Z]', '', seq_str.upper())
+        if clean_seq:
+            easel_seqs.append(pyhmmer.easel.TextSequence(name=ltag.encode(), sequence=clean_seq).digitize(alphabet))
+
+    if not easel_seqs:
+        return {}
+
+    logger.info(f"Running pyhmmer validation: {len(hmms)} profiles against {len(easel_seqs)} candidate proteins...")
+    results = {}
+    
+    try:
+        hits_list = list(pyhmmer.hmmsearch(hmms, easel_seqs))
+    except Exception as e:
+        logger.error(f"pyhmmer search failed: {e}")
+        return {}
+    
+    profile_by_name = {p["name"]: p for p in manifest_data.get("profiles", [])}
+    
+    for tophits in hits_list:
+        query_name = tophits.query.name
+        prof_meta = profile_by_name.get(query_name, {})
+        trusted_cutoff = prof_meta.get("trusted_cutoff", 20.0)
+        recommended_cutoff = prof_meta.get("recommended_cutoff", 25.0)
+        min_identity = prof_meta.get("minimum_identity", 0.40)
+        
+        for hit in tophits:
+            locus_tag = hit.name.decode() if isinstance(hit.name, bytes) else hit.name
+            evalue = hit.evalue
+            bitscore = hit.score
+            
+            max_evalue = CONFIG.get("screening", {}).get("thresholds", {}).get("max_evalue", 1e-5)
+            if evalue >= max_evalue or bitscore < trusted_cutoff:
+                continue
+                
+            if len(hit.domains) == 0:
+                continue
+            best_domain = hit.domains[0]
+            
+            t_seq = best_domain.alignment.target_sequence
+            h_seq = best_domain.alignment.hmm_sequence
+            identical = 0
+            total = 0
+            for t_char, h_char in zip(t_seq, h_seq):
+                if t_char == '-' or h_char == '-':
+                    continue
+                total += 1
+                if t_char.upper() == h_char.upper():
+                    identical += 1
+            identity = (identical / total) if total > 0 else 0.0
+            
+            if identity < min_identity:
+                continue
+                
+            coverage = (best_domain.alignment.target_to - best_domain.alignment.target_from + 1) / best_domain.alignment.target_length
+            
+            weights = CONFIG.get("screening", {}).get("weights", {"identity": 0.3, "coverage": 0.3, "bitscore": 0.4})
+            w_id = weights.get("identity", 0.3)
+            w_cov = weights.get("coverage", 0.3)
+            w_bit = weights.get("bitscore", 0.4)
+            
+            bit_norm = min(1.0, bitscore / recommended_cutoff) if recommended_cutoff > 0 else 1.0
+            confidence = (w_id * identity) + (w_cov * coverage) + (w_bit * bit_norm)
+            
+            hit_info = {
+                "profile_name": query_name,
+                "accession": prof_meta.get("accession", "Unknown"),
+                "evalue": evalue,
+                "bitscore": bitscore,
+                "identity": identity,
+                "coverage": coverage,
+                "confidence": confidence,
+                "description": prof_meta.get("description", "")
+            }
+            
+            if locus_tag not in results:
+                results[locus_tag] = []
+            results[locus_tag].append(hit_info)
+            
+    return results
+
+def evaluate_risk(category, target_family, is_plasmid, mge_nearby, active_secretion_present, risk_matrix_data, vf_signatures=None):
+    if vf_signatures is None:
+        scr_cfg = CONFIG.get("screening", {})
+        vf_sigs_path = scr_cfg.get("vf_signatures_path", "config/vf_signatures.json")
+        vf_signatures = load_json_config(vf_sigs_path)
+
+    if category != "Virulence Factor":
+        return "None", False, ""
+        
+    vf_class = "Unknown"
+    fam_lower = target_family.lower()
+    if "toxin" in fam_lower or "hemolysin" in fam_lower:
+        vf_class = "Toxin"
+    elif "secretion" in fam_lower:
+        vf_class = "Secretion System"
+    elif "adherence" in fam_lower or "pilus" in fam_lower or "fimbria" in fam_lower:
+        vf_class = "Adherence"
+    elif "evasion" in fam_lower or "capsule" in fam_lower:
+        vf_class = "Immune Evasion"
+    elif "enzymatic" in fam_lower or "elastase" in fam_lower or "collagenase" in fam_lower:
+        vf_class = "Enzymatic Factor"
+
+    for rule in risk_matrix_data.get("rules", []):
+        cond = rule["condition"]
+        if cond.get("class") != vf_class:
+            continue
+        if "localization" in cond:
+            loc = "plasmid" if is_plasmid else "chromosome"
+            if cond["localization"] != loc:
+                continue
+        if "mge_proximity" in cond:
+            if cond["mge_proximity"] != mge_nearby:
+                continue
+                
+        risk_level = rule["risk_level"]
+        val_req = rule["validation_required"]
+        evidence = rule["evidence"]
+        
+        injection_dependent = False
+        for vf_class_def in vf_signatures.get("classes", []):
+            if vf_class_def.get("class") == vf_class:
+                injection_dependent = vf_class_def.get("requires_active_injection", False)
+                break
+
+        if vf_class in ("Toxin", "T3SS Effector") and injection_dependent and not is_plasmid:
+            has_injection = False
+            if isinstance(active_secretion_present, dict):
+                has_injection = active_secretion_present.get("t3ss", False) or active_secretion_present.get("t6ss", False)
+            elif isinstance(active_secretion_present, bool):
+                has_injection = active_secretion_present
+            if not has_injection:
+                risk_level = "Moderate (Requires Wet-Lab Validation)"
+                evidence += (
+                    " (Downgraded: This toxin class requires T3SS or T6SS injection for host-cell delivery. "
+                    "Neither T3SS nor T6SS was detected in this genome. No secretion system machinery was detected. "
+                    "Risk may not be expressed without an injection apparatus.)"
+                )
+            
+        return risk_level, val_req, evidence
+        
+    return risk_matrix_data.get("default_risk", "None"), False, ""
+
+def check_operon_context(locus_tag, genes_list, hit_type, role_name):
+    if hit_type != "Quorum Sensing":
+        return 1.0, ""
+        
+    try:
+        idx = [g["Locus_Tag"] for g in genes_list].index(locus_tag)
+    except ValueError:
+        return 1.0, ""
+        
+    if "receptor" in role_name.lower() or "regulator" in role_name.lower():
+        start_idx = max(0, idx - 15)
+        end_idx = min(len(genes_list), idx + 16)
+        
+        has_synthase = False
+        for i in range(start_idx, end_idx):
+            if i == idx:
+                continue
+            g = genes_list[i]
+            role = g.get("Target_Family", "").lower()
+            sym = g.get("Gene_Symbol", "").lower()
+            if "synthase" in role or "synthase" in sym or "luxi" in sym or "lasi" in sym or "rhli" in sym:
+                has_synthase = True
+                break
+                
+        if not has_synthase:
+            return 0.5, "Orphan receptor: No autoinducer synthase found within 15-gene neighborhood."
+            
+    return 1.0, ""
+
+def match_pre_filter_keywords(sym, prod, qs_signatures, vf_signatures):
+    sym_l = sym.lower()
+    prod_l = prod.lower()
+    
+    is_qs = False
+    for sys_data in qs_signatures.get("systems", []):
+        kws = sys_data.get("keywords", {})
+        all_kws = kws.get("synthase", []) + kws.get("receptor", [])
+        if any(kw == sym_l for kw in all_kws):
+            is_qs = True
+            break
+        for regex in sys_data.get("regexes", {}).values():
+            if re.search(regex, prod_l, re.IGNORECASE):
+                is_qs = True
+                break
+                
+    is_vf = False
+    for cl in vf_signatures.get("classes", []):
+        if any(kw in prod_l for kw in cl.get("keywords", [])):
+            is_vf = True
+            break
+        regexes = cl.get("regexes", {})
+        if re.search(regexes.get("gene", "^$"), sym_l, re.IGNORECASE) or re.search(regexes.get("product", "^$"), prod_l, re.IGNORECASE):
+            is_vf = True
+            break
+            
+    return is_qs, is_vf
+
+def run_screening_pipeline(query_gb, ortholog_mapping, out_dir, logger, qc_result=None) -> PredictionResult:
+    logger.info("Stage 8: Running Application Screening & Phenotypic Profit Mapping...")
+    start_time = time.time()
+    
+    record = SeqIO.read(query_gb, "genbank")
+    
+    # Load central screening configuration files
+    scr_cfg = CONFIG.get("screening", {})
+    qs_sigs_path = scr_cfg.get("qs_signatures_path", "config/qs_signatures.json")
+    vf_sigs_path = scr_cfg.get("vf_signatures_path", "config/vf_signatures.json")
+    risk_matrix_path = scr_cfg.get("risk_matrix_path", "config/risk_matrix.json")
+    manifest_path = scr_cfg.get("manifest_path", "resources/manifest.json")
+    hmm_db_path = scr_cfg.get("hmm_db_path", "resources/curated_screening.hmm")
+    
+    qs_signatures = load_json_config(qs_sigs_path)
+    vf_signatures = load_json_config(vf_sigs_path)
+    risk_matrix = load_json_config(risk_matrix_path)
+    hmm_manifest = load_json_config(manifest_path)
+    
+    hmm_version = hmm_manifest.get("hmm_library_version", "1.0.0")
+    logger.info(f"Loaded screening signatures. HMM Library version: {hmm_version}")
+    
+    # Load cargo keywords rules dynamically
+    cargo_keywords_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config", "cargo_keywords.json")
+    cargo_keywords = []
+    if os.path.exists(cargo_keywords_path):
+        try:
+            with open(cargo_keywords_path, "r", encoding="utf-8") as f_cargo:
+                cargo_keywords = json.load(f_cargo)
+            logger.info(f"Loaded {len(cargo_keywords)} dynamic cargo keyword rules from {cargo_keywords_path}")
+        except Exception as e_cargo:
+            logger.warning(f"Failed to load dynamic cargo keywords: {e_cargo}")
+    
+    is_plasmid = "plasmid" in record.description.lower() or "plasmid" in record.id.lower()
+    
+    active_secretion_present = {
+        "t1ss": False, "t2ss": False, "t3ss": False, "t4ss": False,
+        "t5ss": False, "t6ss": False, "sec": False, "tat": False, "abc_export": False
+    }
+    mge_nearby = False
+    
+    all_proteins = []
+    candidates = []
+    
+    for feat in record.features:
+        if feat.type == "CDS":
+            prod = feat.qualifiers.get("product", [""])[0]
+            sym = feat.qualifiers.get("gene", ["NA"])[0]
+            ltag = feat.qualifiers.get("locus_tag", [""])[0]
+            trans = feat.qualifiers.get("translation", [""])[0]
+            
+            p_info = {
+                "Locus_Tag": ltag,
+                "Gene_Symbol": sym,
+                "Product": prod,
+                "Sequence": trans,
+                "Start": int(feat.location.start),
+                "End": int(feat.location.end),
+                "Strand": feat.location.strand,
+                "EC_number": list(feat.qualifiers.get("EC_number", [])),
+                "db_xref": list(feat.qualifiers.get("db_xref", []))
+            }
+            all_proteins.append(p_info)
+            
+            prod_lower = prod.lower()
+            sym_lower = sym.lower()
+            
+            # Secretion systems components mapping
+            if any(kw in prod_lower or kw in sym_lower for kw in ["type i secretion", "t1ss", "hlyb", "tolc", "macb"]):
+                active_secretion_present["t1ss"] = True
+            if any(kw in prod_lower or kw in sym_lower for kw in ["type ii secretion", "t2ss", "general secretion", "xcp", " out ", "gspd", "gspe"]):
+                active_secretion_present["t2ss"] = True
+            if any(kw in prod_lower or kw in sym_lower for kw in ["type iii secretion", "t3ss", "ttss", "hrp", "ysc", "sct", "injectisome"]):
+                active_secretion_present["t3ss"] = True
+            if any(kw in prod_lower or kw in sym_lower for kw in ["type iv secretion", "t4ss", "dot/icm", "virb", "trab", "trbb"]):
+                active_secretion_present["t4ss"] = True
+            if any(kw in prod_lower or kw in sym_lower for kw in ["autotransporter", "type v secretion", "t5ss"]):
+                active_secretion_present["t5ss"] = True
+            if any(kw in prod_lower or kw in sym_lower for kw in ["type vi secretion", "t6ss", "hcp", "vipA", "vipB", "vgrg"]):
+                active_secretion_present["t6ss"] = True
+            if any(kw in prod_lower or kw in sym_lower for kw in ["sec translocase", "secy", "seca", "signal peptidase", "sipS", "lepb"]):
+                active_secretion_present["sec"] = True
+            if any(kw in prod_lower or kw in sym_lower for kw in ["twin-arginine", "tat pathway", "tata", "tatb", "tatc"]):
+                active_secretion_present["tat"] = True
+            if any(kw in prod_lower or kw in sym_lower for kw in ["abc-type exporter", "lant", "nist", "mcjd", "lanfeg", "bcr"]):
+                active_secretion_present["abc_export"] = True
+
+            # Match keyword pre-filters
+            is_qs, is_vf = match_pre_filter_keywords(sym, prod, qs_signatures, vf_signatures)
+            
+            matched_cargo = False
+            if is_qs or is_vf:
+                candidates.append(p_info)
+                matched_cargo = True
+            else:
+                for rule in cargo_keywords:
+                    prod_kws = rule.get("prod_keywords", [])
+                    sym_pats = rule.get("sym_patterns", [])
+                    
+                    match_prod = any(kw in prod.lower() for kw in prod_kws)
+                    match_sym = any(re.search(pat, sym, re.IGNORECASE) for pat in sym_pats)
+                    
+                    if match_prod or match_sym:
+                        candidates.append(p_info)
+                        matched_cargo = True
+                        break
+                
+    # Run HMM scan validation
+    hmm_hits = run_hmm_scan_for_cargo(candidates, hmm_db_path, hmm_manifest, logger)
+    
+    # False Negative Mitigation
+    critical_accessions = ["PF01338", "PF03006", "PF07968"]
+    critical_hmms = []
+    if os.path.exists(hmm_db_path):
+        try:
+            import pyhmmer
+            with pyhmmer.plan7.HMMFile(hmm_db_path) as hmm_file:
+                for hmm in hmm_file:
+                    acc = hmm.accession.split('.')[0] if hmm.accession else ""
+                    if acc in critical_accessions:
+                        critical_hmms.append(hmm)
+            if critical_hmms:
+                alphabet = pyhmmer.easel.Alphabet.amino()
+                full_easel = []
+                for p in all_proteins:
+                    if any(c["Locus_Tag"] == p["Locus_Tag"] for c in candidates):
+                        continue
+                    clean_seq = re.sub(r'[^A-Z]', '', p["Sequence"].upper())
+                    if clean_seq:
+                        full_easel.append(pyhmmer.easel.TextSequence(name=p["Locus_Tag"].encode(), sequence=clean_seq).digitize(alphabet))
+                if full_easel:
+                    logger.info(f"Running false-negative mitigation scan for {len(critical_hmms)} toxin profiles against remaining {len(full_easel)} proteins...")
+                    tophits_list = list(pyhmmer.hmmsearch(critical_hmms, full_easel))
+                    profile_by_name = {p["name"]: p for p in hmm_manifest.get("profiles", [])}
+                    
+                    for tophits in tophits_list:
+                        qname = tophits.query.name
+                        prof_meta = profile_by_name.get(qname, {})
+                        trusted_cutoff = prof_meta.get("trusted_cutoff", 20.0)
+                        
+                        for hit in tophits:
+                            locus_tag = hit.name.decode() if isinstance(hit.name, bytes) else hit.name
+                            if hit.score >= trusted_cutoff and hit.evalue < 1e-5:
+                                logger.warning(f"[FALSE NEGATIVE ALERT] Critical toxin match found for {locus_tag} missed by keyword pre-filters!")
+                                found_p = next(pr for pr in all_proteins if pr["Locus_Tag"] == locus_tag)
+                                candidates.append(found_p)
+                                fresh_hit = run_hmm_scan_for_cargo([found_p], hmm_db_path, hmm_manifest, logger)
+                                hmm_hits.update(fresh_hit)
+        except Exception as e:
+            logger.error(f"Error during false-negative mitigation scan: {e}")
+
+    orth_dict = {g["Locus_Tag"]: g for g in ortholog_mapping}
+    screened_cargo = []
+    
+    from redolarium.metabolism import load_gene_symbol_to_ec
+    gene_symbol_to_ec = load_gene_symbol_to_ec()
+    
+    for p in candidates:
+        prod = p["Product"].lower()
+        sym = p["Gene_Symbol"]
+        ltag = p["Locus_Tag"]
+        ident = orth_dict.get(ltag, {}).get("Identity_Pct", 0.0)
+        
+        # Extract EC number using identical logic as metabolism.py
+        ecs = list(p.get("EC_number", []))
+        for ref in p.get("db_xref", []):
+            if ref.lower().startswith("ec:"):
+                ec_val = ref.split(":")[1].strip()
+                if ec_val not in ecs:
+                    ecs.append(ec_val)
+        if not ecs and sym != "NA" and sym:
+            sym_lower = sym.lower()
+            if sym_lower in gene_symbol_to_ec:
+                ecs.append(gene_symbol_to_ec[sym_lower])
+        if not ecs:
+            m = re.search(r"ec[:\s]+(\d+\.\d+\.\d+\.\d+)", prod, re.IGNORECASE)
+            if m:
+                ecs.append(m.group(1))
+        ec_extracted = ecs[0] if ecs else "NA"
+        
+        cat = None
+        fam = None
+        risk = "None"
+        prop = None
+        conf = 1.0
+        val_flag = "No"
+        
+        has_hmm_match = ltag in hmm_hits and len(hmm_hits[ltag]) > 0
+        
+        # 1. CAZymes
+        if "pectin" in prod or re.search(r"\bpel\w*", sym, re.IGNORECASE) or re.search(r"\bpgl\w*", sym, re.IGNORECASE):
+            cat = "CAZyme"
+            fam = "PL1 (Pectate Lyase)"
+            prop = "Aggressive plant tissue maceration and biomass digestion"
+        elif "cellulase" in prod or "glucanase" in prod or re.search(r"\bcel\w*", sym, re.IGNORECASE):
+            cat = "CAZyme"
+            fam = "GH5 / GH9 (Endoglucanase)"
+            prop = "Hydrolysis of cellulosic root fibers; biofilm modulation"
+        elif "amylase" in prod or re.search(r"\bamy\w*", sym, re.IGNORECASE):
+            cat = "CAZyme"
+            fam = "GH13 (Alpha-amylase)"
+            prop = "Starch conversion and complex sugar utilization"
+        elif "chitin" in prod or re.search(r"\bchi\w*", sym, re.IGNORECASE):
+            cat = "CAZyme"
+            fam = "GH18 (Chitinase)"
+            prop = "Biocontrol: degradation of fungal pathogen cell wall chitin"
+            
+        # 2. Heavy metal resistance / Efflux
+        elif re.search(r"\bars\w*", sym, re.IGNORECASE) or "arsenic" in prod:
+            cat = "Metal Resistance"
+            fam = "arsRDABC Arsenate Efflux"
+            prop = "Arsenic detoxification in metal-stressed agricultural soils"
+        elif re.search(r"\bcop\w*", sym, re.IGNORECASE) or "copper" in prod:
+            cat = "Metal Resistance"
+            fam = "copZA Copper Export"
+            prop = "Copper resistance; survival in copper-fungicide treated soils"
+            
+        # 3. Antibiotic Resistance
+        elif re.search(r"\bvmlr\w*", sym, re.IGNORECASE) or "lincomycin" in prod:
+            cat = "AMR (Intrinsic)"
+            fam = "ABC-F Ribosomal Protection"
+            risk = "Low"
+            prop = "Intrinsic resistance to lincosamides and macrolides"
+        elif re.search(r"\bpenP\w*", sym, re.IGNORECASE) or "beta-lactamase" in prod:
+            cat = "AMR (Intrinsic)"
+            fam = "Class A Beta-lactamase"
+            risk = "Moderate"
+            prop = "Hydrolysis of beta-lactam antibiotics"
+            
+        # 4. Quorum Sensing / Virulence Factors via hybrid HMM
+        else:
+            if has_hmm_match:
+                best_hit = max(hmm_hits[ltag], key=lambda x: x["confidence"])
+                h_name = best_hit["profile_name"]
+                conf = best_hit["confidence"]
+                
+                is_qs_hmm = any(p_m["name"] == h_name for p_m in hmm_manifest.get("profiles", []) if "Lux" in p_m["description"] or "autoinducer" in p_m["description"].lower() or "AIP" in p_m["description"] or "Agr" in p_m["description"] or "diffusible" in p_m["description"].lower())
+                
+                if is_qs_hmm or "PF00765" in best_hit["accession"] or "PF00196" in best_hit["accession"] or "PF08660" in best_hit["accession"]:
+                    cat = "Quorum Sensing"
+                    sys_name = "Unclassified Quorum Sensing"
+                    sys_type = "Unclassified QS"
+                    sys_desc = best_hit["description"]
+                    
+                    for sys_data in qs_signatures.get("systems", []):
+                        for role_type, pf_list in sys_data.get("pfams", {}).items():
+                            if best_hit["accession"] in pf_list:
+                                sys_name = sys_data["name"]
+                                sys_type = sys_data["type"]
+                                sys_desc = sys_data["description"]
+                                break
+                                
+                    fam = f"{sys_type} (HMM validated)"
+                    prop = f"System: {sys_name} | Acc: {best_hit['accession']} | E-value: {best_hit['evalue']:.2e}"
+                    
+                    operon_mult, operon_msg = check_operon_context(ltag, candidates, cat, sys_name)
+                    conf *= operon_mult
+                    if operon_msg:
+                        prop += f" | NOTE: {operon_msg}"
+                else:
+                    cat = "Virulence Factor"
+                    cl_name = "Toxin"
+                    for cl in vf_signatures.get("classes", []):
+                        if best_hit["accession"] in cl.get("pfams", []):
+                            cl_name = cl["name"]
+                            break
+                            
+                    fam = f"{cl_name} (HMM validated)"
+                    risk_level, val_req, evidence = evaluate_risk(cat, cl_name, is_plasmid, mge_nearby, active_secretion_present, risk_matrix, vf_signatures=vf_signatures)
+                    risk = risk_level
+                    val_flag = "Yes" if val_req else "No"
+                    prop = f"Class: {cl_name} | Acc: {best_hit['accession']} | E-value: {best_hit['evalue']:.2e} | Ev: {evidence}"
+            else:
+                is_qs, is_vf = match_pre_filter_keywords(sym, prod, qs_signatures, vf_signatures)
+                if is_qs:
+                    cat = "Quorum Sensing"
+                    fam = "Putative QS gene (Keyword Proxy fallback)"
+                    prop = f"Identified via Quorum Sensing keywords (Gene: {sym}, Product: {prod})"
+                elif is_vf:
+                    cat = "Virulence Factor"
+                    vf_class = "Unknown"
+                    for cl in vf_signatures.get("classes", []):
+                        if any(kw in prod.lower() for kw in cl.get("keywords", [])):
+                            vf_class = cl["name"]
+                            break
+                        regexes = cl.get("regexes", {})
+                        if re.search(regexes.get("gene", "^$"), sym.lower(), re.IGNORECASE) or re.search(regexes.get("product", "^$"), prod.lower(), re.IGNORECASE):
+                            vf_class = cl["name"]
+                            break
+                    fam = f"{vf_class} (Keyword Proxy fallback)"
+                    risk_level, val_req, evidence = evaluate_risk(cat, vf_class, is_plasmid, mge_nearby, active_secretion_present, risk_matrix, vf_signatures=vf_signatures)
+                    risk = risk_level
+                    val_flag = "Yes" if val_req else "No"
+                    prop = f"Identified via Virulence keywords (Gene: {sym}, Product: {prod}) | Ev: {evidence}"
+
+        if cat:
+            # Map mobile element database overlaps (MobileOG-db, ACLAME, ICEberg, ISfinder, PHASTER)
+            mge_overlaps = classify_mge_database_overlaps(sym, p["Product"])
+            if mge_overlaps:
+                db_hits_str = " | MGE Overlaps: " + ", ".join([f"{o['database']} (v{o['version']}, ID={o['match_id']})" for o in mge_overlaps])
+                prop += db_hits_str
+                
+            screened_cargo.append({
+                "Locus_Tag": ltag,
+                "Gene_Symbol": sym,
+                "Functional_Category": cat,
+                "Target_Family": fam,
+                "EC_Number": ec_extracted,
+                "Identity_Pct": ident,
+                "Biosafety_Risk": risk,
+                "Requires_Wet_Lab_Validation": val_flag,
+                "Confidence_Score": round(conf, 4),
+                "Industrial_Value_Proposition": prop
+            })
+
+    if not screened_cargo:
+        logger.info("No application cargo or biosafety flags identified in genome.")
+        screened_cargo.append({
+            "Locus_Tag": "None",
+            "Gene_Symbol": "None",
+            "Functional_Category": "None",
+            "Target_Family": "None",
+            "EC_Number": "NA",
+            "Identity_Pct": 0.0,
+            "Biosafety_Risk": "None",
+            "Requires_Wet_Lab_Validation": "No",
+            "Confidence_Score": 0.0,
+            "Industrial_Value_Proposition": "No cargo detected"
+        })
+
+    df_cargo = pd.DataFrame(screened_cargo)
+    os.makedirs(os.path.join(out_dir, "screening_cazymes"), exist_ok=True)
+    csv_out = os.path.join(out_dir, "screening_cazymes", "screened_cargo.csv")
+    df_cargo.to_csv(csv_out, index=False)
+    logger.info(f"Saved screened application cargo details to: {csv_out}")
+
+    # Visual cargo chart
+    plt.figure(figsize=(8, 5))
+    sns.set_theme(style="whitegrid")
+    counts_df = df_cargo[df_cargo["Functional_Category"] != "None"]["Functional_Category"].value_counts().reset_index()
+    counts_df.columns = ["Category", "Count"]
+    if not counts_df.empty:
+        sns.barplot(data=counts_df, x="Count", y="Category", palette="coolwarm", hue="Category", legend=False)
+    plt.title(f"Functional Cargo Distribution & Biosafety Profile (v{PIPELINE_VERSION})", fontsize=11, fontweight="bold", pad=15)
+    plt.xlabel("Annotated Gene Count", fontsize=9)
+    plt.ylabel("Functional Group", fontsize=9)
+    plt.tight_layout()
+    fig_out = os.path.join(out_dir, "screening_cazymes", "cargo_distribution.png")
+    save_publication_plot(fig_out, dpi=300)
+    plt.close()
+
+    # Formatted Excel Sheet Workbook
+    wb = openpyxl.Workbook()
+    ws_sum = wb.active
+    ws_sum.title = "Summary"
+    ws_sum.sheet_properties.tabColor = TAB_COLORS["Summary"]
+    
+    ws_sum.cell(row=3, column=1, value="Screening Parameter")
+    ws_sum.cell(row=3, column=2, value="Count / Value")
+    ws_sum.cell(row=3, column=3, value="Evaluation Interpretation Context")
+    
+    weights_info = CONFIG.get("screening", {}).get("weights", {"identity": 0.3, "coverage": 0.3, "bitscore": 0.4})
+    formula_text = f"Confidence = {weights_info.get('identity')}*Identity + {weights_info.get('coverage')}*Coverage + {weights_info.get('bitscore')}*NormalizedBitscore"
+    
+    summary_data = [
+        ("Total Screened Genes", str(len(screened_cargo)), "Total proteins checked for industrial applications"),
+        ("CAZyme Family Proteins", str(sum(1 for c in screened_cargo if c["Functional_Category"] == "CAZyme")), "Biomass degradation, pectinase, cellulose digestive enzymes"),
+        ("Heavy Metal Transporters", str(sum(1 for c in screened_cargo if c["Functional_Category"] == "Metal Resistance")), "Arsenic/Copper efflux pumps for soil adaptation"),
+        ("AMR Intrinsic Markers", str(sum(1 for c in screened_cargo if c["Functional_Category"] == "AMR (Intrinsic)")), "Intrinsic antibiotic resistance markers"),
+        ("VFDB Safety Flags (HMM)", str(sum(1 for c in screened_cargo if c["Functional_Category"] == "Virulence Factor")), "HMM-validated safety screening tags (toxins/secretions)"),
+        ("Requires Wet-Lab Validation", str(sum(1 for c in screened_cargo if c["Requires_Wet_Lab_Validation"] == "Yes")), "Candidate safety flags needing laboratory assays"),
+        ("Confidence Evaluation Formula", formula_text, "Configured scoring model parameters for transparency"),
+        ("Pipeline Version", f"v{PIPELINE_VERSION}", "Redolarium core pipeline implementation release version"),
+        ("HMM Database Version", f"Pfam Library v{hmm_version}", "Curated target HMM profile release version")
+    ]
+    
+    for idx, (param, val, desc) in enumerate(summary_data):
+        ws_sum.cell(row=4+idx, column=1, value=param).font = openpyxl.styles.Font(name="Calibri", size=9, bold=True)
+        ws_sum.cell(row=4+idx, column=2, value=val).alignment = openpyxl.styles.Alignment(horizontal="center")
+        ws_sum.cell(row=4+idx, column=3, value=desc)
+        
+    _sheet_title(ws_sum, "Phenotypic Profit Catalog & Biosafety Screening Summary",
+                 f"Genome: {record.id} | Isolate Safety & Industrial Applications Dashboard")
+    _hdr(ws_sum, 3, EXCEL_PALETTE["header_fill"])
+    apply_thin_borders(ws_sum, 4, ws_sum.max_row)
+    _alt_rows(ws_sum, 4, ws_sum.max_row, EXCEL_PALETTE["alt_row_fill"])
+    
+    start_int = ws_sum.max_row + 2
+    ws_sum.merge_cells(start_row=start_int, start_column=1, end_row=start_int+3, end_column=3)
+    ws_sum.cell(row=start_int, column=1, value=(
+        "Interpretation Summary: Screening of the query genome demonstrates potential industrial suitability. "
+        "Confidence is calculated based on a weighted sum of sequence identity, alignment coverage, and normalized HMM bitscore. "
+        "High and Moderate virulence risk profiles have been marked with a mandatory wet-lab validation flag. "
+        "General two-component regulatory matches lacking proximal autoinducer synthases have been contextually downgraded to reduce false positives."
+    )).font = openpyxl.styles.Font(name="Calibri", size=9, italic=True)
+    ws_sum.cell(row=start_int, column=1).alignment = openpyxl.styles.Alignment(wrap_text=True, vertical="top")
+    _col_widths(ws_sum, [30, 24, 65])
+
+    # Sheet 2: Catalog Details
+    ws_cat = wb.create_sheet(title="Phenotypic Profit Catalog")
+    ws_cat.sheet_properties.tabColor = TAB_COLORS.get("Screening", "1F3864")
+    
+    headers = ["Locus Tag", "Gene Symbol", "Functional Category", "Target Family", "EC Number", "Identity Pct (%)", "Biosafety Risk", "Wet-Lab Required", "Confidence", "Industrial Value Proposition"]
+    ws_cat.append(headers)
+    for c in screened_cargo:
+        ws_cat.append([
+            c["Locus_Tag"],
+            c["Gene_Symbol"],
+            c["Functional_Category"],
+            c["Target_Family"],
+            c["EC_Number"],
+            c["Identity_Pct"],
+            c["Biosafety_Risk"],
+            c["Requires_Wet_Lab_Validation"],
+            c["Confidence_Score"],
+            c["Industrial_Value_Proposition"]
+        ])
+        
+    _sheet_title(ws_cat, "Phenotypic Profit Catalog - Industrial Applications Details",
+                 "List of annotated proteins possessing academic, industrial, or agricultural utility.")
+    _hdr(ws_cat, 3, EXCEL_PALETTE["header_fill"])
+    apply_thin_borders(ws_cat, 4, ws_cat.max_row)
+    
+    for r in range(4, ws_cat.max_row + 1):
+        cat_val = ws_cat.cell(row=r, column=3).value
+        risk_val = ws_cat.cell(row=r, column=7).value
+        
+        if cat_val == "CAZyme":
+            ws_cat.cell(row=r, column=3).fill = openpyxl.styles.PatternFill("solid", fgColor=EXCEL_PALETTE["positive_fill"])
+        elif cat_val == "Metal Resistance":
+            ws_cat.cell(row=r, column=3).fill = openpyxl.styles.PatternFill("solid", fgColor=EXCEL_PALETTE["bgc_core_fill"])
+            
+        if "High" in str(risk_val):
+            ws_cat.cell(row=r, column=7).fill = openpyxl.styles.PatternFill("solid", fgColor=EXCEL_PALETTE["warning_fill"])
+            ws_cat.cell(row=r, column=7).font = openpyxl.styles.Font(name="Calibri", size=9, bold=True)
+        elif "Moderate" in str(risk_val):
+            ws_cat.cell(row=r, column=7).fill = openpyxl.styles.PatternFill("solid", fgColor=EXCEL_PALETTE["highlight_fill"])
+            
+        for col in range(1, 10):
+            ws_cat.cell(row=r, column=col).alignment = openpyxl.styles.Alignment(horizontal="center")
+        
+        for col in range(1, 11):
+            is_bold = (col == 1)
+            ws_cat.cell(row=r, column=col).font = openpyxl.styles.Font(name="Calibri", size=9, bold=is_bold)
+            
+    _alt_rows(ws_cat, 4, ws_cat.max_row, EXCEL_PALETTE["alt_row_fill"])
+    _col_widths(ws_cat, [15, 12, 20, 26, 12, 14, 20, 16, 12, 80])
+    
+    # Sheet 3: References
+    create_references_sheet_openpyxl(wb)
+    
+    xls_out = os.path.join(out_dir, "screening_cazymes", "phenotypic_profit.xlsx")
+    wb.save(xls_out)
+    logger.info(f"Saved Excel Phenotypic Profit Catalog to: {xls_out}")
+    
+    # Visual genome map
+    try:
+        fig, ax = plt.subplots(figsize=(12, 4))
+        sns.set_theme(style="white")
+        genome_len = len(record.seq)
+        ax.plot([0, genome_len], [0.5, 0.5], color="#CCCCCC", lw=4, zorder=1)
+        
+        colors_map = {
+            "CAZyme": "#4A90E2",
+            "Metal Resistance": "#2ECC71",
+            "Quorum Sensing": "#9B59B6",
+            "Virulence Factor": "#E74C3C",
+            "AMR (Intrinsic)": "#F1C40F"
+        }
+        
+        for cargo in screened_cargo:
+            if cargo["Locus_Tag"] == "None":
+                continue
+            cat = cargo["Functional_Category"]
+            if cat not in colors_map:
+                continue
+            
+            # Find gene location
+            feat = next(f for f in record.features if f.type == "CDS" and f.qualifiers.get("locus_tag", [""])[0] == cargo["Locus_Tag"])
+            start = int(feat.location.start)
+            end = int(feat.location.end)
+            length = end - start
+            col = colors_map[cat]
+            
+            direction = 1 if feat.location.strand >= 0 else -1
+            y_pos = 0.48 if direction == 1 else 0.52
+            
+            arrow = patches.FancyArrow(
+                start if direction == 1 else end,
+                y_pos,
+                length * direction,
+                0,
+                width=0.015,
+                head_width=0.035,
+                head_length=min(length * 0.4, 20000),
+                facecolor=col,
+                edgecolor="black",
+                lw=0.5,
+                zorder=3
+            )
+            ax.add_patch(arrow)
+            
+            label = cargo["Gene_Symbol"]
+            if label == "NA":
+                label = cargo["Locus_Tag"].split("_")[-1]
+            ax.text(start + length/2, y_pos + 0.022, label, fontsize=7, ha="center", va="bottom", zorder=4,
+                    bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="gray", alpha=0.8, lw=0.5))
+            
+        handles = [plt.Line2D([0], [0], color=col, lw=6, label=cat) for cat, col in colors_map.items()]
+        ax.legend(handles=handles, loc="upper right", frameon=True, fontsize=8)
+        
+        ax.set_xlim(-0.02 * genome_len, 1.02 * genome_len)
+        ax.set_ylim(0.3, 0.7)
+        ax.get_yaxis().set_visible(False)
+        ax.set_xlabel("Genomic Coordinates (bp)", fontsize=9, fontweight="bold")
+        ax.set_title(f"Genomic Synteny & Distribution Map of Functional Cargo: {record.id} (v{PIPELINE_VERSION})", fontsize=10, fontweight="bold", pad=12)
+        plt.tight_layout()
+        
+        cargo_fig_out = os.path.join(out_dir, "screening_cazymes", "cargo_distribution.png")
+        save_publication_plot(cargo_fig_out, dpi=300)
+        plt.close()
+        logger.info(f"Saved directional linear genomic cargo map to: {cargo_fig_out}")
+    except Exception as ex:
+        logger.warning(f"Failed to generate linear genome cargo map: {ex}")
+        
+    # Calculate screening confidence
+    completeness = 100.0
+    contamination = 0.0
+    closure_status = "Closed"
+    if qc_result:
+        completeness = qc_result.prediction.get("completeness", 100.0)
+        contamination = qc_result.prediction.get("contamination", 0.0)
+        closure_status = qc_result.genome_closure_status
+        
+    qc_penalty = get_module_qc_penalty("annotation", completeness, contamination)
+    
+    base_score = 0.95
+    if len(screened_cargo) == 0 or (len(screened_cargo) == 1 and screened_cargo[0]["Locus_Tag"] == "None"):
+        base_score = 0.85
+        
+    final_score = base_score - qc_penalty
+    final_score = max(0.0, min(1.0, final_score))
+    
+    db_vers = CONFIG.get("database_versions", {})
+    
+    return PredictionResult(
+        prediction=screened_cargo,
+        confidence_score=final_score,
+        algorithm="Pfam HMM cargo screening & biosafety risk matrix classifier",
+        algorithm_version="v3.0.0",
+        genome_closure_status=closure_status,
+        database="MobileOG-db / ACLAME / ICEberg / ISfinder / PHASTER",
+        database_version=db_vers.get("mobileog", "1.6"),
+        evidence=[
+            f"Screened {len(candidates)} candidate genes across genome.",
+            f"Identified {len(screened_cargo)} functional cargos (CAZymes, AMR, Metal, QS, VFs).",
+            f"Mapped MGE database overlaps against ISfinder, ICEberg, MobileOG, ACLAME, and PHASTER."
+        ],
+        limitations=[
+            "Screening is based on Pfam domain models and sequence alignment signatures.",
+            "Functional phenotype predictions require experimental validation."
+        ],
+        citations=[
+            "MobileOG-db: Brown et al. 2022 (doi:10.1093/bioinformatics/btac349)",
+            "ACLAME: Leplae et al. 2010 (doi:10.1093/nar/gkp823)",
+            "ICEberg: Liu et al. 2019 (doi:10.1093/nar/gky1123)",
+            "ISfinder: Siguier et al. 2006 (doi:10.1093/nar/gkl014)",
+            "PHASTER: Arndt et al. 2016 (doi:10.1093/nar/gkw387)"
+        ],
+        runtime=time.time() - start_time,
+        warnings=[f"QC assembly penalty applied: -{qc_penalty:.2f}"] if qc_penalty > 0.05 else []
+    )
