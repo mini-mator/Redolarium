@@ -155,10 +155,11 @@ st.markdown("---")
 st.header("Download Package")
 
 # Zip the directory
-if not st.session_state.zip_path:
+zip_base_path = os.path.join(os.path.dirname(out_dir), f"Redolarium_Results_{os.path.basename(out_dir)}")
+zip_file_path = f"{zip_base_path}.zip"
+
+if not st.session_state.zip_path or not os.path.exists(zip_file_path):
     with st.spinner("Compressing output package..."):
-        zip_base_path = os.path.join(os.path.dirname(out_dir), f"Redolarium_Results_{os.path.basename(out_dir)}")
-        zip_file_path = f"{zip_base_path}.zip"
         import zipfile
         try:
             with zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED) as zf:
