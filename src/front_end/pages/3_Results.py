@@ -116,7 +116,7 @@ if num_bgcs > 0:
             st.subheader(f"{selected_bgc} - Dual-Scale Synteny Map")
             synteny_img = os.path.join(bgc_target_dir, "hgt_evolution", f"{selected_bgc}_hgt_synteny.png")
             if os.path.exists(synteny_img):
-                st.image(synteny_img, use_container_width=True)
+                st.image(synteny_img, use_column_width=True)
             else:
                 st.info("Synteny map not found or not generated for this cluster.")
                 
@@ -124,7 +124,7 @@ if num_bgcs > 0:
             st.subheader(f"{selected_bgc} - Pathway Linkage Network")
             linkage_img = os.path.join(bgc_target_dir, "metabolic_pathways", f"{selected_bgc}_metabolic_linkage.png")
             if os.path.exists(linkage_img):
-                st.image(linkage_img, use_container_width=True)
+                st.image(linkage_img, use_column_width=True)
             else:
                 st.info("Metabolic linkage map not found.")
                 
@@ -133,7 +133,7 @@ if num_bgcs > 0:
             cues_csv = os.path.join(bgc_target_dir, "regulatory_networks", f"{selected_bgc}_environmental_cues.csv")
             if os.path.exists(cues_csv):
                 import pandas as pd
-                st.dataframe(pd.read_csv(cues_csv), use_container_width=True)
+                st.dataframe(pd.read_csv(cues_csv))
             else:
                 st.info("No strong environmental cues or promoters mapped for this cluster.")
                 
@@ -144,7 +144,7 @@ if num_bgcs > 0:
                 trees = [f for f in os.listdir(trees_dir) if f.endswith('.png')]
                 if trees:
                     for t in trees:
-                        st.image(os.path.join(trees_dir, t), caption=t, use_container_width=True)
+                        st.image(os.path.join(trees_dir, t), caption=t, use_column_width=True)
                 else:
                     st.info("No phylogenetic trees available.")
             else:
@@ -186,8 +186,8 @@ if st.session_state.zip_path and os.path.exists(st.session_state.zip_path):
             data=fp,
             file_name=os.path.basename(st.session_state.zip_path),
             mime="application/zip",
-            type="primary",
-            use_container_width=True
+            type="primary"
+
         )
 else:
     st.error("Failed to generate the ZIP archive.")
