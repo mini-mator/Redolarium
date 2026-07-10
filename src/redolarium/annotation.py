@@ -1401,6 +1401,8 @@ def run_annotation_pipeline(query_gb, ref_gb, cores, email, out_dir, logger, no_
         from concurrent.futures import ProcessPoolExecutor
         
         # Save dynamic window_size in memory configuration mapping
+        if "annotation" not in CONFIG:
+            CONFIG["annotation"] = {}
         CONFIG["annotation"]["ortholog_search_window"] = window_size
         
         with ProcessPoolExecutor(max_workers=cores) as executor:
