@@ -102,6 +102,16 @@ def format_for_prism_and_origin(hgt_results, out_dir, bgc_id):
     summary_csv = os.path.join(hgt_dir, f"{bgc_id}_prism_grouped_summary.csv")
     df_summary.to_csv(summary_csv, index=False)
 
+import re
+
+class PrivacyFilter(logging.Filter):
+    def filter(self, record):
+        if isinstance(record.msg, str):
+            record.msg = re.sub(r'C:\\Users\\[^\\]+', '[SECURE_LOCAL_PATH]', record.msg)
+            # also handle forward slash variants just in case
+            record.msg = re.sub(r'C:/Users/[^/]+', '[SECURE_LOCAL_PATH]', record.msg)
+        return True
+
 # Setup logger
 def setup_logging(out_dir):
     os.makedirs(out_dir, exist_ok=True)
@@ -111,8 +121,10 @@ def setup_logging(out_dir):
         fmt = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
         ch = logging.StreamHandler(sys.stdout)
         ch.setFormatter(fmt)
+        ch.addFilter(PrivacyFilter())
         fh = logging.FileHandler(os.path.join(out_dir, "pipeline_execution.log"), mode="w", encoding="utf-8")
         fh.setFormatter(fmt)
+        fh.addFilter(PrivacyFilter())
         log.addHandler(ch)
         log.addHandler(fh)
     return log
@@ -955,64 +967,27 @@ def build_and_draw_evidence_graph(qc_res, anno_res, bgc_res, evol_res, prom_res,
     G = nx.DiGraph()
     
     # 1. Parse nodes and evidence payloads
-    nodes_data = {
-        "QC": {
-            "label": f"Genome QC\nScore: {qc_res.confidence_score:.2f}",
-            "confidence": qc_res.confidence_score,
-            "details": qc_res.prediction if isinstance(qc_res.prediction, dict) else {},
-            "evidence": qc_res.evidence,
-            "uncertainties": qc_res.limitations
-        },
-        "Taxonomy": {
-            "label": f"Taxonomy\nScore: {anno_res.confidence_score:.2f}",
-            "confidence": anno_res.confidence_score,
-            "details": anno_res.prediction.get("ref_strains", [])[0] if isinstance(anno_res.prediction, dict) and anno_res.prediction.get("ref_strains") else "Unknown",
-            "evidence": anno_res.evidence,
-            "uncertainties": anno_res.limitations
-        },
-        "Orthology": {
-            "label": f"Orthology Map\nScore: {anno_res.confidence_score:.2f}",
-            "confidence": anno_res.confidence_score,
-            "details": f"{len(anno_res.prediction.get('ortholog_mapping', []))} CDS mapped" if isinstance(anno_res.prediction, dict) else "0 CDS mapped",
-            "evidence": anno_res.evidence,
-            "uncertainties": anno_res.limitations
-        },
-        "BGC": {
-            "label": f"BGC Delineation\nScore: {bgc_res.confidence_score:.2f}",
-            "confidence": bgc_res.confidence_score,
-            "details": bgc_res.prediction.get("target_bgc", {}).get("BGC_Type", "Unknown") if isinstance(bgc_res.prediction, dict) and bgc_res.prediction.get("target_bgc") else "Unknown",
-            "evidence": bgc_res.evidence,
-            "uncertainties": bgc_res.limitations
-        },
-        "HGT": {
-            "label": f"HGT Evidence\nScore: {evol_res.confidence_score:.2f}",
-            "confidence": evol_res.confidence_score,
-            "details": "Sliding window anomalies",
-            "evidence": evol_res.evidence,
-            "uncertainties": evol_res.limitations
-        },
-        "Promoter": {
-            "label": f"Promoters\nScore: {prom_res.confidence_score:.2f}",
-            "confidence": prom_res.confidence_score,
-            "details": f"{len(prom_res.prediction.get('promoter_records', []))} motifs" if isinstance(prom_res.prediction, dict) else "0 motifs",
-            "evidence": prom_res.evidence,
-            "uncertainties": prom_res.limitations
-        },
-        "Docking": {
-            "label": f"Docking Affinity\nScore: {dock_res.confidence_score:.2f}",
-            "confidence": dock_res.confidence_score,
-            "details": f"{dock_res.prediction.get('docking_output').binding_affinity_kcal_mol if (isinstance(dock_res.prediction, dict) and dock_res.prediction.get('docking_output')) else 0.0} kcal/mol",
-            "evidence": dock_res.evidence,
-            "uncertainties": dock_res.limitations
-        },
-        "Phylogeny": {
-            "label": f"Phylogenetics\nScore: {phy_res.confidence_score:.2f}",
-            "confidence": phy_res.confidence_score,
-            "details": f"Speciation nodes: {len(phy_res.prediction.get('divergence_events', []))}" if isinstance(phy_res.prediction, dict) else "0 nodes",
-            "evidence": phy_res.evidence,
-            "uncertainties": phy_res.limitations
-        }
-    }
+    nodes_data = {}
+    
+    def add_node(key, res, default_label, default_details):
+        if res is not None:
+            nodes_data[key] = {
+                "label": f"{default_label}\nScore: {res.confidence_score:.2f}",
+                "confidence": res.confidence_score,
+                "details": default_details(res),
+                "evidence": getattr(res, "evidence", []),
+                "uncertainties": getattr(res, "limitations", [])
+            }
+            
+    add_node("QC", qc_res, "Genome QC", lambda r: r.prediction if isinstance(r.prediction, dict) else {})
+    add_node("Taxonomy", anno_res, "Taxonomy", lambda r: r.prediction.get("ref_strains", [])[0] if isinstance(r.prediction, dict) and r.prediction.get("ref_strains") else "Unknown")
+    add_node("Orthology", anno_res, "Orthology Map", lambda r: f"{len(r.prediction.get('ortholog_mapping', []))} CDS mapped" if isinstance(r.prediction, dict) else "0 CDS mapped")
+    add_node("BGC", bgc_res, "BGC Delineation", lambda r: r.prediction.get("target_bgc", {}).get("BGC_Type", "Unknown") if isinstance(r.prediction, dict) and r.prediction.get("target_bgc") else "Unknown")
+    add_node("HGT", evol_res, "HGT Evidence", lambda r: "Sliding window anomalies")
+    add_node("Promoter", prom_res, "Promoters", lambda r: f"{len(r.prediction.get('promoter_records', []))} motifs" if isinstance(r.prediction, dict) else "0 motifs")
+    add_node("Docking", dock_res, "Docking Affinity", lambda r: f"{r.prediction.get('docking_output').binding_affinity_kcal_mol if (isinstance(r.prediction, dict) and r.prediction.get('docking_output')) else 0.0} kcal/mol")
+    add_node("Phylogeny", phy_res, "Phylogenetics", lambda r: f"Speciation nodes: {len(r.prediction.get('divergence_events', []))}" if isinstance(r.prediction, dict) else "0 nodes")
+
     
     # Add nodes to graph
     for node, data in nodes_data.items():

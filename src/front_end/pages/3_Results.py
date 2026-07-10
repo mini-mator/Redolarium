@@ -167,6 +167,8 @@ if not st.session_state.zip_path or not os.path.exists(zip_file_path):
                     # Safely skip problematic temp directories
                     if "mmseqs_tmp" in dirs:
                         dirs.remove("mmseqs_tmp")
+                    if "antismash_results" in dirs:
+                        dirs.remove("antismash_results")
                     for file in files:
                         file_path = os.path.join(root, file)
                         arcname = os.path.relpath(file_path, out_dir)

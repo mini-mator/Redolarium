@@ -181,25 +181,25 @@ def load_brite_pathway_categories(force_refresh, logger):
 def get_category_color(category):
     cat_lower = category.lower()
     if "carbohydrate" in cat_lower:
-        return "#E2F0CB"
+        return "#8BC34A" # Light Green
     elif "energy" in cat_lower:
-        return "#FFE699"
+        return "#FFC107" # Amber
     elif "lipid" in cat_lower:
-        return "#C9DAF8"
+        return "#03A9F4" # Light Blue
     elif "nucleotide" in cat_lower:
-        return "#F8CBAD"
+        return "#FF5722" # Deep Orange
     elif "amino acid" in cat_lower:
-        return "#FCE4D6"
+        return "#E91E63" # Pink
     elif "cofactors" in cat_lower or "vitamin" in cat_lower:
-        return "#FFF2CC"
+        return "#FF9800" # Orange
     elif "glycan" in cat_lower:
-        return "#FFF2CC"
+        return "#CDDC39" # Lime
     elif "secondary" in cat_lower or "biosynthesis" in cat_lower:
-        return "#E4DFEC"
+        return "#9C27B0" # Purple
     elif "xenobiotics" in cat_lower or "biodegradation" in cat_lower or "transport" in cat_lower:
-        return "#E2EFDA"
+        return "#00BCD4" # Cyan
     else:
-        return "#F2F2F2"
+        return "#9E9E9E" # Grey
 
 def export_to_sbml(genes_with_ec, reconstructed_data, filepath, logger):
     """

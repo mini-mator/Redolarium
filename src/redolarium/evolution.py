@@ -20,6 +20,7 @@ from redolarium.config import CONFIG
 from redolarium.schemas import HGTOutput
 from redolarium.structures import PredictionResult
 from redolarium.qc import get_module_qc_penalty
+from redolarium.utils import save_publication_plot
 
 logger = logging.getLogger("redolarium")
 

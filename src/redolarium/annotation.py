@@ -790,7 +790,10 @@ def download_reference_genbank(accession, email, out_dir, logger):
     cache_dir = "resources/reference_genomes_cache"
     os.makedirs(cache_dir, exist_ok=True)
     ref_cache_path = os.path.join(cache_dir, f"{accession}.gb")
-    ref_path = os.path.join(out_dir, f"{accession}.gb")
+    
+    ref_out_dir = os.path.join(out_dir, "reference_genomes")
+    os.makedirs(ref_out_dir, exist_ok=True)
+    ref_path = os.path.join(ref_out_dir, f"{accession}.gb")
     
     if os.path.exists(ref_cache_path) and os.path.getsize(ref_cache_path) > 0:
         logger.info(f"Using cached GenBank record for reference strain: {ref_cache_path}")

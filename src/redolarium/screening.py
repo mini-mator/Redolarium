@@ -817,6 +817,10 @@ def run_screening_pipeline(query_gb, ortholog_mapping, out_dir, logger, qc_resul
         handles = [plt.Line2D([0], [0], color=col, lw=6, label=cat) for cat, col in colors_map.items()]
         ax.legend(handles=handles, loc="upper right", frameon=True, fontsize=8)
         
+        # Explicit annotation if empty
+        if not [c for c in screened_cargo if c["Locus_Tag"] != "None"]:
+            ax.text(genome_len / 2, 0.5, "No specific functional cargo identified", ha="center", va="center", fontsize=12, color="gray", fontstyle="italic")
+        
         ax.set_xlim(-0.02 * genome_len, 1.02 * genome_len)
         ax.set_ylim(0.3, 0.7)
         ax.get_yaxis().set_visible(False)

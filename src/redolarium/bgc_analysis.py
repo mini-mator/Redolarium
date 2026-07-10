@@ -959,14 +959,16 @@ def evaluate_targeted_bgc(query_gb, ref_gb, ortholog_mapping, target_bgc, out_di
     # Draw Fisheye connecting lines using ConnectionPatch
     try:
         from matplotlib.patches import ConnectionPatch
+        # Track 1 uses genome coordinates. Track 2 uses genome coordinates (view_start to view_end)
+        # So we can just map the specific X coordinates between the axes
         con1 = ConnectionPatch(xyA=(bgc_start, -0.5), xyB=(bgc_start, 3.5), coordsA="data", coordsB="data",
                                axesA=ax1, axesB=ax2, color="red", alpha=0.3, linestyle="--")
         con2 = ConnectionPatch(xyA=(bgc_end, -0.5), xyB=(bgc_end, 3.5), coordsA="data", coordsB="data",
                                axesA=ax1, axesB=ax2, color="red", alpha=0.3, linestyle="--")
-        ax1.add_artist(con1)
-        ax1.add_artist(con2)
-    except Exception:
-        pass
+        ax2.add_artist(con1)
+        ax2.add_artist(con2)
+    except Exception as e:
+        logger.warning(f"Failed to draw synteny fisheye connection patches: {e}")
         
     for g in (region_genes + flanking_genes):
         g_len = g["End_Coord"] - g["Start_Coord"]
@@ -1003,23 +1005,44 @@ def evaluate_targeted_bgc(query_gb, ref_gb, ortholog_mapping, target_bgc, out_di
         )
         ax2.add_patch(arrow)
         
-        if g["Role"] in ["biosynthetic", "immunity", "regulatory"] and g_len > 800:
-            y_offset = 1.8 if direction == 1 else -2.0
-            ax2.text(
-                (g["Start_Coord"] + g["End_Coord"]) / 2,
-                y_offset,
-                g["Gene_Symbol"] if g["Gene_Symbol"] != "NA" else g["Locus_Tag"][-5:],
-                ha="center", fontsize=8, rotation=45 if direction == 1 else -45
-            )
+        # Determine center
+        center_pos = (g["Start_Coord"] + g["End_Coord"]) / 2.0
+        
+        # Top Label (Gene Name / Symbol)
+        y_name_offset = 1.8 if direction == 1 else -2.0
+        gene_name = g["Gene_Symbol"] if g["Gene_Symbol"] != "NA" else g["Locus_Tag"][-5:]
+        ax2.text(
+            center_pos,
+            y_name_offset,
+            gene_name,
+            ha="center", fontsize=7, fontweight="bold", rotation=45 if direction == 1 else -45
+        )
+        
+        # Bottom Label (Length in bp)
+        y_len_offset = -1.5 if direction == 1 else 1.5
+        ax2.text(
+            center_pos,
+            y_len_offset,
+            f"{g_len} bp",
+            ha="center", fontsize=6, rotation=0
+        )
+        
+        # Side Labels (Start and End Coordinates)
+        if direction == 1:
+            ax2.text(g["Start_Coord"], -0.8, str(g["Start_Coord"]), ha="right", va="top", fontsize=5, rotation=90)
+            ax2.text(g["End_Coord"], -1.2, str(g["End_Coord"]), ha="left", va="top", fontsize=5, rotation=90)
+        else:
+            ax2.text(g["End_Coord"], 0.8, str(g["End_Coord"]), ha="right", va="bottom", fontsize=5, rotation=90)
+            ax2.text(g["Start_Coord"], 1.2, str(g["Start_Coord"]), ha="left", va="bottom", fontsize=5, rotation=90)
             
     core_border = patches.Rectangle(
-        (target_bgc["Core_Start"], -2.2),
+        (target_bgc["Core_Start"], -2.8),
         target_bgc["Core_End"] - target_bgc["Core_Start"],
-        4.4,
+        5.6,
         fill=False, edgecolor="red", linestyle="--", lw=1.5, alpha=0.5
     )
     ax2.add_patch(core_border)
-    ax2.text((target_bgc["Core_Start"] + target_bgc["Core_End"])/2, 2.4, "BGC Core Region", ha="center", fontsize=10, color="red", fontweight="bold")
+    ax2.text((target_bgc["Core_Start"] + target_bgc["Core_End"])/2, 3.0, "BGC Core Region", ha="center", fontsize=10, color="red", fontweight="bold")
     
     plt.suptitle(f"Target Cluster Synteny Map: {bgc_id} ({target_bgc['BGC_Type']})", fontsize=14, fontweight="bold")
     plt.tight_layout()
@@ -1042,7 +1065,7 @@ def generate_comprehensive_bgc_summary(bgc_list, query_gb, out_dir, logger):
         
     logger.info("Generating Comprehensive BGC Summary Excel...")
     
-    out_xlsx = os.path.join(out_dir, "tabular_data", "BGC_Comprehensive_Summary.xlsx")
+    out_xlsx = os.path.join(out_dir, "bgc", "BGC_Comprehensive_Summary.xlsx")
     os.makedirs(os.path.dirname(out_xlsx), exist_ok=True)
     
     try:
@@ -1113,20 +1136,6 @@ def run_bgc_pipeline(query_gb, ref_gb, ortholog_mapping, out_dir, logger, qc_res
     # Generate comprehensive multi-sheet Excel summary for all detected BGCs
     generate_comprehensive_bgc_summary(bgc_list, query_gb, out_dir, logger)
     
-    # 2. Identify target BGC of interest
-    target_bgc = None
-    if bgc_list:
-        for b in bgc_list:
-            if "surfactin" in b["BGC_Type"].lower() or "fengycin" in b["BGC_Type"].lower() or "plipastatin" in b["BGC_Type"].lower():
-                target_bgc = b
-                break
-            
-    region_genes, flanking_genes, promoter_records, phage_hits = [], [], [], []
-    if target_bgc:
-        region_genes, flanking_genes, promoter_records, phage_hits = evaluate_targeted_bgc(
-            query_gb, ref_gb, ortholog_mapping, target_bgc, out_dir, logger
-        )
-        
     # Calculate continuous confidence score
     completeness = 100.0
     contamination = 0.0
@@ -1140,29 +1149,20 @@ def run_bgc_pipeline(query_gb, ref_gb, ortholog_mapping, out_dir, logger, qc_res
     
     # Base BGC score
     base_bgc_score = 0.90
-    if target_bgc:
-        match = re.search(r'([\d.]+)\s*%\s*similarity', target_bgc["BGC_Type"])
-        if match:
-            base_bgc_score = float(match.group(1)) / 100.0
-            
-    bgc_score = base_bgc_score - qc_penalty
-    bgc_score = max(0.0, min(1.0, bgc_score))
+    bgc_score = max(0.0, min(1.0, base_bgc_score - qc_penalty))
     
     prediction_data = {
         "bgc_list": bgc_list,
-        "target_bgc": target_bgc,
-        "region_genes": region_genes,
-        "flanking_genes": flanking_genes,
-        "promoter_records": promoter_records,
-        "phage_hits": phage_hits
+        "target_bgc": None,
+        "region_genes": [],
+        "flanking_genes": [],
+        "promoter_records": [],
+        "phage_hits": []
     }
     
     evidence = [
-        f"Detected {len(bgc_list)} biosynthetic gene clusters in genome.",
-        f"Target BGC: {target_bgc['BGC_ID'] if target_bgc else 'None'} ({target_bgc['BGC_Type'] if target_bgc else 'None'})"
+        f"Detected {len(bgc_list)} biosynthetic gene clusters in genome."
     ]
-    if phage_hits:
-        evidence.append(f"Identified {len(phage_hits)} mobile/phage flanking artifacts near cluster.")
         
     db_vers = CONFIG.get("database_versions", {})
     

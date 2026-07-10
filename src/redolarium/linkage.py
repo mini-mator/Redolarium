@@ -237,7 +237,6 @@ def run_linkage_pipeline(query_gb, region_genes, target_bgc, out_dir, logger):
     
     if os.path.exists(kegg_csv):
         try:
-            import pandas as pd
             df_kegg = pd.read_csv(kegg_csv)
             for _, row in df_kegg.iterrows():
                 if row.get("Locus_Tag") in bgc_tags:

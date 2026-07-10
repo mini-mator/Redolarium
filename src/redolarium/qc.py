@@ -206,7 +206,7 @@ def run_qc_pipeline(query_gb, out_dir, logger):
     }
     
     os.makedirs(os.path.join(out_dir, "tabular_data"), exist_ok=True)
-    qc_json = os.path.join(out_dir, "tabular_data", "genome_qc_metrics.json")
+    qc_json = os.path.join(out_dir, "genome_qc_metrics.json")
     with open(qc_json, "w", encoding="utf-8") as f:
         json.dump(qc_data, f, indent=4)
         
