@@ -119,15 +119,21 @@ with col2:
 
 st.markdown("---")
 if st.button("Proceed to Analysis Settings"):
+    errors = []
     if not st.session_state.email_id:
-        st.error("An Email ID is required to proceed.")
-    elif query_type == "Input Sequence File" and not st.session_state.query_file_content:
-        st.error("Please upload a Query Sequence file.")
-    elif query_type == "NCBI Accession ID" and not st.session_state.query_accession:
-        st.error("Please enter a valid Query NCBI Accession ID.")
-    elif ref_type == "Local Reference Sequence" and not st.session_state.ref_file_contents:
-        st.error("Please upload at least one Reference Sequence file.")
-    elif ref_type == "NCBI Accession ID" and not st.session_state.ref_accession:
-        st.error("Please enter valid Reference NCBI Accession IDs.")
+        errors.append("An Email ID is required to proceed.")
+    if query_type == "Input Sequence File" and not st.session_state.query_file_content:
+        errors.append("Please upload a Query Sequence file.")
+    if query_type == "NCBI Accession ID" and not st.session_state.query_accession:
+        errors.append("Please enter a valid Query NCBI Accession ID.")
+    if ref_type == "Local Reference Sequence" and not st.session_state.ref_file_contents:
+        errors.append("Please upload at least one Reference Sequence file.")
+    if ref_type == "NCBI Accession ID" and not st.session_state.ref_accession:
+        errors.append("Please enter valid Reference NCBI Accession IDs.")
+    
+    if errors:
+        for err in errors:
+            st.error(f"Validation Error: {err} Please change it.")
+        st.stop()
     else:
-        st.success("Configuration saved! Please select '1_Settings' from the sidebar to continue.")
+        st.switch_page("pages/1_Settings.py")

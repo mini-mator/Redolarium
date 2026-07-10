@@ -92,4 +92,11 @@ if st.session_state.analysis_bgc:
 
 st.markdown("---")
 if st.button("Proceed to Terminal & Execution"):
-    st.success("Settings saved! Please select '2_Terminal' from the sidebar to start the pipeline.")
+    if not (st.session_state.analysis_genome_annotation or 
+            st.session_state.analysis_query_vs_ref or 
+            st.session_state.analysis_cazymes or 
+            st.session_state.analysis_bgc):
+        st.error("Validation Error: Please select at least one analysis module to proceed. Please change it.")
+        st.stop()
+    else:
+        st.switch_page("pages/2_Terminal.py")
