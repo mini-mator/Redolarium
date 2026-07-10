@@ -14,7 +14,6 @@ from redolarium.bgc_analysis import detect_all_bgcs, evaluate_targeted_bgc
 from redolarium.target_bgc_analysis import run_target_bgc_analysis
 from redolarium.evolution import run_evolution_pipeline
 from redolarium.phylogeny import run_phylogeny_pipeline
-from redolarium.docking import run_docking_pipeline
 from redolarium.linkage import run_linkage_pipeline
 
 class QueueLoggingHandler(logging.Handler):
@@ -32,7 +31,7 @@ def run_pipeline_thread(query, ref, out_dir, email, cores, run_blast, target_bgc
     try:
         # Set up folders
         subdirs = [
-            "docking_images", "phylogeny_trees", "tabular_data", 
+            "phylogeny_trees", "tabular_data", 
             "metabolic_pathways", "comparative_genomics", "hgt_evolution", 
             "screening_cazymes", "bgc_motifs"
         ]
@@ -89,9 +88,12 @@ def run_pipeline_thread(query, ref, out_dir, email, cores, run_blast, target_bgc
         )
         
         # 5b. Promoter & prophage analysis
-        promoter_records, phage_hits, blast_rows = run_target_bgc_analysis(
+        result_prom = run_target_bgc_analysis(
             query, selected_bgc, run_blast, email, out_dir, logger
         )
+        promoter_records = result_prom.prediction.get("promoter_records", [])
+        phage_hits = result_prom.prediction.get("phage_hits", [])
+        blast_rows = result_prom.prediction.get("blast_rows", [])
         
         # 5c. Evolutionary HGT signatures
         hgt_results = run_evolution_pipeline(query, selected_bgc, out_dir, logger)
@@ -99,10 +101,7 @@ def run_pipeline_thread(query, ref, out_dir, email, cores, run_blast, target_bgc
         # 5d. Phylogenetics
         run_phylogeny_pipeline(query, ref_strains, identities, sim_matrix, out_dir, logger, bgc_blast_results=blast_rows)
         
-        # 5e. Molecular Docking
-        run_docking_pipeline(query, selected_bgc, region_genes, out_dir, logger)
-        
-        # 5f. Precursor ATP stoichiometry
+        # 5e. Precursor ATP stoichiometry
         stoichiometry_data = run_linkage_pipeline(query, region_genes, selected_bgc, out_dir, logger)
         
         # 6. Report generation
@@ -131,7 +130,11 @@ def run_pipeline_thread(query, ref, out_dir, email, cores, run_blast, target_bgc
                 f"The core region of {bgc_id} contains {len(region_genes)} core genes. Ortholog mapping indicates key biosynthetic roles."
             ])
         ]
-        write_word_report(doc_filename, bgc_id, query_org, sections, out_dir)
+        if not region_genes and not flanking_genes:
+            logger.warning(f"Aborting Word report generation for {bgc_id} due to missing structural cluster inputs. Falling back to Excel workbook only.")
+        else:
+            write_word_report(doc_filename, bgc_id, query_org, sections, out_dir)
+            logger.info("Word report drafted successfully.")
         
         logger.info("Pipeline thread completed successfully.")
         status_event["complete"] = True

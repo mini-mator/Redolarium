@@ -1,7 +1,7 @@
 # Redolarium
 **A Universal Genomic, Metabolic, and Biosynthetic Gene Cluster (BGC) Analysis Pipeline**
 
-Redolarium is an automated bioinformatics pipeline that evaluates sequence similarity, stoichiometric precursors, molecular docking, and horizontal gene transfer (HGT) signatures. It features a robust Python backend with a streamlined Streamlit graphical interface.
+Redolarium is an automated bioinformatics pipeline that evaluates sequence similarity, stoichiometric precursors, genome-aware promoter prediction, and horizontal gene transfer (HGT) signatures. It features a robust Python backend with a streamlined Streamlit graphical interface.
 
 ## System Requirements
 - **OS:** Windows, macOS, or Linux

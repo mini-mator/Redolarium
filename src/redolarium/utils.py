@@ -425,9 +425,33 @@ def compile_bgc_excel_report(bgc_target, ortholog_mapping, ref_strains, reconstr
     ws = wb.create_sheet(title="BGC_Gene_Architecture")
     ws.sheet_properties.tabColor = TAB_COLORS["BGC_Gene_Architecture"]
     
-    ws.append(["Locus Tag", "Gene Symbol", "Start", "End", "Strand", "Product Description", "Role Class", "Ref Ortholog Tag", "Identity Pct (%)"])
+    ws.append(["Locus Tag", "Gene Symbol", "Start", "End", "Strand", "Product Description", "Role Class", "Ref Ortholog Tag", "Identity Pct (%)", "Promoter Region"])
     for g in region_genes:
         orth = next((x for x in ortholog_mapping if x["Locus_Tag"] == g["Locus_Tag"]), {})
+        
+        # Promoter mapping logic: check by Locus Tag or generous bounding box (-500 to +100 bp)
+        prom_status = "None"
+        g_start = g.get("Start_Coord", 0)
+        g_end = g.get("End_Coord", 0)
+        g_strand = g.get("Strand", 1)
+        
+        for pm in promoter_records:
+            if pm.get("Locus_Tag") == g["Locus_Tag"]:
+                prom_status = f"{pm.get('Sigma_Factor', 'Promoter')} detected"
+                break
+            
+            # Global coordinate check (assuming pm has Absolute_Position)
+            p_pos = pm.get("Absolute_Position")
+            if p_pos is not None:
+                if g_strand == 1 or g_strand == "+":
+                    if (g_start - 500) <= p_pos <= (g_start + 100):
+                        prom_status = f"{pm.get('Sigma_Factor', 'Promoter')} (Upstream)"
+                        break
+                else:
+                    if (g_end - 100) <= p_pos <= (g_end + 500):
+                        prom_status = f"{pm.get('Sigma_Factor', 'Promoter')} (Upstream)"
+                        break
+                        
         ws.append([
             g["Locus_Tag"],
             g["Gene_Symbol"],
@@ -437,7 +461,8 @@ def compile_bgc_excel_report(bgc_target, ortholog_mapping, ref_strains, reconstr
             g["Product_Description"],
             g["Role"],
             orth.get("Ref_Ortholog_Tag", "NA"),
-            orth.get("Identity_Pct", 0.0)
+            orth.get("Identity_Pct", 0.0),
+            prom_status
         ])
         
     _sheet_title(ws, "Biosynthetic Gene Cluster Core Architecture",

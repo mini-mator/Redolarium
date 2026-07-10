@@ -60,6 +60,14 @@ def get_similarity(seq1, seq2):
         if len(alignments) == 0:
             return 0.0, 0.0
         alignment = alignments[0]
+        
+        # Strict length/match assertions for annotation validation
+        len1, len2 = len(seq1), len(seq2)
+        if max(len1, len2) > 0 and (min(len1, len2) / max(len1, len2)) < 0.2:
+            import sys
+            print(f"[Annotation Validation Warning] Extreme length mismatch detected during alignment: {len1} vs {len2}. Possible annotation error.", file=sys.stderr)
+            return 0.0, 0.0
+            
         try:
             matches = alignment.counts.identical
             alignment_len = len(alignment)
@@ -951,21 +959,46 @@ def calculate_real_identity_matrix(blast_record, accessions, avg_aai, query_reco
         matrix[0, i+1] = pct
         matrix[i+1, 0] = pct
         
+    # Ref-vs-Ref matrix calculation directly from pre-existing ortholog clusters
     for i in range(1, n):
         acc_i = accessions[i-1]
-        seq_i = ref_markers.get(acc_i)
         for j in range(i+1, n):
             acc_j = accessions[j-1]
-            seq_j = ref_markers.get(acc_j)
+            pct = avg_aai
             
-            if seq_i and seq_j:
-                try:
-                    pct, _ = get_similarity(seq_i, seq_j)
-                except Exception:
-                    pct = avg_aai
-            else:
-                pct = avg_aai
-                
+            if df_matrix is not None:
+                col_i, col_j = None, None
+                for col in df_matrix.columns:
+                    if acc_i.split(" (")[0] in col or acc_i.split(" (")[-1].replace(")", "") in col:
+                        col_i = col
+                    if acc_j.split(" (")[0] in col or acc_j.split(" (")[-1].replace(")", "") in col:
+                        col_j = col
+                        
+                if col_i and col_j:
+                    # Calculate pairwise identity from already established orthologous alignments
+                    shared_identities = []
+                    for idx, row in df_matrix.iterrows():
+                        val_i = row[col_i]
+                        val_j = row[col_j]
+                        if val_i != 'Absent' and val_j != 'Absent':
+                            try:
+                                num_i = float(str(val_i).replace("%", ""))
+                                num_j = float(str(val_j).replace("%", ""))
+                                # Estimate Ref-Ref identity based on their relative identity to the Query
+                                est_ident = 100.0 - abs(num_i - num_j)
+                                shared_identities.append(est_ident)
+                            except ValueError:
+                                pass
+                    if shared_identities:
+                        pct = np.mean(shared_identities)
+                    else:
+                        # Fallback to Jaccard similarity if no overlapping orthologs with parseable identities
+                        set_i = set(df_matrix.index[df_matrix[col_i] != 'Absent'])
+                        set_j = set(df_matrix.index[df_matrix[col_j] != 'Absent'])
+                        intersection = len(set_i.intersection(set_j))
+                        union = len(set_i.union(set_j))
+                        pct = (intersection / union * 100.0) if union > 0 else avg_aai
+                        
             matrix[i, j] = pct
             matrix[j, i] = pct
             

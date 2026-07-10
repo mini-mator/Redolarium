@@ -465,17 +465,20 @@ def run_target_bgc_analysis(query_gb, selected_bgc, run_blast, email, out_dir, l
     ax1.text(0, -0.4, "Start Codon (ATG)", ha="center", fontsize=9, fontweight="bold")
     ax1.axvline(0, color="red", linestyle="--", ymin=0.3, ymax=0.7)
     
-    p35_box = patches.Rectangle((-38, -0.2), 6, 0.4, facecolor="#FF9999", edgecolor="black", lw=1)
-    ax1.add_patch(p35_box)
-    ax1.text(-35, 0.4, "-35 Box", ha="center", fontsize=8, fontweight="bold")
-    
-    p10_box = patches.Rectangle((-15, -0.2), 6, 0.4, facecolor="#C9DAF8", edgecolor="black", lw=1)
-    ax1.add_patch(p10_box)
-    ax1.text(-12, 0.4, "-10 Box", ha="center", fontsize=8, fontweight="bold")
-    
-    sd_box = patches.Rectangle((-24, -0.2), 6, 0.4, facecolor="#FFE699", edgecolor="black", lw=1)
-    ax1.add_patch(sd_box)
-    ax1.text(-21, 0.4, "SD Box", ha="center", fontsize=8, fontweight="bold")
+    if promoter_records:
+        p35_box = patches.Rectangle((-38, -0.2), 6, 0.4, facecolor="#FF9999", edgecolor="black", lw=1)
+        ax1.add_patch(p35_box)
+        ax1.text(-35, 0.4, "-35 Box", ha="center", fontsize=8, fontweight="bold")
+        
+        p10_box = patches.Rectangle((-15, -0.2), 6, 0.4, facecolor="#C9DAF8", edgecolor="black", lw=1)
+        ax1.add_patch(p10_box)
+        ax1.text(-12, 0.4, "-10 Box", ha="center", fontsize=8, fontweight="bold")
+        
+        sd_box = patches.Rectangle((-24, -0.2), 6, 0.4, facecolor="#FFE699", edgecolor="black", lw=1)
+        ax1.add_patch(sd_box)
+        ax1.text(-21, 0.4, "SD Box", ha="center", fontsize=8, fontweight="bold")
+    else:
+        ax1.text(-45, 0.5, "No promoter motifs detected", ha="center", fontsize=10, fontstyle="italic")
     
     ax1.set_title(f"Promoter Transcription Consensus Motifs upstream of {bgc_id} core genes", fontsize=11, fontweight="bold")
     
@@ -488,11 +491,13 @@ def run_target_bgc_analysis(query_gb, selected_bgc, run_blast, email, out_dir, l
     ax2.add_patch(core_block)
     ax2.text((bgc_start + bgc_end)/2, 1.0, f"BGC Core: {bgc_id}\n({bgc_end-bgc_start:,} bp)", ha="center", fontsize=8, fontweight="bold")
     
-    for ph in phage_hits[:5]:
+    # Annotation Collision Prevention: dynamic layout repelling/scattering on heavy BGC tracks
+    for i, ph in enumerate(phage_hits):
         p_len = ph["End"] - ph["Start"]
         p_block = patches.Rectangle((ph["Start"], 0.2), p_len, 0.6, facecolor="#FFD7D7", edgecolor="red", lw=1)
         ax2.add_patch(p_block)
-        ax2.text((ph["Start"] + ph["End"])/2, -0.3, str(ph["Locus_Tag"]), ha="center", fontsize=7, rotation=30)
+        y_jitter = -0.3 - (0.25 * (i % 3)) # Scatter text on y-axis
+        ax2.text((ph["Start"] + ph["End"])/2, y_jitter, str(ph["Locus_Tag"]), ha="center", fontsize=7, rotation=30)
         
     ax2.set_title(f"Genomic Flanking Environment & Prophage Remnant Architecture for {bgc_id}", fontsize=11, fontweight="bold")
     

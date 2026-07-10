@@ -213,54 +213,77 @@ def run_linkage_pipeline(query_gb, region_genes, target_bgc, out_dir, logger):
         export_node = "Active Transporter\nExport"
 
     # ==========================================
-    # VISUAL: Systems Biology Pathway Network Map
+    # VISUAL: Dynamic Systems Biology Pathway Network Map
     # ==========================================
     G = nx.DiGraph()
     
-    pos = {
-        "Glucose": (0, 4),
-        "Glycolysis & TCA\n(Energy Pool)": (-2, 3),
-        "ATP Generation\n(Substrate Phosphorylation)": (-3, 2),
-        "Precursor\nCharged tRNAs": (3, 2),
-        "tRNA Charging\nSynthetases": (0, 1.5),
-        synthesis_node: (1.5, 0.5),
-        mod_node: (-1.5, 0.5),
-        export_node: (0, -0.5),
-        "Extracellular Active\nBGC Product": (0, -1.5)
-    }
+    # 1. Base nodes
+    G.add_node("Host Central Metabolism\n(Energy & Precursors)")
+    G.add_node(synthesis_node)
+    G.add_node(mod_node)
+    G.add_node(export_node)
+    G.add_node("Extracellular Active\nBGC Product")
     
-    active_aas = [row for row in stoichiometry_rows if row.get("Precursor_Count", 0) > 0]
-    num_aas = len(active_aas)
-    for idx, aa_row in enumerate(active_aas):
-        aa_name = aa_row["Amino_Acid"]
-        x_pos = 1.0 + (idx / float(max(1, num_aas - 1))) * 2.0 if num_aas > 1 else 2.0
-        y_pos = 3.2 + (0.3 if idx % 2 == 0 else -0.3)
-        pos[aa_name] = (x_pos, y_pos)
-        
-    for node in pos:
-        G.add_node(node)
-        
     edges = [
-        ("Glucose", "Glycolysis & TCA\n(Energy Pool)"),
-        ("Glycolysis & TCA\n(Energy Pool)", "ATP Generation\n(Substrate Phosphorylation)"),
-        ("tRNA Charging\nSynthetases", "Precursor\nCharged tRNAs"),
-        ("ATP Generation\n(Substrate Phosphorylation)", "tRNA Charging\nSynthetases"),
-        ("Precursor\nCharged tRNAs", synthesis_node),
-        ("ATP Generation\n(Substrate Phosphorylation)", synthesis_node),
         (synthesis_node, mod_node),
-        ("ATP Generation\n(Substrate Phosphorylation)", mod_node),
         (mod_node, export_node),
-        ("ATP Generation\n(Substrate Phosphorylation)", export_node),
         (export_node, "Extracellular Active\nBGC Product")
     ]
     
-    for aa_row in active_aas:
-        aa_name = aa_row["Amino_Acid"]
-        edges.append(("Glucose", aa_name))
-        edges.append(("Glycolysis & TCA\n(Energy Pool)", aa_name))
-        edges.append((aa_name, "Precursor\nCharged tRNAs"))
+    # 2. Parse exact BGC genes mapped to KEGG orthology
+    kegg_csv = os.path.join(out_dir, "metabolic_pathways", "kegg_enzymes.csv")
+    found_pathways = set()
+    bgc_tags = {g.get("Locus_Tag") for g in region_genes}
+    
+    if os.path.exists(kegg_csv):
+        try:
+            import pandas as pd
+            df_kegg = pd.read_csv(kegg_csv)
+            for _, row in df_kegg.iterrows():
+                if row.get("Locus_Tag") in bgc_tags:
+                    pathway = row.get("Primary_Pathway", "Unmapped")
+                    if pd.notna(pathway) and pathway != "Unmapped" and "Unknown" not in pathway:
+                        # Clean up long pathway names
+                        clean_name = str(pathway).split(":")[-1].strip()
+                        if len(clean_name) > 30:
+                            clean_name = clean_name[:27] + "..."
+                        found_pathways.add(clean_name)
+        except Exception as e:
+            logger.warning(f"Failed to parse KEGG orthology for dynamic linkage: {e}")
+            
+    # If no specific KEGG pathways are mapped for this BGC, fall back to amino acid precursors
+    if not found_pathways:
+        for aa_row in active_aas:
+            found_pathways.add(f"{aa_row['Amino_Acid']}\nMetabolism")
+            
+    # 3. Add dynamic edges based only on found pathways
+    for pw in found_pathways:
+        G.add_node(pw)
+        edges.append(("Host Central Metabolism\n(Energy & Precursors)", pw))
+        edges.append((pw, synthesis_node))
         
     G.add_edges_from(edges)
+    
+    # Layout dynamically
+    try:
+        from networkx.drawing.nx_agraph import graphviz_layout
+        pos = graphviz_layout(G, prog="dot")
+    except Exception:
+        # Fallback to spring layout if graphviz is unavailable
+        pos = nx.spring_layout(G, seed=42, k=1.5)
+        # Manually adjust key nodes in fallback to ensure flow
+        pos["Host Central Metabolism\n(Energy & Precursors)"] = (0, 1)
+        pos[synthesis_node] = (0, -0.2)
+        pos[mod_node] = (0, -0.6)
+        pos[export_node] = (0, -1.0)
+        pos["Extracellular Active\nBGC Product"] = (0, -1.4)
+        
+        idx = 0
+        total_pw = len(found_pathways)
+        for pw in found_pathways:
+            x_offset = -0.5 + (idx / max(1, total_pw - 1)) if total_pw > 1 else 0
+            pos[pw] = (x_offset, 0.4)
+            idx += 1
     
     # ==========================================
     # VISUAL: Figure 5 (Thermodynamic Precursor Burden Chart)

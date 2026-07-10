@@ -647,9 +647,7 @@ def run_screening_pipeline(query_gb, ortholog_mapping, out_dir, logger, qc_resul
 
     df_cargo = pd.DataFrame(screened_cargo)
     os.makedirs(os.path.join(out_dir, "screening_cazymes"), exist_ok=True)
-    csv_out = os.path.join(out_dir, "screening_cazymes", "screened_cargo.csv")
-    df_cargo.to_csv(csv_out, index=False)
-    logger.info(f"Saved screened application cargo details to: {csv_out}")
+    logger.info("Screened application cargo table generated in memory.")
 
     # Visual cargo chart
     plt.figure(figsize=(8, 5))
@@ -686,6 +684,9 @@ def run_screening_pipeline(query_gb, ortholog_mapping, out_dir, logger, qc_resul
         ("AMR Intrinsic Markers", str(sum(1 for c in screened_cargo if c["Functional_Category"] == "AMR (Intrinsic)")), "Intrinsic antibiotic resistance markers"),
         ("VFDB Safety Flags (HMM)", str(sum(1 for c in screened_cargo if c["Functional_Category"] == "Virulence Factor")), "HMM-validated safety screening tags (toxins/secretions)"),
         ("Requires Wet-Lab Validation", str(sum(1 for c in screened_cargo if c["Requires_Wet_Lab_Validation"] == "Yes")), "Candidate safety flags needing laboratory assays"),
+        ("Input Accession", record.id, "Query sequence identifier"),
+        ("Screening Algorithm", "Pfam HMM cargo screening & biosafety risk matrix classifier", "Algorithm used for detection"),
+        ("CAZyme Database Reference", "CAZy (Lombard et al. 2014, doi:10.1093/nar/gkt1178)", "Carbohydrate-Active enZymes database citation"),
         ("Confidence Evaluation Formula", formula_text, "Configured scoring model parameters for transparency"),
         ("Pipeline Version", f"v{PIPELINE_VERSION}", "Redolarium core pipeline implementation release version"),
         ("HMM Database Version", f"Pfam Library v{hmm_version}", "Curated target HMM profile release version")
@@ -799,29 +800,19 @@ def run_screening_pipeline(query_gb, ortholog_mapping, out_dir, logger, qc_resul
             length = end - start
             col = colors_map[cat]
             
+            # Layered density track / feature map visualization
             direction = 1 if feat.location.strand >= 0 else -1
-            y_pos = 0.48 if direction == 1 else 0.52
+            # Adjust y_pos to layer tracks slightly
+            y_pos = 0.5 + (0.05 * (list(colors_map.keys()).index(cat) - 2))
             
-            arrow = patches.FancyArrow(
-                start if direction == 1 else end,
-                y_pos,
-                length * direction,
-                0,
-                width=0.015,
-                head_width=0.035,
-                head_length=min(length * 0.4, 20000),
-                facecolor=col,
-                edgecolor="black",
-                lw=0.5,
-                zorder=3
-            )
-            ax.add_patch(arrow)
+            track_block = patches.Rectangle((start, y_pos - 0.02), length, 0.04, facecolor=col, edgecolor="none", alpha=0.7, zorder=3)
+            ax.add_patch(track_block)
             
             label = cargo["Gene_Symbol"]
             if label == "NA":
                 label = cargo["Locus_Tag"].split("_")[-1]
-            ax.text(start + length/2, y_pos + 0.022, label, fontsize=7, ha="center", va="bottom", zorder=4,
-                    bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="gray", alpha=0.8, lw=0.5))
+            ax.text(start + length/2, y_pos + 0.03, label, fontsize=6, ha="center", va="bottom", zorder=4, rotation=45,
+                    bbox=dict(boxstyle="round,pad=0.1", fc="white", ec=col, alpha=0.9, lw=0.5))
             
         handles = [plt.Line2D([0], [0], color=col, lw=6, label=cat) for cat, col in colors_map.items()]
         ax.legend(handles=handles, loc="upper right", frameon=True, fontsize=8)

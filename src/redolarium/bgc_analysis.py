@@ -924,51 +924,104 @@ def evaluate_targeted_bgc(query_gb, ref_gb, ortholog_mapping, target_bgc, out_di
         "accessory/context": "#E8F0FE"
     }
     
-    plt.figure(figsize=(12, 4))
-    ax = plt.gca()
-    ax.set_xlim(bgc_start, bgc_end)
-    ax.set_ylim(-1, 2)
-    ax.axis("off")
+    # Dual-scale / Fisheye Synteny Diagram Overhaul
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 8), gridspec_kw={'height_ratios': [1, 3]})
     
-    ax.plot([bgc_start, bgc_end], [0.5, 0.5], color="grey", lw=1)
+    # Track 1: Wide-context track (Genome/Contig)
+    try:
+        record = SeqIO.read(query_gb, "genbank")
+    except Exception:
+        record = SeqIO.read(query_gb, "fasta")
+    genome_len = len(record.seq)
     
+    ax1.set_xlim(0, genome_len)
+    ax1.set_ylim(-1, 1)
+    ax1.axis("off")
+    ax1.plot([0, genome_len], [0, 0], color="black", lw=2)
+    ax1.add_patch(patches.Rectangle((bgc_start, -0.5), bgc_end - bgc_start, 1.0, fill=True, color="red", alpha=0.4))
+    ax1.text(genome_len/2, 0.6, f"Full Contig Context ({genome_len:,} bp)", ha="center", fontsize=9, fontweight="bold")
+    ax1.text((bgc_start + bgc_end)/2, -0.8, f"Target {bgc_id}", ha="center", fontsize=8, color="red", fontweight="bold")
+    
+    # Track 2: Specifically scaled subset track for the focused BGC
+    # Add some padding around the BGC bounds
+    view_start = max(0, bgc_start - 5000)
+    view_end = min(genome_len, bgc_end + 5000)
+    
+    ax2.set_xlim(view_start, view_end)
+    ax2.set_ylim(-2.5, 3.5)
+    ax2.axis("off")
+    
+    # 5' to 3' tracking line
+    ax2.plot([view_start, view_end], [0, 0], color="black", lw=2)
+    ax2.text(view_start + 100, 0.2, "5'", fontweight="bold", fontsize=12)
+    ax2.text(view_end - 500, 0.2, "3'", fontweight="bold", fontsize=12)
+    
+    # Draw Fisheye connecting lines using ConnectionPatch
+    try:
+        from matplotlib.patches import ConnectionPatch
+        con1 = ConnectionPatch(xyA=(bgc_start, -0.5), xyB=(bgc_start, 3.5), coordsA="data", coordsB="data",
+                               axesA=ax1, axesB=ax2, color="red", alpha=0.3, linestyle="--")
+        con2 = ConnectionPatch(xyA=(bgc_end, -0.5), xyB=(bgc_end, 3.5), coordsA="data", coordsB="data",
+                               axesA=ax1, axesB=ax2, color="red", alpha=0.3, linestyle="--")
+        ax1.add_artist(con1)
+        ax1.add_artist(con2)
+    except Exception:
+        pass
+        
     for g in (region_genes + flanking_genes):
         g_len = g["End_Coord"] - g["Start_Coord"]
         color = colors.get(g["Role"], "#E8F0FE")
         direction = 1 if g["Strand"] == "+" else -1
         
+        # Explicit transcription start/stop sites (Promoter/Terminator demarcation)
+        if direction == 1:
+            # Promoter (Green arrow up and right)
+            ax2.plot([g["Start_Coord"], g["Start_Coord"]], [0, 1.2], color="green", lw=1.5, alpha=0.7)
+            ax2.plot([g["Start_Coord"], g["Start_Coord"]+300], [1.2, 1.2], color="green", lw=1.5, alpha=0.7)
+            # Terminator (Red line with square down)
+            ax2.plot([g["End_Coord"], g["End_Coord"]], [0, -0.8], color="red", lw=1.5, marker="s", markersize=4, alpha=0.7)
+        else:
+            # Promoter (Green arrow down and left)
+            ax2.plot([g["End_Coord"], g["End_Coord"]], [0, -1.2], color="green", lw=1.5, alpha=0.7)
+            ax2.plot([g["End_Coord"], g["End_Coord"]-300], [-1.2, -1.2], color="green", lw=1.5, alpha=0.7)
+            # Terminator (Red line with square up)
+            ax2.plot([g["Start_Coord"], g["Start_Coord"]], [0, 0.8], color="red", lw=1.5, marker="s", markersize=4, alpha=0.7)
+            
+        # Gene Arrow Body
         arrow = patches.FancyArrow(
             g["Start_Coord"] if direction == 1 else g["End_Coord"],
-            0.5,
+            0,
             g_len * direction,
             0,
-            width=0.4,
-            head_width=0.8,
+            width=0.6,
+            head_width=1.0,
             head_length=min(g_len * 0.3, 1000),
             facecolor=color,
             edgecolor="black",
-            lw=0.5
+            lw=0.8,
+            zorder=3
         )
-        ax.add_patch(arrow)
+        ax2.add_patch(arrow)
         
         if g["Role"] in ["biosynthetic", "immunity", "regulatory"] and g_len > 800:
-            ax.text(
+            y_offset = 1.8 if direction == 1 else -2.0
+            ax2.text(
                 (g["Start_Coord"] + g["End_Coord"]) / 2,
-                1.1,
+                y_offset,
                 g["Gene_Symbol"] if g["Gene_Symbol"] != "NA" else g["Locus_Tag"][-5:],
-                ha="center", fontsize=7, rotation=45
+                ha="center", fontsize=8, rotation=45 if direction == 1 else -45
             )
             
     core_border = patches.Rectangle(
-        (target_bgc["Core_Start"], -0.1),
+        (target_bgc["Core_Start"], -2.2),
         target_bgc["Core_End"] - target_bgc["Core_Start"],
-        1.2,
-        fill=False, edgecolor="red", linestyle="--", lw=1
+        4.4,
+        fill=False, edgecolor="red", linestyle="--", lw=1.5, alpha=0.5
     )
-    ax.add_patch(core_border)
-    ax.text((target_bgc["Core_Start"] + target_bgc["Core_End"])/2, 1.6, "BGC Core Region", ha="center", fontsize=9, color="red", fontweight="bold")
+    ax2.add_patch(core_border)
+    ax2.text((target_bgc["Core_Start"] + target_bgc["Core_End"])/2, 2.4, "BGC Core Region", ha="center", fontsize=10, color="red", fontweight="bold")
     
-    plt.title(f"Target Cluster Synteny Map: {bgc_id} ({target_bgc['BGC_Type']})", fontsize=11, fontweight="bold", pad=15)
+    plt.suptitle(f"Target Cluster Synteny Map: {bgc_id} ({target_bgc['BGC_Type']})", fontsize=14, fontweight="bold")
     plt.tight_layout()
     
     fig_out = os.path.join(out_dir, "hgt_evolution", f"{bgc_id}_bgc_synteny_blocks.png")

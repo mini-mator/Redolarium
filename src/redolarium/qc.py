@@ -38,25 +38,41 @@ def run_qc_pipeline(query_gb, out_dir, logger):
     
     # 1. Parse using Biopython for basic metrics and count contigs
     records = []
+    ext = os.path.splitext(query_gb)[1].lower()
     try:
-        # Try parsing as multi-record GenBank
-        records = list(SeqIO.parse(query_gb, "genbank"))
-    except Exception:
-        try:
+        if ext in ['.gb', '.gbk']:
+            records = list(SeqIO.parse(query_gb, "genbank"))
+            logger.info("Input sequence loaded in GenBank format.")
+        elif ext in ['.fasta', '.fna', '.ffn', '.faa', '.frn']:
             records = list(SeqIO.parse(query_gb, "fasta"))
-            logger.info("Input sequence loaded in raw FASTA format.")
-        except Exception as e:
-            logger.error(f"Failed to parse query input file: {e}")
-            return PredictionResult(
-                prediction="Failed to parse genome file",
-                confidence_score=0.0,
-                algorithm="Biopython",
-                algorithm_version="1.81",
-                evidence=[f"Parsing error: {str(e)}"],
-                limitations=["Genome could not be parsed."],
-                runtime=time.time() - start_time
-            )
-            
+            logger.info("Input sequence loaded in FASTA format.")
+        elif ext in ['.fastq', '.fq']:
+            records = list(SeqIO.parse(query_gb, "fastq"))
+            logger.info("Input sequence loaded in FASTQ format.")
+        else:
+            # Robust fallback chain if extension is missing or unrecognized
+            try:
+                records = list(SeqIO.parse(query_gb, "genbank"))
+                logger.info("Input sequence loaded in GenBank format (fallback).")
+            except Exception:
+                try:
+                    records = list(SeqIO.parse(query_gb, "fasta"))
+                    logger.info("Input sequence loaded in FASTA format (fallback).")
+                except Exception:
+                    records = list(SeqIO.parse(query_gb, "fastq"))
+                    logger.info("Input sequence loaded in FASTQ format (fallback).")
+    except Exception as e:
+        logger.error(f"Failed to parse query input file: {e}")
+        return PredictionResult(
+            prediction="Failed to parse genome file",
+            confidence_score=0.0,
+            algorithm="Biopython",
+            algorithm_version="1.81",
+            evidence=[f"Parsing error: {str(e)}"],
+            limitations=["Genome could not be parsed."],
+            runtime=time.time() - start_time
+        )
+        
     if not records:
         logger.error("No sequences found in input file.")
         return PredictionResult(
