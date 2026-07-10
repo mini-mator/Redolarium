@@ -3,7 +3,12 @@ import gzip
 import os
 
 os.makedirs('resources', exist_ok=True)
-pfams = ['PF01338', 'PF03006', 'PF07968', 'PF00765', 'PF00196', 'PF08660']
+pfams = [
+    'PF01338', 'PF03006', 'PF07968', 'PF00765', 'PF00196', 'PF08660', # Screening/QS
+    'PF00109', 'PF02801', 'PF00668', 'PF00501', 'PF05147', 'PF04738', # PKS/NRPS/RiPPs
+    'PF04183', 'PF06283', 'PF06316', 'PF00582', 'PF03936',            # Siderophores/Phenazines/Terpenes
+    'PF00589', 'PF00872', 'PF00239'                                   # MGEs
+]
 combined = ''
 
 for p in pfams:
