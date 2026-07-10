@@ -73,18 +73,19 @@ if not st.session_state.tmp_out_dir or not os.path.exists(st.session_state.tmp_o
 out_dir = st.session_state.tmp_out_dir
 
 # Calculate basic metrics based on output folder
-tabular_dir = os.path.join(out_dir, "tabular_data")
-bgc_motifs_dir = os.path.join(out_dir, "bgc_motifs")
-trees_dir = os.path.join(out_dir, "phylogeny_trees")
-
+bgc_base_dir = os.path.join(out_dir, "bgc")
+bgc_list = []
 num_bgcs = 0
-if os.path.exists(bgc_motifs_dir):
-    num_bgcs = len([name for name in os.listdir(bgc_motifs_dir) if os.path.isdir(os.path.join(bgc_motifs_dir, name))])
-
 num_trees = 0
-if os.path.exists(trees_dir):
-    num_trees = len([f for f in os.listdir(trees_dir) if f.endswith('.png') or f.endswith('.svg')])
-    
+
+if os.path.exists(bgc_base_dir):
+    bgc_list = sorted([d for d in os.listdir(bgc_base_dir) if os.path.isdir(os.path.join(bgc_base_dir, d))])
+    num_bgcs = len(bgc_list)
+    for bgc_name in bgc_list:
+        trees_dir = os.path.join(bgc_base_dir, bgc_name, "phylogeny_trees")
+        if os.path.exists(trees_dir):
+            num_trees += len([f for f in os.listdir(trees_dir) if f.endswith('.png') or f.endswith('.svg')])
+            
 total_files = sum([len(files) for r, d, files in os.walk(out_dir)])
 total_size = sum(os.path.getsize(os.path.join(dirpath, filename)) for dirpath, _, filenames in os.walk(out_dir) for filename in filenames)
 size_mb = total_size / (1024 * 1024)
@@ -100,6 +101,56 @@ with col3:
 with col4:
     st.markdown(f"<div class='metric-card'><div class='metric-value'>{size_mb:.2f} MB</div><div class='metric-label'>Total Data Volume</div></div>", unsafe_allow_html=True)
 
+st.markdown("---")
+
+if num_bgcs > 0:
+    st.header("BGC Interactive Gallery")
+    selected_bgc = st.selectbox("Select a BGC to view generated insights:", bgc_list)
+    
+    if selected_bgc:
+        bgc_target_dir = os.path.join(bgc_base_dir, selected_bgc)
+        
+        tab1, tab2, tab3, tab4 = st.tabs(["Synteny Map", "Metabolic Linkage", "Environmental Cues", "Phylogeny"])
+        
+        with tab1:
+            st.subheader(f"{selected_bgc} - Dual-Scale Synteny Map")
+            synteny_img = os.path.join(bgc_target_dir, "hgt_evolution", f"{selected_bgc}_hgt_synteny.png")
+            if os.path.exists(synteny_img):
+                st.image(synteny_img, use_container_width=True)
+            else:
+                st.info("Synteny map not found or not generated for this cluster.")
+                
+        with tab2:
+            st.subheader(f"{selected_bgc} - Pathway Linkage Network")
+            linkage_img = os.path.join(bgc_target_dir, "metabolic_pathways", f"{selected_bgc}_metabolic_linkage.png")
+            if os.path.exists(linkage_img):
+                st.image(linkage_img, use_container_width=True)
+            else:
+                st.info("Metabolic linkage map not found.")
+                
+        with tab3:
+            st.subheader(f"{selected_bgc} - Genome-Aware Cues")
+            cues_csv = os.path.join(bgc_target_dir, "regulatory_networks", f"{selected_bgc}_environmental_cues.csv")
+            if os.path.exists(cues_csv):
+                import pandas as pd
+                st.dataframe(pd.read_csv(cues_csv), use_container_width=True)
+            else:
+                st.info("No strong environmental cues or promoters mapped for this cluster.")
+                
+        with tab4:
+            st.subheader(f"{selected_bgc} - Clocking & Trees")
+            trees_dir = os.path.join(bgc_target_dir, "phylogeny_trees")
+            if os.path.exists(trees_dir):
+                trees = [f for f in os.listdir(trees_dir) if f.endswith('.png')]
+                if trees:
+                    for t in trees:
+                        st.image(os.path.join(trees_dir, t), caption=t, use_container_width=True)
+                else:
+                    st.info("No phylogenetic trees available.")
+            else:
+                st.info("No phylogenetic trees available.")
+
+st.markdown("---")
 st.markdown("---")
 st.header("Download Package")
 
