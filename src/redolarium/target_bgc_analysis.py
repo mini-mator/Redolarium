@@ -298,60 +298,21 @@ def run_target_bgc_analysis(query_gb, selected_bgc, run_blast, email, out_dir, l
                         "product": feat.qualifiers.get("product", [""])[0]
                     })
                     
+    from redolarium.promoter_prediction import run_promoter_prediction
+    
+    # Normalize core_genes keys for run_promoter_prediction
+    normalized_genes = []
     for g in core_genes:
-        g_start = g.get("start") if g.get("start") is not None else g.get("Start_Coord")
-        g_end = g.get("end") if g.get("end") is not None else g.get("End_Coord")
-        g_strand = g.get("strand") if g.get("strand") is not None else g.get("Strand")
-        g_ltag = g.get("locus_tag") if g.get("locus_tag") is not None else g.get("Locus_Tag")
-        g_symbol = g.get("gene") if g.get("gene") is not None else g.get("Gene_Symbol", "NA")
+        normalized_genes.append({
+            "Locus_Tag": g.get("locus_tag") or g.get("Locus_Tag", "Unknown"),
+            "Gene": g.get("gene") or g.get("Gene_Symbol", "-"),
+            "Start": g.get("start") if g.get("start") is not None else g.get("Start_Coord", 0),
+            "End": g.get("end") if g.get("end") is not None else g.get("End_Coord", 0),
+            "Strand": g.get("strand") or g.get("Strand", "+"),
+            "Role": "Core Biosynthetic"
+        })
         
-        up_seq = extract_promoter_upstream(record, g_start, g_end, g_strand, CONFIG["promoter_search_upstream"])
-        motifs = scan_promoter_pwm_and_shape(up_seq, CONFIG["sigma_motifs"])
-        
-        sd_match = re.search(r"(AGGAGG|GAGG|AAGG|AGGAG|GGAGG)", up_seq[-15:-3], re.IGNORECASE)
-        sd_seq = sd_match.group().upper() if sd_match else "Not detected"
-        
-        reg_match = re.search(r"([AT]TGA[ATCG]).{4,12}([AT]TGA[ATCG])", up_seq, re.IGNORECASE)
-        reg_box = reg_match.group().upper() if reg_match else "Not detected"
-        
-        if motifs:
-            for m in motifs:
-                promoter_records.append({
-                    "Locus_Tag": g_ltag,
-                    "Gene_Symbol": g_symbol,
-                    "Upstream_Position": g_start,
-                    "Sigma_Factor": m["Sigma_Factor"],
-                    "Minus35_Pos": m["Minus35_Pos"],
-                    "Minus35_Seq": m["Minus35_Seq"],
-                    "Spacer_Length": m["Spacer_Length"],
-                    "Minus10_Pos": m["Minus10_Pos"],
-                    "Minus10_Seq": m["Minus10_Seq"],
-                    "Shine_Dalgarno": sd_seq,
-                    "Regulatory_Box": reg_box,
-                    "Quality_Class": m["Quality"],
-                    "Confidence": m["Confidence"]
-                })
-        else:
-            promoter_records.append({
-                "Locus_Tag": g_ltag,
-                "Gene_Symbol": g_symbol,
-                "Upstream_Position": g_start,
-                "Sigma_Factor": "Not detected",
-                "Minus35_Pos": None,
-                "Minus35_Seq": "Not detected",
-                "Spacer_Length": None,
-                "Minus10_Pos": None,
-                "Minus10_Seq": "Not detected",
-                "Shine_Dalgarno": sd_seq,
-                "Regulatory_Box": reg_box,
-                "Quality_Class": "No consensus promoter motif found in upstream region",
-                "Confidence": 0.0
-            })
-            
-    df_mot = pd.DataFrame(promoter_records)
-    csv_out = os.path.join(out_dir, "bgc_motifs", f"{bgc_id}_promoter_motifs.csv")
-    df_mot.to_csv(csv_out, index=False)
-    logger.info(f"Saved promoter motif data to: {csv_out}")
+    promoter_records = run_promoter_prediction(query_gb, selected_bgc, normalized_genes, out_dir, logger)
 
     # ─── 2. Flanking Phage Remnants and MGE Scanning ───
     logger.info(f"Scanning flanking coordinates of BGC {bgc_id} for mobile elements and prophages...")

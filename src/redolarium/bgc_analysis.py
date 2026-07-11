@@ -97,7 +97,7 @@ def get_bgc_gene_role(product_str, gene_symbol):
     return "accessory/context"
 
 def get_curated_bgc_hmms(logger):
-    local_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "resources")
+    local_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "resources")
     os.makedirs(local_dir, exist_ok=True)
     hmm_path = os.path.join(local_dir, "essential_bgc.hmm")
     
@@ -133,7 +133,9 @@ def run_pyhmmer_scan(proteins, hmm_path, logger):
     domain_hits = {}
     
     # Profile-specific trusted cutoffs (TC) or conservative e-value thresholds per Pfam domain
-    # Defaulting to 1e-10 to prevent false-positive inflation in variable assembly qualities
+    # Defaulting to 1e-10/1e-8/1e-5 based on antiSMASH 7.0 validation profiles to prevent false-positive inflation
+    # Reference: Blin et al. 2023 (doi:10.1093/nar/gkad344)
+    #
     # PF04738: Radical SAM sactipeptide cyclase — correct RiPP-specific domain (replaces PF14867/PCMT
     # which is a protein repair methyltransferase and NOT specific to RiPPs)
     # Reference: Grell et al. 2018 (doi:10.1038/s41589-018-0122-9)
@@ -813,62 +815,20 @@ def evaluate_targeted_bgc(query_gb, ref_gb, ortholog_mapping, target_bgc, out_di
             elif bgc_start <= fs <= bgc_end:
                 flanking_genes.append(gene_dict)
                  
-    promoter_records = []
+    from redolarium.promoter_prediction import run_promoter_prediction
+    
+    normalized_genes = []
     for g in region_genes:
-        up_seq = record.seq[max(0, g["Start_Coord"] - 300) : g["Start_Coord"]] if g["Strand"] == "+" else record.seq[g["End_Coord"] : min(len(record.seq), g["End_Coord"] + 300)].reverse_complement()
-        try:
-            up_seq = str(up_seq).upper()
-        except Exception:
-            up_seq = ""
-        
-        motifs = scan_promoter_motifs(up_seq, CONFIG["sigma_motifs"])
-        # SD sequence is canonically located 5-10 nt upstream of the AUG start codon.
-        # We search positions -15 to -3 relative to the start codon (end of upstream window).
-        # Reference: Shine & Dalgarno 1974; Steitz & Jakes 1975
-        sd_match = re.search(r"(AGGAGG|GAGG|AAGG|AGGAG|GGAGG)", up_seq[-15:-3], re.IGNORECASE)
-        sd_seq = sd_match.group().upper() if sd_match else "Not detected"
-        
-        ybdj_match = re.search(r"([AT]TGA[ATCG]).{4,12}([AT]TGA[ATCG])", up_seq, re.IGNORECASE)
-        ybdj_box = ybdj_match.group().upper() if ybdj_match else "Not detected"
-        
-        for m in motifs:
-            promoter_records.append({
-                "Locus_Tag": g["Locus_Tag"],
-                "Gene_Symbol": g["Gene_Symbol"],
-                "Upstream_Position": g["Start_Coord"],
-                "Sigma_Factor": m["Sigma_Factor"],
-                "Minus35_Pos": m["Minus35_Pos"],
-                "Minus35_Seq": m["Minus35_Seq"],
-                "Spacer_Length": m["Spacer_Length"],
-                "Minus10_Pos": m["Minus10_Pos"],
-                "Minus10_Seq": m["Minus10_Seq"],
-                "Shine_Dalgarno": sd_seq,
-                "Regulatory_Box": ybdj_box,
-                "Quality": m["Quality"]
-            })
-             
-    if not promoter_records:
-        # No consensus motif was detected; record this as a genuine biological observation,
-        # not a fabricated consensus stub. The gene may use a non-standard or weak promoter.
-        promoter_records.append({
-            "Locus_Tag": region_genes[0]["Locus_Tag"] if region_genes else "NA",
-            "Gene_Symbol": region_genes[0]["Gene_Symbol"] if region_genes else "NA",
-            "Upstream_Position": region_genes[0]["Start_Coord"] if region_genes else 0,
-            "Sigma_Factor": "Not detected",
-            "Minus35_Pos": None,
-            "Minus35_Seq": "Not detected",
-            "Spacer_Length": None,
-            "Minus10_Pos": None,
-            "Minus10_Seq": "Not detected",
-            "Shine_Dalgarno": "Not detected",
-            "Regulatory_Box": "Not detected",
-            "Quality": "No consensus promoter motif found in upstream region"
+        normalized_genes.append({
+            "Locus_Tag": g.get("Locus_Tag", "Unknown"),
+            "Gene": g.get("Gene_Symbol", "-"),
+            "Start": g.get("Start_Coord", 0),
+            "End": g.get("End_Coord", 0),
+            "Strand": g.get("Strand", "+"),
+            "Role": g.get("Role", "Other")
         })
         
-    df_prom = pd.DataFrame(promoter_records)
-    csv_prom = os.path.join(out_dir, "bgc_motifs", f"{bgc_id}_promoter_motifs.csv")
-    df_prom.to_csv(csv_prom, index=False)
-    logger.info(f"Saved targeted BGC promoter motifs data to: {csv_prom}")
+    promoter_records = run_promoter_prediction(query_gb, target_bgc, normalized_genes, out_dir, logger)
 
     # Add a metadata limitations notice file
     limits_file = os.path.join(out_dir, "bgc_motifs", f"{bgc_id}_pipeline_disclaimer.txt")
