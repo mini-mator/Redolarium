@@ -216,7 +216,7 @@ def run_pipeline_task(config):
         update_state(stage="Report Compilation", percentage=98, remaining=2)
         xls_filename = f"{bgc_id}_BGC_Analysis_Metabolism_Integrated.xlsx"
         xls_path = os.path.join(out_dir, xls_filename)
-        query_record = SeqIO.read(query, "genbank")
+        query_record = max(list(SeqIO.parse(query, "genbank")), key=lambda r: len(r.seq))
         query_org = query_record.annotations.get("organism", "Query Isolate")
         
         logger.info("Compiling integrated Excel workbook...")
@@ -361,12 +361,12 @@ class RedolariumHandler(SimpleHTTPRequestHandler):
             # Format: /api/files/<out_dir>/<rel_path>
             file_path = self.path[len("/api/files/"):]
             # basic protection against path traversal
-            if ".." in file_path or file_path.startswith("/"):
+            abs_path = os.path.abspath(os.path.join(parent_dir, file_path))
+            if not abs_path.startswith(os.path.abspath(parent_dir)):
                 self.send_response(403)
                 self.end_headers()
                 return
                 
-            abs_path = os.path.join(parent_dir, file_path)
             if not os.path.exists(abs_path) or os.path.isdir(abs_path):
                 self.send_response(404)
                 self.end_headers()
@@ -439,7 +439,7 @@ class RedolariumHandler(SimpleHTTPRequestHandler):
 
 def main():
     port = 8000
-    server_address = ('', port)
+    server_address = ('127.0.0.1', port)
     httpd = HTTPServer(server_address, RedolariumHandler)
     print(f"Redolarium Web GUI server started at http://localhost:{port}")
     
@@ -454,6 +454,11 @@ def main():
         httpd.serve_forever()
     except KeyboardInterrupt:
         print("\nShutting down server gracefully...")
+    except Exception as e:
+        print(f"\nFATAL: Unexpected GUI server crash: {e}")
+        import traceback
+        traceback.print_exc()
+    finally:
         httpd.server_close()
 
 if __name__ == "__main__":

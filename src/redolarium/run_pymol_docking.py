@@ -36,10 +36,8 @@ def build_complex_and_render(receptor_uniprot, peptide_seq, bgc_id, pdb_dir):
             urllib.request.urlretrieve(url, receptor_pdb)
         except Exception as e:
             print(f"Failed to download receptor: {e}")
-            # Write a dummy receptor PDB to prevent crash
-            with open(receptor_pdb, "w") as f:
-                f.write("HEADER Dummy Receptor\nATOM      1  CA  ALA A   1      0.000   0.000   0.000  1.00 20.00           C\nEND\n")
-            
+            sys.exit(1)
+
     # 2. Initialize PyMOL
     cmd.reinitialize()
     cmd.load(receptor_pdb, "receptor")
@@ -54,8 +52,8 @@ def build_complex_and_render(receptor_uniprot, peptide_seq, bgc_id, pdb_dir):
     print(f"Building precursor peptide: {peptide_seq}")
     cmd.fab(peptide_seq, "peptide")
     
-    # 4. Simple alignment/translation to simulate docking near active site/center of mass
-    cmd.translate("[10, 10, 10]", "peptide")
+    # Note: Proper docking (e.g., via AutoDock Vina) is required for realistic binding poses.
+    # This script only renders the un-docked complex.
     
     # 5. Save complex structure PDB
     complex_pdb = os.path.join(pdb_dir, f"{bgc_id}_predicted_complex.pdb")

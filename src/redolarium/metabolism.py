@@ -262,7 +262,7 @@ def run_metabolism_pipeline(query_gb, ortholog_mapping, out_dir, logger, force_r
         if not metapath_avail:
             logger.warning("MetaPathPredict command not found in PATH.")
             
-    query_record = SeqIO.read(query_gb, "genbank")
+    query_record = max(list(SeqIO.parse(query_gb, "genbank")), key=lambda r: len(r.seq))
     query_org = query_record.annotations.get("organism", "Query Species")
     
     # Load gene symbol to EC mapping
@@ -525,7 +525,7 @@ def run_metabolism_pipeline(query_gb, ortholog_mapping, out_dir, logger, force_r
         # Hole-filling heuristics are deliberately excluded: predicting missing enzymes are 'fillable'
         # based solely on pathway position inflates completeness scores without experimental basis.
         # For gap-filling with metabolic network topology, use GapSeq or ModelSEED.
-        # Reference: Zimmermann et al. 2019 (GapSeq, doi:10.1038/s41467-019-13108-2)
+        # Reference: Zimmermann et al. 2021 (GapSeq, doi:10.1186/s13059-021-02295-1)
         if present_count > 0:
             pathway_completeness_rows.append({
                 "Pathway_ID": pid,

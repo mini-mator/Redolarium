@@ -110,10 +110,10 @@ def run_promoter_prediction(query_gb, target_bgc, region_genes, out_dir, logger)
     bgc_id = target_bgc["BGC_ID"]
     
     try:
-        record = SeqIO.read(query_gb, "genbank")
+        record = max(list(SeqIO.parse(query_gb, "genbank")), key=lambda r: len(r.seq))
     except Exception:
         try:
-            record = SeqIO.read(query_gb, "fasta")
+            record = max(list(SeqIO.parse(query_gb, "fasta")), key=lambda r: len(r.seq))
         except Exception as e:
             logger.warning(f"Failed to read genome for promoter prediction: {e}")
             return []
@@ -123,29 +123,55 @@ def run_promoter_prediction(query_gb, target_bgc, region_genes, out_dir, logger)
     taxonomy_list = record.annotations.get("taxonomy", [])
     taxonomy_str = " ".join(taxonomy_list).lower()
     
+    organism_name = record.annotations.get("organism", "")
+    query_genus = organism_name.split()[0] if organism_name else "Unknown"
+    
     all_motifs = CONFIG.get("sigma_motifs", {})
-    selected_phylum = "Universal"
+    selected_phylum = None
     
     if "firmicutes" in taxonomy_str or "bacillota" in taxonomy_str:
-        selected_phylum = "Firmicutes"
+        if query_genus.lower() != "bacillus":
+            logger.warning("Firmicutes detected, but genus is {0}, not Bacillus. Rule R4 prohibits cross-genus motif mapping without citation. Aborting promoter prediction.".format(query_genus))
+            selected_phylum = None
+        else:
+            selected_phylum = "Firmicutes"
+            
     elif "proteobacteria" in taxonomy_str or "pseudomonadota" in taxonomy_str:
-        selected_phylum = "Pseudomonadota"
+        if query_genus.lower() not in ["escherichia", "pseudomonas", "salmonella"]:
+            logger.warning("Proteobacteria detected, but genus is {0}. Rule R4 prohibits cross-genus motif mapping. Aborting promoter prediction.".format(query_genus))
+            selected_phylum = None
+        else:
+            selected_phylum = "Pseudomonadota"
+            
     elif "actinobacteria" in taxonomy_str or "actinomycetota" in taxonomy_str:
-        selected_phylum = "Actinomycetota"
+        if query_genus.lower() != "streptomyces":
+            logger.warning("Actinobacteria detected, but genus is {0}. Rule R4 prohibits cross-genus motif mapping. Aborting promoter prediction.".format(query_genus))
+            selected_phylum = None
+        else:
+            selected_phylum = "Actinomycetota"
+            
     elif "bacteroidetes" in taxonomy_str or "bacteroidota" in taxonomy_str:
-        selected_phylum = "Bacteroidota"
-    
-    sigma_dict = all_motifs.get(selected_phylum, all_motifs.get("Universal", {}))
-    logger.info(f"Extracted organism taxonomy mapped to: {selected_phylum}. Applying {selected_phylum} motif PSSMs.")
+        if query_genus.lower() != "bacteroides":
+            logger.warning("Bacteroidetes detected, but genus is {0}. Rule R4 prohibits cross-genus motif mapping. Aborting promoter prediction.".format(query_genus))
+            selected_phylum = None
+        else:
+            selected_phylum = "Bacteroidota"
+
+    if selected_phylum is None:
+        logger.warning("No validated promoter motifs exist for genus {0}. Returning empty dataset per Rule R4.".format(query_genus))
+        return []
+        
+    sigma_dict = all_motifs.get(selected_phylum, {})
+    logger.info(f"Extracted organism taxonomy mapped to phylum: {selected_phylum}. Genus: {query_genus}. Applying {selected_phylum} motif PSSMs.")
     
     promoter_records = []
     
     for gene in region_genes:
         locus_tag = gene.get("Locus_Tag", "Unknown")
-        gene_symbol = gene.get("Gene", "-")
-        start = gene.get("Start", 0)
-        end = gene.get("End", 0)
-        strand = gene.get("Strand", "+")
+        gene_symbol = gene.get("Gene") or gene.get("Gene_Symbol", "-")
+        start = gene.get("Start") if gene.get("Start") is not None else gene.get("Start_Coord", 0)
+        end = gene.get("End") if gene.get("End") is not None else gene.get("End_Coord", 0)
+        strand = gene.get("Strand") or gene.get("Strand", "+")
         role = gene.get("Role", "Other")
         
         if start == 0 and end == 0:

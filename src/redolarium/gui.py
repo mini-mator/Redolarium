@@ -107,7 +107,7 @@ def run_pipeline_thread(query, ref, out_dir, email, cores, run_blast, target_bgc
         # 6. Report generation
         xls_filename = f"{bgc_id}_BGC_Analysis_Metabolism_Integrated.xlsx"
         xls_path = os.path.join(out_dir, xls_filename)
-        query_record = SeqIO.read(query, "genbank")
+        query_record = max(list(SeqIO.parse(query, "genbank")), key=lambda r: len(r.seq))
         query_org = query_record.annotations.get("organism", "Query Isolate")
         
         logger.info("Compiling Excel workbook...")

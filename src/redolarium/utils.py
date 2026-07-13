@@ -47,6 +47,48 @@ def api_retry(retries=5, backoff_factor=2.0, exceptions=(urllib.error.URLError, 
         return wrapper
     return decorator
 
+def subprocess_retry(retries=3, backoff_factor=3.0):
+    """
+    Decorator for wrapping external CLI tools (Docker, WSL, mmseqs, antiSMASH) with exponential backoff.
+    Catches timeouts and generic CalledProcessError if tools crash due to memory spikes or daemon hangs.
+    """
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            import subprocess
+            delay = 3.0
+            for i in range(retries):
+                try:
+                    return func(*args, **kwargs)
+                except (subprocess.TimeoutExpired, subprocess.CalledProcessError) as e:
+                    if i == retries - 1:
+                        raise e
+                    logger = kwargs.get('logger')
+                    if not logger and args:
+                        for arg in args:
+                            if hasattr(arg, 'info'):
+                                logger = arg
+                                break
+                    msg = f"Subprocess/Docker execution failed: {e}. Retrying in {delay:.1f}s (Attempt {i+1}/{retries})..."
+                    if logger:
+                        logger.warning(msg)
+                    else:
+                        print(msg)
+                    time.sleep(delay)
+                    delay *= backoff_factor
+        return wrapper
+    return decorator
+
+@subprocess_retry(retries=3, backoff_factor=3.0)
+def safe_subprocess_run(*args, **kwargs):
+    import subprocess
+    # Ensure check=True so CalledProcessError is raised and caught by the retry wrapper
+    if 'check' not in kwargs:
+        kwargs['check'] = True
+    if 'timeout' not in kwargs:
+        kwargs['timeout'] = 300
+    return subprocess.run(*args, **kwargs)
+
 def save_publication_plot(fig_path, dpi=300):
     """
     Saves the active matplotlib figure as both a high-res PNG and a layered
@@ -506,18 +548,17 @@ def compile_bgc_excel_report(bgc_target, ortholog_mapping, ref_strains, reconstr
     ws.append(["Locus Tag", "Gene Symbol", "Motif Upstream Pos", "Sigma Factor Association", "-35 Box Motif", "Spacer (bp)", "-10 Box Motif", "Shine-Dalgarno", "Regulatory Box", "Quality Class"])
     for pm in promoter_records:
         ws.append([
-            pm["Locus_Tag"],
-            pm["Gene_Symbol"],
-            pm["Upstream_Position"],
-            pm["Sigma_Factor"],
-            pm["Minus35_Seq"],
-            pm["Spacer_Length"],
-            pm["Minus10_Seq"],
-            pm["Shine_Dalgarno"],
-            pm.get("Regulatory_Box") if pm.get("Regulatory_Box") else pm.get("YbdJ_Regulatory_Box", "Not detected"),
-            pm.get("Quality_Class") if pm.get("Quality_Class") else pm.get("Quality", "Strong")
+            pm.get("Locus_Tag", "-"),
+            pm.get("Gene_Symbol", "-"),
+            pm.get("Upstream_Position", "-"),
+            pm.get("Sigma_Factor", "-"),
+            pm.get("Minus35_Seq", "-"),
+            pm.get("Spacer_Length", "-"),
+            pm.get("Minus10_Seq", "-"),
+            pm.get("Shine_Dalgarno", "-"),
+            pm.get("Regulatory_Box", "-"),
+            pm.get("Quality_Class", "-")
         ])
-        
     _sheet_title(ws, "BGC Promoter & Shine-Dalgarno Motif Profile",
                  "Transcription binding sites and ribosomal translation consensus motifs upstream of core genes")
     _hdr(ws, 3, EXCEL_PALETTE["header_fill"])
@@ -977,6 +1018,14 @@ def build_and_draw_evidence_graph(qc_res, anno_res, bgc_res, evol_res, prom_res,
                 "details": default_details(res),
                 "evidence": getattr(res, "evidence", []),
                 "uncertainties": getattr(res, "limitations", [])
+            }
+        else:
+            nodes_data[key] = {
+                "label": f"{default_label}\n(Skipped/Missing)",
+                "confidence": 0.0,
+                "details": {},
+                "evidence": [],
+                "uncertainties": ["Module was skipped or failed."]
             }
             
     add_node("QC", qc_res, "Genome QC", lambda r: r.prediction if isinstance(r.prediction, dict) else {})

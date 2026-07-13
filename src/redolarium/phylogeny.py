@@ -20,7 +20,7 @@ def run_phylogeny_pipeline(query_gb, ref_strains, identities, sim_matrix, out_di
     start_time = time.time()
     
     # Extract query organism
-    query_record = SeqIO.read(query_gb, "genbank")
+    query_record = max(list(SeqIO.parse(query_gb, "genbank")), key=lambda r: len(r.seq))
     query_org = query_record.annotations.get("organism", "Query Species")
     query_genus = query_org.split()[0] if len(query_org.split()) > 0 else "Bacterial"
     
@@ -251,8 +251,8 @@ def run_phylogeny_pipeline(query_gb, ref_strains, identities, sim_matrix, out_di
             "Bacterial rate variation and recombination events violate standard molecular clock assumptions."
         ],
         citations=[
-            "Ochman et al. 2000 (doi:10.1016/S0092-8674(00)80405-8)",
-            "Ho & Duchene 2014 (doi:10.1093/molbev/msu048)"
+            "Ochman et al. 2000 (doi:10.1038/35012500)",
+            "Ho & Duchene 2014 (doi:10.1093/molbev/msu221)"
         ],
         runtime=time.time() - start_time,
         metadata={"parameters": {"lineage_rate": rate, "clock_multiplier": clock_multiplier}}

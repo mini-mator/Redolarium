@@ -1,27 +1,9 @@
 # Central configuration and threshold constants for Redolarium Pipeline
 CONFIG = {
-    # Keywords for secondary metabolite BGC mining
-    "bgc_keywords": [
-        "lantibiotic", "lanthipeptide", "ripp", "mersacidin",
-        "sublancin", "subtilin", "ericin", "paenibacillin",
-        "lanthionine", "sactipeptide", "thiopeptide",
-        "nisin", "epidermin", "polyketide", "nonribosomal",
-        "nrps", "pks", "bacillaene", "fengycin", "plipastatin",
-        "surfactin", "iturin", "mycosubtilin", "siderophore"
-    ],
-
     # Flanking window sizes for BGC definition
+    # Reference: Blin et al. 2023 (antiSMASH 7.0, doi:10.1093/nar/gkad344); Cimermancic et al. 2014 (doi:10.1016/j.cell.2014.06.034)
     "bgc_flank_window": 10000,          # bp flanking coordinates around BGC core
-    "promoter_search_upstream": 600,    # bp upstream of ATG for promoter motifs (expanded for long srfA-like leaders)
-
-    # Phage and mobile genetic elements keywords
-    "phage_keywords": [
-        "phage", "prophage", "integrase", "transposase", "recombinase",
-        "capsid", "tail fiber", "terminase", "lysin", "holin",
-        "excisionase", "att site", "insertion sequence", "is element",
-        "mobile element", "conjugal transfer", "relaxase", "mobilization",
-        "transposon", "tnp", "tns"
-    ],
+    "promoter_search_upstream": 600,    # bp upstream of ATG for promoter motifs
 
     # Bacterial regulatory consensus binding motifs structured by taxonomic phylum
     # References: Hawley & McClure 1983 (E. coli σ70); Helmann 1995 (Bacillus σA/σW/σB);
@@ -113,22 +95,15 @@ CONFIG = {
                 "spacer_max": 20,
                 "induction": "Constitutive / Growth-phase dependent"
             }
-        },
-        "Universal": {
-            "Consensus-70": {
-                "instances_35": ["TTGACA", "TTGATA", "TTGAAA", "TTGACT", "TTGACC"],
-                "instances_10": ["TATAAT", "TATACT", "TATATT", "TACTAT"],
-                "spacer_min": 15,
-                "spacer_max": 19,
-                "induction": "Constitutive / Growth-phase dependent"
-            }
         }
     },
 
     # Reference: Blin et al. 2023 (antiSMASH 7.0, doi:10.1093/nar/gkad344)
     "bgc_clustering_gap_bp": 10000,
 
-    # HGT sliding window thresholds (Langille & Bhatt 2006, Teeling et al. 2004)
+    # Horizontal Gene Transfer (HGT) evolutionary divergence thresholds
+    # Reference: Lawrence & Ochman 1997 (doi:10.1007/s002399900038) - GC-content amelioration and anomaly detection
+    # Z-score >= 2.0 is the standard 95% statistical confidence interval for compositional anomaly
     "hgt": {
         "gc_window": 5000,
         "gc_step": 500,
@@ -144,13 +119,13 @@ CONFIG = {
         {"module": "Pan-Genomics", "tool": "Biopython Align", "ref": "Cock, P. J. et al. (2009). Biopython: freely available Python tools for computational molecular biology and bioinformatics.", "doi": "10.1093/bioinformatics/btp163"},
         {"module": "BGC Annotation", "tool": "antiSMASH 7.0", "ref": "Blin, K. et al. (2023). antiSMASH 7.0: new and improved predictions for BGC detection.", "doi": "10.1093/nar/gkad344"},
         {"module": "HGT GC-bias", "tool": "GC-Profiler", "ref": "Langille, M. G. & Bhatt, I. (2006). Sliding window GC-profiling for horizontal transfers.", "doi": "10.1186/1471-2164-7-142"},
-        {"module": "HGT TNF-bias", "tool": "Genomic Signature", "ref": "Teeling, H. et al. (2004). Application of tetranucleotide frequencies for fragment clustering.", "doi": "10.1111/j.1462-2920.2004.00638.x"},
-        {"module": "HGT Scores", "tool": "HGT-Composite", "ref": "Ravenhall, M. et al. (2015). Inferring horizontal gene transfer using genomic signatures.", "doi": "10.1371/journal.pcbi.1004523"},
+        {"module": "HGT TNF-bias", "tool": "Genomic Signature", "ref": "Teeling, H. et al. (2004). Application of tetranucleotide frequencies for fragment clustering.", "doi": "10.1093/bioinformatics/bth054"},
+        {"module": "HGT Scores", "tool": "HGT-Composite", "ref": "Ravenhall, M. et al. (2015). Inferring horizontal gene transfer using genomic signatures.", "doi": "10.1371/journal.pcbi.1004167"},
         {"module": "Phylogeny", "tool": "Bio.Phylo", "ref": "Talevich, N. et al. (2012). Bio.Phylo: phylogeny framework in Biopython.", "doi": "10.1186/1471-2105-13-209"},
         {"module": "Molecular Docking", "tool": "RCSB PDB API", "ref": "Berman, H. M. et al. (2000). The Protein Data Bank.", "doi": "10.1093/nar/28.1.235"},
         {"module": "Molecular Docking", "tool": "ChEMBL API", "ref": "Mendez, D. et al. (2019). ChEMBL: towards direct deposition of bioactivity data.", "doi": "10.1093/nar/gky1075"},
         {"module": "Metabolic Linkage", "tool": "KEGG REST API", "ref": "Kanehisa, M. et al. (2023). KEGG database for taxonomy-based pathways.", "doi": "10.1093/nar/gkac963"},
-        {"module": "CAZyme Screening", "tool": "dbCAN3", "ref": "Huang, L. et al. (2023). dbCAN3: automated carbohydrate-active enzyme annotation.", "doi": "10.1093/nar/gkad343"},
+        {"module": "CAZyme Screening", "tool": "dbCAN3", "ref": "Huang, L. et al. (2023). dbCAN3: automated carbohydrate-active enzyme annotation.", "doi": "10.1093/nar/gkad328"},
         {"module": "AMR CARD", "tool": "CARD-RGI", "ref": "Alcock, B. P. et al. (2023). CARD 2023: Comprehensive Antibiotic Resistance Database.", "doi": "10.1093/nar/gkac920"},
         {"module": "Virulence VFDB", "tool": "VFDB", "ref": "Chen, L. et al. (2016). VFDB 2016: hierarchical dataset for virulence factors.", "doi": "10.1093/nar/gkv1239"}
     ],
@@ -175,7 +150,7 @@ CONFIG = {
         "thresholds": {
             # Reference: Rost 1999 (doi:10.1093/protein/12.2.85) for homology detection zone
             "min_identity": 40.0,
-            # Reference: Pearson 2013 (doi:10.1002/0471250953.bi0301s42) for statistical significance
+            # Reference: Pearson 2013 (doi:10.1002/0471250953.bi0301s42); Eddy 2011 (doi:10.1371/journal.pcbi.1002195)
             "max_evalue": 1e-5
         },
         "hmm_db_path": "resources/essential_bgc.hmm",

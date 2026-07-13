@@ -4,6 +4,10 @@
 # type: ignore
 import os
 import sys
+import socket
+
+# Globally prevent ALL remote network calls (e.g. NCBI Entrez/BLAST) from hanging infinitely
+socket.setdefaulttimeout(180.0)
 
 # --- Path bootstrap: ensure the project root is on sys.path when run directly ---
 _project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -135,9 +139,9 @@ rule qc:
         from redolarium.utils import setup_logging
         logger = setup_logging(config["out_dir"])
         qc_res = run_qc_pipeline(input.query, config["out_dir"], logger)
-        import pickle
-        with open(output.qc_json, "wb") as f:
-            pickle.dump(qc_res, f)
+        import json
+        with open(output.qc_json, "w", encoding="utf-8") as f:
+            f.write(qc_res.model_dump_json())
 """
     with open(snakefile_path, "w", encoding="utf-8") as f:
         f.write(content)
@@ -232,6 +236,9 @@ def main():
         print("\n=== Interactive Setup Completed ===\n")
     
     out_dir = args.out
+    import urllib.parse
+    if args.email:
+        args.email = urllib.parse.quote(args.email)
     subdirs = [
         "phylogeny_trees", "tabular_data", 
         "metabolic_pathways", "comparative_genomics", "hgt_evolution", 
@@ -441,7 +448,7 @@ def main():
             blast_rows = []
             try:
                 from redolarium.promoter_prediction import run_promoter_prediction
-                promoter_records = run_promoter_prediction(args.query, selected_bgc, bgc_out_dir, logger)
+                promoter_records = run_promoter_prediction(args.query, selected_bgc, region_genes, bgc_out_dir, logger)
                 
                 from redolarium.structures import PredictionResult
                 import time
@@ -494,7 +501,7 @@ def main():
             # ─── Compile 12-sheet Excel Workbook ───
             xls_filename = f"{bgc_id}_BGC_Analysis_Metabolism_Integrated.xlsx"
             xls_path = os.path.join(bgc_out_dir, xls_filename)
-            query_record = SeqIO.read(args.query, "genbank")
+            query_record = max(list(SeqIO.parse(args.query, "genbank")), key=lambda r: len(r.seq))
             query_org = query_record.annotations.get("organism", "Query Isolate")
             
             logger.info(f"Compiling 12-sheet Excel workbook for {bgc_id}...")

@@ -62,10 +62,17 @@ class RedolariumAuditLogger:
                 with open(AUDIT_LOG_PATH, "r", encoding="utf-8") as f:
                     logs = json.load(f)
             except Exception:
-                pass
+                logs = []
                 
         logs.append(log_entry)
         
-        with open(AUDIT_LOG_PATH, "w", encoding="utf-8") as f:
-            json.dump(logs, f, indent=4)
+        try:
+            import filelock
+            lock = filelock.FileLock(AUDIT_LOG_PATH + ".lock", timeout=5)
+            with lock:
+                with open(AUDIT_LOG_PATH, "w", encoding="utf-8") as f:
+                    json.dump(logs, f, indent=4)
+        except ImportError:
+            with open(AUDIT_LOG_PATH, "w", encoding="utf-8") as f:
+                json.dump(logs, f, indent=4)
         print(f"[{status}] Logged action '{action_type}' to audit_log.json. System Hash: {sys_hash[:10]}...")

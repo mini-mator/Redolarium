@@ -22,6 +22,8 @@ def link_snapshot(active_snapshot, db_dir):
         if os.name == 'nt':
             # On Windows, creating a symlink requires admin or developer mode.
             # Fallback to junction point or copying if symlink fails.
+            if any(c in target or c in source for c in ['&', '|', '>', '<', '"', ';', '^']):
+                raise ValueError("Invalid characters in path, aborting cmd execution.")
             import subprocess
             subprocess.run(["cmd", "/c", "mklink", "/J", target, source], check=True)
         else:

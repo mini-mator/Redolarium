@@ -118,7 +118,7 @@ def run_evolution_pipeline(query_gb: str, target_bgc: Dict[str, Any], out_dir: s
     logger.info("Stage 6: Running Evolutionary & Acquisition (HGT) Analysis...")
     start_time = time.time()
     
-    record = SeqIO.read(query_gb, "genbank")
+    record = max(list(SeqIO.parse(query_gb, "genbank")), key=lambda r: len(r.seq))
     query_org = record.annotations.get("organism", "Query Species")
     try:
         seq_str = str(record.seq).upper()
@@ -227,13 +227,8 @@ def run_evolution_pipeline(query_gb: str, target_bgc: Dict[str, Any], out_dir: s
     mge_coords = []
     for feat in record.features:
         if feat.type in ["CDS", "mobile_element", "prophage"]:
-            prod = feat.qualifiers.get("product", [""])[0].lower()
-            gene = feat.qualifiers.get("gene", [""])[0].lower()
-            note = feat.qualifiers.get("note", [""])[0].lower()
-            is_mge = any(kw in prod or kw in gene or kw in note for kw in [
-                "integrase", "transposase", "recombinase", "phage", "mobile", "tnp", "tns", "insertion sequence"
-            ])
-            if is_mge or feat.type in ["mobile_element", "prophage"]:
+            # Strictly enforce NCBI structural feature types rather than string guessing MGEs
+            if feat.type in ["mobile_element", "prophage"]:
                 mge_coords.append((int(feat.location.start), int(feat.location.end)))
                 
     # 2. Extract targeted BGC window and flankings (50kb flanking coordinates)
@@ -257,8 +252,9 @@ def run_evolution_pipeline(query_gb: str, target_bgc: Dict[str, Any], out_dir: s
             win_gc = gcs[w]
             gc_z = (win_gc - global_mean_gc) / global_std_gc if global_std_gc > 0 else 0.0
             
-            # GC Deviation Norm
-            gc_dev_norm = min(1.0, abs(gc_z) / 3.0)
+            # GC Deviation Norm (Langille & Bhatt 2006 threshold z >= 2.0)
+            z_thresh = CONFIG.get("hgt", {}).get("gc_zscore_threshold", 2.0)
+            gc_dev_norm = 1.0 if abs(gc_z) >= z_thresh else 0.0
             
             # GC Skew
             win_g = win_seq.count("G")
@@ -434,7 +430,7 @@ def run_evolution_pipeline(query_gb: str, target_bgc: Dict[str, Any], out_dir: s
             "TNF and codon usage baselines can be affected by assembly quality and horizontal gene transfer events between close relatives."
         ],
         citations=[
-            "Ochman et al. 2000 (doi:10.1016/S0092-8674(00)80405-8)",
+            "Ochman et al. 2000 (doi:10.1038/35012500)",
             "Medema et al. 2011 (doi:10.1093/nar/gkr466)"
         ],
         runtime=time.time() - start_time,

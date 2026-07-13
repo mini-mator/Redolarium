@@ -71,3 +71,15 @@ Thumbs.db
 # Allow example data to be tracked despite global extension ignores
 !example_data/
 !example_data/*
+benchmarks/data/
+benchmarks/old_tests/
+benchmarks/optimization_results/
+benchmarks/resources/
+resources/kegg_cache/
+scratch/
+example_data/
+src/resources/ncbi_query_cache.json
+src/resources/ncbi_blast.lock
+benchmarks/fix_fstrings.py
+__pycache__/
+*.pyc

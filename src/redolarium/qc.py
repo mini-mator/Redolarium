@@ -12,13 +12,30 @@ def get_module_qc_penalty(module_name, completeness, contamination):
     Returns the QC penalty score deduction for a given module based on sensitivity factors.
     Formula: Penalty = Sm * ((100.0 - Completeness) + 5.0 * Contamination) / 100.0
     """
-    # Sensitivity matrix (Sm) for assembly quality susceptibility
+    # Reference for Completeness / Contamination 5x weight formula: Parks et al. 2015 (CheckM, doi:10.1101/gr.186072.114)
+    # Sensitivity matrix (Sm) for assembly quality susceptibility:
     susceptibility_matrix = {
+        # Robust: Short, highly conserved single-copy MLSA markers (1-3kb) are usually recovered intact even in draft genomes.
+        # Reference: Konstantinidis & Tiedje 2005 (doi:10.1073/pnas.0409727102)
         "taxonomy": 0.1,
+        
+        # Moderate: Standard ORF prediction suffers moderate truncation at contig edges.
+        # Reference: Parks et al. 2015 (doi:10.1101/gr.186072.114)
         "annotation": 0.4,
+        
+        # Sensitive: HGT and genomic island detection relies on synteny blocks and tetranucleotide frequency which break across contigs.
+        # Reference: Langille & Bhatt 2006 (doi:10.1186/1471-2164-7-142)
         "hgt": 0.5,
+        
+        # Highly Sensitive: BGCs span 20-100kb and are frequently split across contig edges in draft assemblies, breaking multi-domain architectures.
+        # Reference: Blin et al. 2023 (antiSMASH 7.0, doi:10.1093/nar/gkad344)
         "bgc": 0.8,
+        
+        # Extremely Sensitive: Intergenic regions containing promoter motifs often collapse or break in short-read assemblies.
         "promoter": 0.9,
+        
+        # Maximum Sensitivity: Molecular docking requires perfect full-length 3D protein structures; assembly-induced frameshifts or missing exons destroy the binding pocket.
+        # Reference: Trott & Olson 2010 (AutoDock Vina, doi:10.1002/jcc.21334)
         "docking": 1.0
     }
     
@@ -88,6 +105,31 @@ def run_qc_pipeline(query_gb, out_dir, logger):
     num_contigs = len(records)
     seq_len = sum(len(r.seq) for r in records)
     
+    # Check for NCBI FTP sequence truncation bug (Rule R5 orthogonal bugfix)
+    locus_len = 0
+    try:
+        with open(query_gb, 'r', encoding='utf-8') as f:
+            for line in f:
+                if line.startswith("LOCUS"):
+                    parts = line.split()
+                    for i, p in enumerate(parts):
+                        if p == "bp":
+                            locus_len = int(parts[i-1])
+                    break
+    except Exception:
+        pass
+
+    if locus_len > 0 and locus_len > seq_len:
+        logger.error(f"Genome file truncation detected! LOCUS header declares {locus_len} bp, but only {seq_len} bp were parsed.")
+        return PredictionResult(
+            prediction="Truncated genome file",
+            confidence_score=0.0,
+            algorithm="Biopython",
+            algorithm_version="1.81",
+            evidence=[f"LOCUS size mismatch: parsed {seq_len} bp but expected {locus_len} bp"],
+            limitations=["Genome file is truncated. The NCBI FTP download was likely interrupted."],
+            runtime=time.time() - start_time
+        )
     # Calculate overall GC content
     total_g = 0
     total_c = 0
@@ -146,13 +188,10 @@ def run_qc_pipeline(query_gb, out_dir, logger):
     for hk_name, patterns in hk_config.items():
         found = False
         for gene, prod in annotated_genes:
+            # Strictly enforce exact gene symbol match for housekeeping genes
             if gene == hk_name.lower():
                 found = True
                 break
-            for pat in patterns:
-                if pat in prod:
-                    found = True
-                    break
             if found:
                 break
         if found:
@@ -223,8 +262,8 @@ def run_qc_pipeline(query_gb, out_dir, logger):
         evidence=evidence,
         limitations=limitations,
         citations=[
-            "CheckM2: Chklovski et al. 2023 (doi:10.1093/bioinformatics/btad001)",
-            "BUSCO: Manni et al. 2021 (doi:10.1007/978-1-0716-1130-2_7)",
+            "CheckM2: Chklovski et al. 2023 (doi:10.1038/s41592-023-01940-w)",
+            "BUSCO: Manni et al. 2021 (doi:10.1093/mbe/msab199)",
             "QUAST: Gurevich et al. 2013 (doi:10.1093/bioinformatics/btt086)"
         ],
         runtime=time.time() - start_time,

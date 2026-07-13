@@ -12,7 +12,7 @@ import seaborn as sns
 from Bio import SeqIO, Entrez
 from Bio.SeqFeature import SeqFeature, FeatureLocation
 from Bio.Blast import NCBIWWW, NCBIXML
-from redolarium.utils import api_retry, save_publication_plot
+from redolarium.utils import api_retry, save_publication_plot, safe_subprocess_run
 from redolarium import db_manager
 
 # Housekeeping genes for MLSA (Multi-Locus Sequence Analysis)
@@ -183,7 +183,8 @@ def find_housekeeping_gene(record):
                 continue
                 
             for name, aliases in HOUSEKEEPING_GENES.items():
-                if gene == name or any(a in product for a in aliases):
+                # Strictly enforce exact gene symbol match for MLSA markers, removing fuzzy string guessing on the product
+                if gene == name:
                     return name, trans
     return None, None
 
@@ -266,12 +267,16 @@ def load_local_reference_genomes(out_dir, logger):
     if all_files:
         for f_path in all_files[:25]:
             try:
-                rec = SeqIO.read(f_path, "genbank")
-                ref_strains.append(f"{rec.annotations.get('organism', 'Local Ref')} ({rec.id})")
+                recs = list(SeqIO.parse(f_path, "genbank"))
+                if recs:
+                    rec = max(recs, key=lambda r: len(r.seq))
+                    ref_strains.append(f"{rec.annotations.get('organism', 'Local Ref')} ({rec.id})")
             except Exception:
                 try:
-                    rec = SeqIO.read(f_path, "fasta")
-                    ref_strains.append(f"Local Fasta Ref ({rec.id})")
+                    recs = list(SeqIO.parse(f_path, "fasta"))
+                    if recs:
+                        rec = max(recs, key=lambda r: len(r.seq))
+                        ref_strains.append(f"Local Fasta Ref ({rec.id})")
                 except Exception:
                     pass
                     
@@ -352,7 +357,11 @@ def detect_16s_strict_chain(query_record, logger, temp_dir=".", email="researche
         
         # Test Docker if local failed
         if not barrnap_run:
-            res = subprocess.run(["wsl", "docker", "run", "--rm", "-v", f"{os.path.abspath(temp_dir)}:/data", "seemann/barrnap:latest", "barrnap", "/data/temp_query.fasta"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            try:
+                res = safe_subprocess_run(["wsl", "docker", "run", "--rm", "-v", f"{os.path.abspath(temp_dir)}:/data", "seemann/barrnap:latest", "barrnap", "/data/temp_query.fasta"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            except Exception as e:
+                logger.warning(f"Barrnap docker crashed: {e}")
+                res = type('obj', (object,), {'returncode': 1, 'stdout': '', 'stderr': str(e)})()
             if res.returncode == 0:
                 for line in res.stdout.splitlines():
                     if "16S_rRNA" in line:
@@ -722,13 +731,15 @@ def fetch_blast_references_ncbi(query_record, query_org, logger, limit=50, no_do
         if remote_refs:
             logger.info("Remote BLAST query succeeded. Automatically downloading remote hits to improve the local database...")
             workspace_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            ref_genomes_dir = os.path.join(workspace_dir, "..", "resources", "reference_genomes_cache")
+            os.makedirs(ref_genomes_dir, exist_ok=True)
             downloaded_any = False
             for ref in remote_refs:
                 try:
                     acc = ref.split(" (")[-1].replace(")", "") if " (" in ref else ref
                     logger.info(f"Auto-downloading complete genome {acc} for local DB expansion...")
                     fetch_handle = Entrez.efetch(db="nucleotide", id=acc, rettype="gbwithparts", retmode="text")
-                    dest_path = os.path.join(workspace_dir, f"{acc}.gb")
+                    dest_path = os.path.join(ref_genomes_dir, f"{acc}.gb")
                     with open(dest_path, "w", encoding="utf-8") as f_out:
                         f_out.write(fetch_handle.read())
                     logger.info(f"Saved: {dest_path}")
@@ -801,11 +812,15 @@ def download_reference_genbank(accession, email, out_dir, logger):
         return ref_path
 
     logger.info(f"Downloading GenBank record for closest reference strain (synteny mapping): {accession}...")
-    Entrez.email = email
-    handle = Entrez.efetch(db="nucleotide", id=accession, rettype="gbwithparts", retmode="text")
-    with open(ref_cache_path, "w", encoding="utf-8") as f:
-        f.write(handle.read())
-    logger.info(f"Successfully downloaded and saved reference GenBank to cache: {ref_cache_path}")
+    try:
+        Entrez.email = email
+        handle = Entrez.efetch(db="nucleotide", id=accession, rettype="gbwithparts", retmode="text")
+        with open(ref_cache_path, "w", encoding="utf-8") as f:
+            f.write(handle.read())
+        logger.info(f"Successfully downloaded and saved reference GenBank to cache: {ref_cache_path}")
+    except Exception as e:
+        logger.warning(f"Failed to download reference GenBank {accession} from NCBI: {e}")
+        return None
     shutil.copy2(ref_cache_path, ref_path)
     return ref_path
 
@@ -836,12 +851,13 @@ def find_specific_marker_gene(record, target_name):
     for feat in record.features:
         if feat.type == "CDS":
             gene = feat.qualifiers.get("gene", [""])[0].lower()
-            product = feat.qualifiers.get("product", [""])[0].lower()
             trans = feat.qualifiers.get("translation", [""])[0]
             if not trans:
                 continue
-            if gene == target_lower or any(a in product for a in aliases):
-                return trans
+                
+            # Strictly enforce exact gene symbol match
+            if gene == target_lower:
+                return target_name, trans
     return None
 
 def get_reference_marker_sequence(acc_name, out_dir, marker_name):
@@ -1042,7 +1058,9 @@ def generate_comparative_matrix(query_record, local_ref_gb_files, out_dir, logge
     with open(refs_fasta, "w", encoding="utf-8") as f:
         for ref_file in local_ref_gb_files:
             try:
-                rec = SeqIO.read(ref_file, "genbank")
+                recs = list(SeqIO.parse(ref_file, "genbank"))
+                if not recs: continue
+                rec = max(recs, key=lambda r: len(r.seq))
                 org_name = rec.annotations.get("organism", rec.id)
                 r_name = f"{org_name}_{rec.id}".replace(" ", "_")
                 ref_names.append(r_name)
@@ -1075,10 +1093,11 @@ def generate_comparative_matrix(query_record, local_ref_gb_files, out_dir, logge
         wsl_out = out_tsv.replace("\\\\", "/").replace("\\", "/").replace("F:", "/mnt/f").replace("C:", "/mnt/c")
         wsl_tmp = tmp_dir.replace("\\\\", "/").replace("\\", "/").replace("F:", "/mnt/f").replace("C:", "/mnt/c")
         # Reference: Rost 1999 (doi:10.1093/protein/12.2.85) — twilight zone boundary for protein homology
-        cmd = ["bash", "-c", f"mmseqs easy-search {wsl_query} {wsl_refs} {wsl_out} {wsl_tmp} --format-output 'query,target,pident,qcov,tcov' --min-seq-id 0.3 -c 0.5"]
+        import shlex
+        cmd = ["wsl", "-e", "bash", "-c", f"mmseqs easy-search {shlex.quote(wsl_query)} {shlex.quote(wsl_refs)} {shlex.quote(wsl_out)} {shlex.quote(wsl_tmp)} --format-output 'query,target,pident,qcov,tcov' --min-seq-id 0.3 -c 0.5"]
         
     try:
-        subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        safe_subprocess_run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except Exception as e:
         logger.warning(f"mmseqs failed: {e}. Comparative matrix will be skipped.")
         return
@@ -1205,12 +1224,19 @@ def run_annotation_pipeline(query_gb, ref_gb, cores, email, out_dir, logger, no_
     from redolarium.structures import PredictionResult
     from redolarium.qc import get_module_qc_penalty
     
-    # 1. Parse Query Record (Support both FASTA and GenBank formats)
+    # 1. Parse Query Record (Support both FASTA and GenBank formats, and multi-contig assemblies)
     try:
-        query_record = SeqIO.read(query_gb, "genbank")
+        records = list(SeqIO.parse(query_gb, "genbank"))
+        if not records:
+            raise ValueError("No records found")
+        # Select the largest contig/chromosome to represent the core genome for annotation mapping
+        query_record = max(records, key=lambda r: len(r.seq))
     except Exception:
         try:
-            query_record = SeqIO.read(query_gb, "fasta")
+            records = list(SeqIO.parse(query_gb, "fasta"))
+            if not records:
+                raise ValueError("No FASTA records found")
+            query_record = max(records, key=lambda r: len(r.seq))
             logger.info("Input sequence loaded successfully in raw FASTA format.")
         except Exception as e:
             raise Exception(f"Failed to read query input file: {e}")
@@ -1300,7 +1326,9 @@ def run_annotation_pipeline(query_gb, ref_gb, cores, email, out_dir, logger, no_
         ref_strains = []
         for p in local_ref_gb_files:
             try:
-                rec = SeqIO.read(p, "genbank")
+                recs = list(SeqIO.parse(p, "genbank"))
+                if not recs: continue
+                rec = max(recs, key=lambda r: len(r.seq))
                 r_org = rec.annotations.get("organism", "Reference Species")
                 ref_strains.append(f"{r_org} ({rec.id})")
             except Exception as e:
@@ -1358,9 +1386,11 @@ def run_annotation_pipeline(query_gb, ref_gb, cores, email, out_dir, logger, no_
         logger.info(f"Adaptive ortholog window calculated dynamically: {window_size} genes (based on mean operon length: {mean_op_len:.2f})")
     
     if ref_gb:
-        ref_record = SeqIO.read(ref_gb, "genbank")
-        ref_cds = [f for f in ref_record.features if f.type == "CDS"]
-        ref_cds.sort(key=lambda x: int(x.location.start))
+        recs = list(SeqIO.parse(ref_gb, "genbank"))
+        ref_record = max(recs, key=lambda r: len(r.seq)) if recs else None
+        if ref_record:
+            ref_cds = [f for f in ref_record.features if f.type == "CDS"]
+            ref_cds.sort(key=lambda x: int(x.location.start))
         
         ref_cds_data = {
             'list': [],
@@ -1454,7 +1484,7 @@ def run_annotation_pipeline(query_gb, ref_gb, cores, email, out_dir, logger, no_
         
     # 6. Visual Heatmap (run after mmseqs2, using the actual matrix values)
     matched_identities = [x["Identity_Pct"] for x in ortholog_mapping if x["Ref_Ortholog_Tag"] != "NA" and x["Identity_Pct"] > 0.0]
-    avg_aai = np.mean(matched_identities) if matched_identities else 85.0
+    avg_aai = np.mean(matched_identities) if matched_identities else 0.0
     
     sim_matrix = calculate_real_identity_matrix(blast_record, ref_strains, avg_aai, query_record, logger, out_dir, df_matrix=df_matrix)
     ref_names_short = [query_org[:22]] + [r.split(" (")[0][:22] for r in ref_strains]

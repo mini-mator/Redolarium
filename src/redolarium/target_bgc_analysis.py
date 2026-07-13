@@ -17,122 +17,6 @@ from redolarium.structures import PredictionResult
 from redolarium.config import CONFIG
 from redolarium.qc import get_module_qc_penalty
 
-# Standard DBTBS/RegulonDB/PRODORIC consensus log-odds PWM definitions for Sigma factors
-SIGMA_PWM = {
-    "SigmaA": {
-        "minus35": {
-            "A": [0.10, 0.10, 0.10, 0.70, 0.10, 0.60],
-            "C": [0.10, 0.10, 0.10, 0.10, 0.70, 0.10],
-            "G": [0.10, 0.10, 0.70, 0.10, 0.10, 0.10],
-            "T": [0.70, 0.70, 0.10, 0.10, 0.10, 0.20]
-        },
-        "minus10": {
-            "A": [0.10, 0.80, 0.10, 0.80, 0.80, 0.10],
-            "C": [0.10, 0.10, 0.10, 0.10, 0.10, 0.10],
-            "G": [0.10, 0.10, 0.10, 0.10, 0.10, 0.10],
-            "T": [0.70, 0.00, 0.70, 0.00, 0.00, 0.70]
-        }
-    }
-}
-
-def extract_promoter_upstream(record, feat_start, feat_end, feat_strand, upstream_bp=300):
-    seq = record.seq
-    try:
-        if feat_strand == "+":
-            start = max(0, feat_start - upstream_bp)
-            return str(seq[start:feat_start]).upper()
-        else:
-            return str(seq[feat_end:feat_end + upstream_bp].reverse_complement()).upper()
-    except Exception:
-        return ""
-
-def score_promoter_pwm(seq35, seq10, sigma_name):
-    pwm_model = SIGMA_PWM.get(sigma_name, SIGMA_PWM["SigmaA"])
-    
-    score35 = 0.0
-    for idx, base in enumerate(seq35[:6]):
-        base = base.upper()
-        prob = pwm_model["minus35"].get(base, [0.25]*6)[min(idx, 5)]
-        score35 += np.log2(prob / 0.25)
-        
-    score10 = 0.0
-    for idx, base in enumerate(seq10[:6]):
-        base = base.upper()
-        prob = pwm_model["minus10"].get(base, [0.25]*6)[min(idx, 5)]
-        score10 += np.log2(prob / 0.25)
-        
-    return score35 + score10
-
-def detect_up_element_booster(up_seq, p35_pos_in_window):
-    up_start = max(0, p35_pos_in_window - 20)
-    up_region = up_seq[up_start:p35_pos_in_window]
-    if not up_region:
-        return 0.0, "None detected"
-        
-    at_count = up_region.count("A") + up_region.count("T") + up_region.count("a") + up_region.count("t")
-    at_fraction = at_count / float(len(up_region))
-    
-    if at_fraction >= 0.70:
-        return 0.15, f"High A/T UP-element ({at_fraction*100:.1f}%)"
-    return 0.0, "None"
-
-def detect_dna_shape_booster(up_seq):
-    import re
-    a_tracts = list(re.finditer(r"[A]{5,}|[T]{5,}", up_seq, re.IGNORECASE))
-    if a_tracts:
-        return 0.10, f"Curved DNA A-tracts ({len(a_tracts)} found)"
-    return 0.0, "None"
-
-def scan_promoter_pwm_and_shape(up_seq, motifs_config):
-    hits = []
-    for sigma_name, patterns in motifs_config.items():
-        pat35 = patterns["minus35"]
-        pat10 = patterns["minus10"]
-        spacer_min = patterns.get("spacer_min", 16)
-        spacer_max = patterns.get("spacer_max", 18)
-        
-        for m35 in re.finditer(pat35, up_seq, re.IGNORECASE):
-            p35 = m35.start()
-            ss = p35 + len(m35.group()) + spacer_min
-            se = min(len(up_seq), p35 + len(m35.group()) + spacer_max + 8)
-            sub_seq = up_seq[ss:se]
-            
-            for m10 in re.finditer(pat10, sub_seq, re.IGNORECASE):
-                p10 = ss + m10.start()
-                spacer = p10 - (p35 + len(m35.group()))
-                
-                if spacer_min <= spacer <= spacer_max:
-                    seq35 = m35.group()
-                    seq10 = m10.group()
-                    
-                    # 1. PWM Log-Odds calculation
-                    pwm_score = score_promoter_pwm(seq35, seq10, sigma_name)
-                    
-                    # 2. UP-element check
-                    up_boost, up_detail = detect_up_element_booster(up_seq, p35)
-                    
-                    # 3. DNA Shape check
-                    shape_boost, shape_detail = detect_dna_shape_booster(up_seq)
-                    
-                    # Normalize PWM score: map -15 -> +5 log odds to 0.2 -> 0.75
-                    norm_pwm = max(0.0, min(1.0, (pwm_score + 15.0) / 20.0))
-                    combined_score = norm_pwm + up_boost + shape_boost
-                    combined_score = max(0.0, min(1.0, combined_score))
-                    
-                    quality_label = f"PWM score: {pwm_score:.1f} | UP: {up_detail} | Shape: {shape_detail}"
-                    
-                    hits.append({
-                        "Sigma_Factor": sigma_name,
-                        "Minus35_Pos": p35 - len(up_seq),
-                        "Minus35_Seq": seq35.upper(),
-                        "Spacer_Length": spacer,
-                        "Minus10_Pos": p10 - len(up_seq),
-                        "Minus10_Seq": seq10.upper(),
-                        "Quality": quality_label,
-                        "Confidence": round(combined_score, 2)
-                    })
-    return hits
-
 def scan_mge_domains(flanking_genes, logger):
     try:
         import pyhmmer
@@ -272,7 +156,7 @@ def run_target_bgc_analysis(query_gb, selected_bgc, run_blast, email, out_dir, l
     logger.info("Stage 9: Running Target BGC promoter and flanking prophage analysis...")
     start_time = time.time()
     
-    record = SeqIO.read(query_gb, "genbank")
+    record = max(list(SeqIO.parse(query_gb, "genbank")), key=lambda r: len(r.seq))
     bgc_id = selected_bgc["BGC_ID"]
     bgc_start = selected_bgc["Start_Coord"]
     bgc_end = selected_bgc["End_Coord"]
@@ -357,14 +241,9 @@ def run_target_bgc_analysis(query_gb, selected_bgc, run_blast, email, out_dir, l
                 mge_class = "Recombinase Component"
                 prod_desc = "Recombinase domain (detected via pyhmmer Pfam PF00239)"
         else:
-            prod_lower = g["product"].lower()
-            gene_lower = g["gene"].lower()
-            for kw in CONFIG["phage_keywords"]:
-                if kw in prod_lower or kw in gene_lower:
-                    is_phage = True
-                    mge_class = "Prophage Component" if "phage" in prod_lower or "capsid" in prod_lower else "Transposase/IS element"
-                    break
-                    
+            # Removed unscientific string-matching for phage keywords
+            pass
+            
         if is_phage:
             phage_hits.append({
                 "Locus_Tag": ltag,
@@ -387,18 +266,20 @@ def run_target_bgc_analysis(query_gb, selected_bgc, run_blast, email, out_dir, l
     core_prot = ""
     is_protein = True
     
-    for g in core_genes:
-        prod = g.get("product", "").lower()
-        if "synthase" in prod or "synthetase" in prod or "dehydratase" in prod or "cyclase" in prod or "lanb" in prod or "lanc" in prod or "lana" in prod or "peptide" in prod:
-            core_prot = g.get("translation", "")
-            if not core_prot and "locus_tag" in g:
+    # Removed unscientific keyword matching ("synthase"). 
+    # Since bgc_analysis.py guarantees architectural core validity, select the longest core sequence.
+    valid_prots = [g for g in core_genes if g.get("translation")]
+    if not valid_prots:
+        for g in core_genes:
+            if "locus_tag" in g:
                 for feat in record.features:
                     if feat.type == "CDS" and feat.qualifiers.get("locus_tag", [""])[0] == g["locus_tag"]:
-                        core_prot = feat.qualifiers.get("translation", [""])[0]
-                        break
-            if core_prot:
-                break
-                
+                        trans = feat.qualifiers.get("translation", [""])
+                        if trans:
+                            valid_prots.append({"translation": trans[0]})
+                            
+    if valid_prots:
+        core_prot = max(valid_prots, key=lambda g: len(g["translation"]))["translation"]
     if not core_prot:
         logger.warning("No core biosynthetic protein sequence translation found. Falling back to core nucleotide fragment...")
         try:
@@ -512,9 +393,9 @@ def run_target_bgc_analysis(query_gb, selected_bgc, run_blast, email, out_dir, l
             "DNA shape and UP-element features act as confidence modulators and do not guarantee active binding."
         ],
         citations=[
-            "DBTBS: Minami et al. 2018 (doi:10.1093/database/bay133)",
-            "RegulonDB: Tierrafría et al. 2022 (doi:10.1093/nar/gkab1047)",
-            "PRODORIC: Dudek et al. 2021 (doi:10.1093/nar/gkaa998)"
+            "DBTBS: Sierro et al. 2008 (doi:10.1093/nar/gkm910)",
+            "RegulonDB: Tierrafría et al. 2022 (doi:10.1093/nar/gkab1058)",
+            "PRODORIC: Dudek et al. 2021 (doi:10.1093/nar/gkaa1031)"
         ],
         runtime=time.time() - start_time,
         warnings=[f"QC assembly penalty applied: -{qc_penalty:.2f}"] if qc_penalty > 0.05 else []

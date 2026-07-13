@@ -122,12 +122,27 @@ def run_remote_blast_expansion(program, query_seq, current_references, limit, qu
     lock_path = os.path.join(lock_dir, "ncbi_blast.lock")
     lock = FileLock(lock_path)
     
+    import socket
+    from urllib.error import URLError
+
     try:
         logger.info("Waiting for lock to perform remote NCBI BLAST query (preventing parallel IP throttling)...")
         lock.acquire()
         logger.info("Lock acquired. Executing remote NCBI BLAST query for reference expansion...")
-        result_handle = NCBIWWW.qblast(program, "nr" if program == "blastp" else "nt", query_seq, hitlist_size=100)
-        xml_str = result_handle.read()
+        
+        # Set a global socket timeout to prevent indefinite hanging on NCBI servers
+        original_timeout = socket.getdefaulttimeout()
+        socket.setdefaulttimeout(180.0)
+        
+        try:
+            result_handle = NCBIWWW.qblast(program, "nr" if program == "blastp" else "nt", query_seq, hitlist_size=100)
+            xml_str = result_handle.read()
+        except (socket.timeout, URLError, Exception) as e:
+            logger.warning(f"Remote NCBI BLAST failed or timed out: {e}")
+            xml_str = None
+        finally:
+            socket.setdefaulttimeout(original_timeout)
+            
     finally:
         lock.release()
         

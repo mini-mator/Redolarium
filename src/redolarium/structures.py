@@ -22,9 +22,9 @@ class PredictionResult:
         # Calculate base score
         raw_score = float(confidence_score)
         
-        # Apply mandatory assembly fragmentation penalty if the genome is a draft
-        if self.genome_closure_status.lower() == "draft":
-            raw_score *= 0.80  # Mandatory 20% downrate for fragmented assemblies
+        # Assembly fragmentation penalties are rigorously handled downstream by the CheckM-cited 
+        # get_module_qc_penalty() in qc.py based on actual completeness/contamination scores.
+        # We do not apply a flat magic number penalty (e.g., 0.80) here.
             
         # Apply automatic fallback downrating if active
         if self.fallback_active:

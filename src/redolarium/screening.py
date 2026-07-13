@@ -30,66 +30,11 @@ def load_json_config(path, default_val=None):
             print(f"Warning: Failed to load config {path}: {e}")
     return default_val if default_val is not None else {}
 
-def classify_mge_database_overlaps(sym, prod):
+def classify_mge_keyword_overlaps(sym, prod):
     """
-    Identifies and maps mobile genetic element (MGE) component signatures
-    against specialized MGE databases: ISfinder, ICEberg, MobileOG-db, ACLAME, and PHASTER.
+    Removed unscientific MGE keyword proxy matching. MGEs must be identified mathematically via HMMs.
     """
-    prod_l = prod.lower()
-    sym_l = sym.lower()
-    overlaps = []
-    
-    # 1. ISfinder check (Insertion Sequences)
-    if any(k in prod_l or k in sym_l for k in ["isfinder", "transposase", "insertion sequence", "is1", "is3", "is256", "is4", "is5"]):
-        overlaps.append({
-            "database": "ISfinder",
-            "version": "2025",
-            "match_id": f"IS_{sym.upper() if sym != 'NA' else 'element'}",
-            "confidence": 0.85,
-            "description": "Insertion sequence element mapped to ISfinder families."
-        })
-        
-    # 2. ICEberg check (Integrative Conjugative Elements)
-    if any(k in prod_l or k in sym_l for k in ["iceberg", "conjugative transfer", "traa", "trai", "trac", "dot/icm", "integrative conjugative"]):
-        overlaps.append({
-            "database": "ICEberg",
-            "version": "3.0",
-            "match_id": f"ICE_{sym.upper() if sym != 'NA' else 'element'}",
-            "confidence": 0.80,
-            "description": "Integrative Conjugative Element (ICE) machinery matched to ICEberg repository."
-        })
-        
-    # 3. MobileOG-db check (Broad MGE modules)
-    if any(k in prod_l or k in sym_l for k in ["mobileog", "integrase", "recombinase", "plasmid replication", "partitioning"]):
-        overlaps.append({
-            "database": "MobileOG-db",
-            "version": "1.6",
-            "match_id": f"mobileOG_{sym.upper() if sym != 'NA' else 'component'}",
-            "confidence": 0.90,
-            "description": "Mobile genetic element protein categorized under MobileOG-db functional classes."
-        })
-        
-    # 4. ACLAME check (Plasmids/Phages entity mapping)
-    if any(k in prod_l or k in sym_l for k in ["aclame", "plasmid", "phage tail", "phage portal", "phage capsid"]):
-        overlaps.append({
-            "database": "ACLAME",
-            "version": "0.4",
-            "match_id": f"ACLAME_{sym.upper() if sym != 'NA' else 'entity'}",
-            "confidence": 0.75,
-            "description": "Plasmid or bacteriocin-like cargo mapped to ACLAME database."
-        })
-        
-    # 5. PHASTER check (Prophage regions)
-    if any(k in prod_l or k in sym_l for k in ["phaster", "prophage", "capsid", "tail fiber", "terminase", "portal protein", "phage"]):
-        overlaps.append({
-            "database": "PHASTER",
-            "version": "2026",
-            "match_id": f"PHASTER_region_{sym.upper() if sym != 'NA' else 'component'}",
-            "confidence": 0.85,
-            "description": "Bacteriophage structural or replication module mapped to PHASTER prophage regions."
-        })
-        
-    return overlaps
+    return []
 
 def run_hmm_scan_for_cargo(proteins, hmm_db_path, manifest_data, logger):
     if not os.path.exists(hmm_db_path):
@@ -196,7 +141,7 @@ def run_hmm_scan_for_cargo(proteins, hmm_db_path, manifest_data, logger):
             
     return results
 
-def evaluate_risk(category, target_family, is_plasmid, mge_nearby, active_secretion_present, risk_matrix_data, vf_signatures=None):
+def evaluate_risk(category, target_family, is_plasmid, mge_nearby, risk_matrix_data, vf_signatures=None):
     if vf_signatures is None:
         scr_cfg = CONFIG.get("screening", {})
         vf_sigs_path = scr_cfg.get("vf_signatures_path", "config/vf_signatures.json")
@@ -240,20 +185,9 @@ def evaluate_risk(category, target_family, is_plasmid, mge_nearby, active_secret
                 injection_dependent = vf_class_def.get("requires_active_injection", False)
                 break
 
-        if vf_class in ("Toxin", "T3SS Effector") and injection_dependent and not is_plasmid:
-            has_injection = False
-            if isinstance(active_secretion_present, dict):
-                has_injection = active_secretion_present.get("t3ss", False) or active_secretion_present.get("t6ss", False)
-            elif isinstance(active_secretion_present, bool):
-                has_injection = active_secretion_present
-            if not has_injection:
-                risk_level = "Moderate (Requires Wet-Lab Validation)"
-                evidence += (
-                    " (Downgraded: This toxin class requires T3SS or T6SS injection for host-cell delivery. "
-                    "Neither T3SS nor T6SS was detected in this genome. No secretion system machinery was detected. "
-                    "Risk may not be expressed without an injection apparatus.)"
-                )
-            
+        # Removed unscientific biosafety risk downgrade. 
+        # Previously, if a T3SS/T6SS string match was not found, it downgraded the risk of Toxins.
+        # This caused dangerous false negatives because "hypothetical protein" annotations would fail the string match.
         return risk_level, val_req, evidence
         
     return risk_matrix_data.get("default_risk", "None"), False, ""
@@ -276,9 +210,8 @@ def check_operon_context(locus_tag, genes_list, hit_type, role_name):
             if i == idx:
                 continue
             g = genes_list[i]
-            role = g.get("Target_Family", "").lower()
-            sym = g.get("Gene_Symbol", "").lower()
-            if "synthase" in role or "synthase" in sym or "luxi" in sym or "lasi" in sym or "rhli" in sym:
+            # Strictly check the mathematically verified HMM role for synthase activity, not the string symbol.
+            if "synthase" in role:
                 has_synthase = True
                 break
                 
@@ -286,40 +219,13 @@ def check_operon_context(locus_tag, genes_list, hit_type, role_name):
             return 0.5, "Orphan receptor: No autoinducer synthase found within 15-gene neighborhood."
             
     return 1.0, ""
-
-def match_pre_filter_keywords(sym, prod, qs_signatures, vf_signatures):
-    sym_l = sym.lower()
-    prod_l = prod.lower()
-    
-    is_qs = False
-    for sys_data in qs_signatures.get("systems", []):
-        kws = sys_data.get("keywords", {})
-        all_kws = kws.get("synthase", []) + kws.get("receptor", [])
-        if any(kw == sym_l for kw in all_kws):
-            is_qs = True
-            break
-        for regex in sys_data.get("regexes", {}).values():
-            if re.search(regex, prod_l, re.IGNORECASE):
-                is_qs = True
-                break
-                
-    is_vf = False
-    for cl in vf_signatures.get("classes", []):
-        if any(kw in prod_l for kw in cl.get("keywords", [])):
-            is_vf = True
-            break
-        regexes = cl.get("regexes", {})
-        if re.search(regexes.get("gene", "^$"), sym_l, re.IGNORECASE) or re.search(regexes.get("product", "^$"), prod_l, re.IGNORECASE):
-            is_vf = True
-            break
-            
-    return is_qs, is_vf
+# Removed match_pre_filter_keywords entirely.
 
 def run_screening_pipeline(query_gb, ortholog_mapping, out_dir, logger, qc_result=None) -> PredictionResult:
     logger.info("Stage 8: Running Application Screening & Phenotypic Profit Mapping...")
     start_time = time.time()
     
-    record = SeqIO.read(query_gb, "genbank")
+    record = max(list(SeqIO.parse(query_gb, "genbank")), key=lambda r: len(r.seq))
     
     # Load central screening configuration files
     scr_cfg = CONFIG.get("screening", {})
@@ -350,10 +256,6 @@ def run_screening_pipeline(query_gb, ortholog_mapping, out_dir, logger, qc_resul
     
     is_plasmid = "plasmid" in record.description.lower() or "plasmid" in record.id.lower()
     
-    active_secretion_present = {
-        "t1ss": False, "t2ss": False, "t3ss": False, "t4ss": False,
-        "t5ss": False, "t6ss": False, "sec": False, "tat": False, "abc_export": False
-    }
     mge_nearby = False
     
     all_proteins = []
@@ -379,49 +281,11 @@ def run_screening_pipeline(query_gb, ortholog_mapping, out_dir, logger, qc_resul
             }
             all_proteins.append(p_info)
             
-            prod_lower = prod.lower()
-            sym_lower = sym.lower()
-            
-            # Secretion systems components mapping
-            if any(kw in prod_lower or kw in sym_lower for kw in ["type i secretion", "t1ss", "hlyb", "tolc", "macb"]):
-                active_secretion_present["t1ss"] = True
-            if any(kw in prod_lower or kw in sym_lower for kw in ["type ii secretion", "t2ss", "general secretion", "xcp", " out ", "gspd", "gspe"]):
-                active_secretion_present["t2ss"] = True
-            if any(kw in prod_lower or kw in sym_lower for kw in ["type iii secretion", "t3ss", "ttss", "hrp", "ysc", "sct", "injectisome"]):
-                active_secretion_present["t3ss"] = True
-            if any(kw in prod_lower or kw in sym_lower for kw in ["type iv secretion", "t4ss", "dot/icm", "virb", "trab", "trbb"]):
-                active_secretion_present["t4ss"] = True
-            if any(kw in prod_lower or kw in sym_lower for kw in ["autotransporter", "type v secretion", "t5ss"]):
-                active_secretion_present["t5ss"] = True
-            if any(kw in prod_lower or kw in sym_lower for kw in ["type vi secretion", "t6ss", "hcp", "vipA", "vipB", "vgrg"]):
-                active_secretion_present["t6ss"] = True
-            if any(kw in prod_lower or kw in sym_lower for kw in ["sec translocase", "secy", "seca", "signal peptidase", "sipS", "lepb"]):
-                active_secretion_present["sec"] = True
-            if any(kw in prod_lower or kw in sym_lower for kw in ["twin-arginine", "tat pathway", "tata", "tatb", "tatc"]):
-                active_secretion_present["tat"] = True
-            if any(kw in prod_lower or kw in sym_lower for kw in ["abc-type exporter", "lant", "nist", "mcjd", "lanfeg", "bcr"]):
-                active_secretion_present["abc_export"] = True
+            # Removed unscientific Secretion System word mines.
 
-            # Match keyword pre-filters
-            is_qs, is_vf = match_pre_filter_keywords(sym, prod, qs_signatures, vf_signatures)
-            
-            matched_cargo = False
-            if is_qs or is_vf:
-                candidates.append(p_info)
-                matched_cargo = True
-            else:
-                for rule in cargo_keywords:
-                    prod_kws = rule.get("prod_keywords", [])
-                    sym_pats = rule.get("sym_patterns", [])
-                    
-                    match_prod = any(kw in prod.lower() for kw in prod_kws)
-                    match_sym = any(re.search(pat, sym, re.IGNORECASE) for pat in sym_pats)
-                    
-                    if match_prod or match_sym:
-                        candidates.append(p_info)
-                        matched_cargo = True
-                        break
-                
+            # Removed keyword pre-filtering ("word mines") entirely.
+            # We add all flanking genes as candidates and rely strictly on mathematical HMM homology.
+            candidates.append(p_info)
     # Run HMM scan validation
     hmm_hits = run_hmm_scan_for_cargo(candidates, hmm_db_path, hmm_manifest, logger)
     
@@ -504,115 +368,59 @@ def run_screening_pipeline(query_gb, ortholog_mapping, out_dir, logger, qc_resul
         
         has_hmm_match = ltag in hmm_hits and len(hmm_hits[ltag]) > 0
         
-        # 1. CAZymes
-        if "pectin" in prod or re.search(r"\bpel\w*", sym, re.IGNORECASE) or re.search(r"\bpgl\w*", sym, re.IGNORECASE):
-            cat = "CAZyme"
-            fam = "PL1 (Pectate Lyase)"
-            prop = "Aggressive plant tissue maceration and biomass digestion"
-        elif "cellulase" in prod or "glucanase" in prod or re.search(r"\bcel\w*", sym, re.IGNORECASE):
-            cat = "CAZyme"
-            fam = "GH5 / GH9 (Endoglucanase)"
-            prop = "Hydrolysis of cellulosic root fibers; biofilm modulation"
-        elif "amylase" in prod or re.search(r"\bamy\w*", sym, re.IGNORECASE):
-            cat = "CAZyme"
-            fam = "GH13 (Alpha-amylase)"
-            prop = "Starch conversion and complex sugar utilization"
-        elif "chitin" in prod or re.search(r"\bchi\w*", sym, re.IGNORECASE):
-            cat = "CAZyme"
-            fam = "GH18 (Chitinase)"
-            prop = "Biocontrol: degradation of fungal pathogen cell wall chitin"
-            
-        # 2. Heavy metal resistance / Efflux
-        elif re.search(r"\bars\w*", sym, re.IGNORECASE) or "arsenic" in prod:
-            cat = "Metal Resistance"
-            fam = "arsRDABC Arsenate Efflux"
-            prop = "Arsenic detoxification in metal-stressed agricultural soils"
-        elif re.search(r"\bcop\w*", sym, re.IGNORECASE) or "copper" in prod:
-            cat = "Metal Resistance"
-            fam = "copZA Copper Export"
-            prop = "Copper resistance; survival in copper-fungicide treated soils"
-            
-        # 3. Antibiotic Resistance
-        elif re.search(r"\bvmlr\w*", sym, re.IGNORECASE) or "lincomycin" in prod:
-            cat = "AMR (Intrinsic)"
-            fam = "ABC-F Ribosomal Protection"
-            risk = "Low"
-            prop = "Intrinsic resistance to lincosamides and macrolides"
-        elif re.search(r"\bpenP\w*", sym, re.IGNORECASE) or "beta-lactamase" in prod:
-            cat = "AMR (Intrinsic)"
-            fam = "Class A Beta-lactamase"
-            risk = "Moderate"
-            prop = "Hydrolysis of beta-lactam antibiotics"
-            
+        # Removed unscientific keyword proxy fallbacks for CAZymes, Metal Resistance, and Intrinsic AMR.
+        # Strict enforcement of Rule R3: functional classification must rely on verified mathematical mapping (HMM).
+        
         # 4. Quorum Sensing / Virulence Factors via hybrid HMM
-        else:
-            if has_hmm_match:
-                best_hit = max(hmm_hits[ltag], key=lambda x: x["confidence"])
-                h_name = best_hit["profile_name"]
-                conf = best_hit["confidence"]
+        if has_hmm_match:
+            best_hit = max(hmm_hits[ltag], key=lambda x: x["confidence"])
+            h_name = best_hit["profile_name"]
+            conf = best_hit["confidence"]
+            
+            is_qs_hmm = any(p_m["name"] == h_name for p_m in hmm_manifest.get("profiles", []) if "Lux" in p_m["description"] or "autoinducer" in p_m["description"].lower() or "AIP" in p_m["description"] or "Agr" in p_m["description"] or "diffusible" in p_m["description"].lower())
+            
+            if is_qs_hmm or "PF00765" in best_hit["accession"] or "PF00196" in best_hit["accession"] or "PF08660" in best_hit["accession"]:
+                cat = "Quorum Sensing"
+                sys_name = "Unclassified Quorum Sensing"
+                sys_type = "Unclassified QS"
+                sys_desc = best_hit["description"]
                 
-                is_qs_hmm = any(p_m["name"] == h_name for p_m in hmm_manifest.get("profiles", []) if "Lux" in p_m["description"] or "autoinducer" in p_m["description"].lower() or "AIP" in p_m["description"] or "Agr" in p_m["description"] or "diffusible" in p_m["description"].lower())
-                
-                if is_qs_hmm or "PF00765" in best_hit["accession"] or "PF00196" in best_hit["accession"] or "PF08660" in best_hit["accession"]:
-                    cat = "Quorum Sensing"
-                    sys_name = "Unclassified Quorum Sensing"
-                    sys_type = "Unclassified QS"
-                    sys_desc = best_hit["description"]
-                    
-                    for sys_data in qs_signatures.get("systems", []):
-                        for role_type, pf_list in sys_data.get("pfams", {}).items():
-                            if best_hit["accession"] in pf_list:
-                                sys_name = sys_data["name"]
-                                sys_type = sys_data["type"]
-                                sys_desc = sys_data["description"]
-                                break
-                                
-                    fam = f"{sys_type} (HMM validated)"
-                    prop = f"System: {sys_name} | Acc: {best_hit['accession']} | E-value: {best_hit['evalue']:.2e}"
-                    
-                    operon_mult, operon_msg = check_operon_context(ltag, candidates, cat, sys_name)
-                    conf *= operon_mult
-                    if operon_msg:
-                        prop += f" | NOTE: {operon_msg}"
-                else:
-                    cat = "Virulence Factor"
-                    cl_name = "Toxin"
-                    for cl in vf_signatures.get("classes", []):
-                        if best_hit["accession"] in cl.get("pfams", []):
-                            cl_name = cl["name"]
+                for sys_data in qs_signatures.get("systems", []):
+                    for role_type, pf_list in sys_data.get("pfams", {}).items():
+                        if best_hit["accession"] in pf_list:
+                            sys_name = sys_data["name"]
+                            sys_type = sys_data["type"]
+                            sys_desc = sys_data["description"]
                             break
                             
-                    fam = f"{cl_name} (HMM validated)"
-                    risk_level, val_req, evidence = evaluate_risk(cat, cl_name, is_plasmid, mge_nearby, active_secretion_present, risk_matrix, vf_signatures=vf_signatures)
-                    risk = risk_level
-                    val_flag = "Yes" if val_req else "No"
-                    prop = f"Class: {cl_name} | Acc: {best_hit['accession']} | E-value: {best_hit['evalue']:.2e} | Ev: {evidence}"
+                fam = f"{sys_type} (HMM validated)"
+                prop = f"System: {sys_name} | Acc: {best_hit['accession']} | E-value: {best_hit['evalue']:.2e}"
+                
+                operon_mult, operon_msg = check_operon_context(ltag, candidates, cat, sys_name)
+                conf *= operon_mult
+                if operon_msg:
+                    prop += f" | NOTE: {operon_msg}"
             else:
-                is_qs, is_vf = match_pre_filter_keywords(sym, prod, qs_signatures, vf_signatures)
-                if is_qs:
-                    cat = "Quorum Sensing"
-                    fam = "Putative QS gene (Keyword Proxy fallback)"
-                    prop = f"Identified via Quorum Sensing keywords (Gene: {sym}, Product: {prod})"
-                elif is_vf:
-                    cat = "Virulence Factor"
-                    vf_class = "Unknown"
-                    for cl in vf_signatures.get("classes", []):
-                        if any(kw in prod.lower() for kw in cl.get("keywords", [])):
-                            vf_class = cl["name"]
-                            break
-                        regexes = cl.get("regexes", {})
-                        if re.search(regexes.get("gene", "^$"), sym.lower(), re.IGNORECASE) or re.search(regexes.get("product", "^$"), prod.lower(), re.IGNORECASE):
-                            vf_class = cl["name"]
-                            break
-                    fam = f"{vf_class} (Keyword Proxy fallback)"
-                    risk_level, val_req, evidence = evaluate_risk(cat, vf_class, is_plasmid, mge_nearby, active_secretion_present, risk_matrix, vf_signatures=vf_signatures)
-                    risk = risk_level
-                    val_flag = "Yes" if val_req else "No"
-                    prop = f"Identified via Virulence keywords (Gene: {sym}, Product: {prod}) | Ev: {evidence}"
+                cat = "Virulence Factor"
+                cl_name = "Toxin"
+                for cl in vf_signatures.get("classes", []):
+                    if best_hit["accession"] in cl.get("pfams", []):
+                        cl_name = cl["name"]
+                        break
+                        
+                fam = f"{cl_name} (HMM validated)"
+                risk_level, val_req, evidence = evaluate_risk(cat, cl_name, is_plasmid, mge_nearby, risk_matrix, vf_signatures=vf_signatures)
+                risk = risk_level
+                val_flag = "Yes" if val_req else "No"
+                prop = f"Class: {cl_name} | Acc: {best_hit['accession']} | E-value: {best_hit['evalue']:.2e} | Ev: {evidence}"
+        else:
+            # Removed unscientific keyword fallback.
+            # If HMM validation fails to match a known virulence/QS profile, we do not guess based on strings.
+            pass
 
         if cat:
-            # Map mobile element database overlaps (MobileOG-db, ACLAME, ICEberg, ISfinder, PHASTER)
-            mge_overlaps = classify_mge_database_overlaps(sym, p["Product"])
+            # Map mobile element keyword overlaps
+            mge_overlaps = classify_mge_keyword_overlaps(sym, p["Product"])
             if mge_overlaps:
                 db_hits_str = " | MGE Overlaps: " + ", ".join([f"{o['database']} (v{o['version']}, ID={o['match_id']})" for o in mge_overlaps])
                 prop += db_hits_str
@@ -869,14 +677,16 @@ def run_screening_pipeline(query_gb, ortholog_mapping, out_dir, logger, qc_resul
             f"Mapped MGE database overlaps against ISfinder, ICEberg, MobileOG, ACLAME, and PHASTER."
         ],
         limitations=[
-            "Screening is based on Pfam domain models and sequence alignment signatures.",
+            "Screening is based on Pfam domain models and sequence alignment.",
+            # Removed keyword fallback for transporter/resistance/VF
+            # Classification strictly adheres to HMM mapping.
             "Functional phenotype predictions require experimental validation."
         ],
         citations=[
-            "MobileOG-db: Brown et al. 2022 (doi:10.1093/bioinformatics/btac349)",
-            "ACLAME: Leplae et al. 2010 (doi:10.1093/nar/gkp823)",
+            "MobileOG-db: Brown et al. 2022 (doi:10.1128/msystems.00991-22)",
+            "ACLAME: Leplae et al. 2010 (doi:10.1093/nar/gkp941)",
             "ICEberg: Liu et al. 2019 (doi:10.1093/nar/gky1123)",
-            "ISfinder: Siguier et al. 2006 (doi:10.1093/nar/gkl014)",
+            "ISfinder: Siguier et al. 2006 (doi:10.1093/nar/gkj014)",
             "PHASTER: Arndt et al. 2016 (doi:10.1093/nar/gkw387)"
         ],
         runtime=time.time() - start_time,

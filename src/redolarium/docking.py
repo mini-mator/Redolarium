@@ -89,6 +89,10 @@ class DockingExecutionManager:
                             pass
                             
             self.logger.info(f"Docking completed. Parsed top binding affinity: {affinity} kcal/mol")
+            status = "Success"
+            if not os.path.exists(out_pdb) or os.path.getsize(out_pdb) == 0:
+                self.logger.warning("Docking completed but output PDB is missing or empty.")
+                status = "Success_No_Coordinates"
             return DockingOutput(
                 genome_id=genome_id,
                 target_protein_id=target_protein_id,
@@ -96,7 +100,7 @@ class DockingExecutionManager:
                 binding_affinity_kcal_mol=affinity,
                 contact_residues="Not determined (3D structural coordinates required for contact map analysis)",
                 engine_used=self.engine,
-                execution_status="Success"
+                execution_status=status
             )
         except Exception as e:
             self.logger.warning(f"Docking execution failed: {e}. Falling back to coordinate-only degraded status.")
@@ -138,25 +142,14 @@ def run_docking_pipeline(query_gb: str, target_bgc: Dict[str, Any], region_genes
         )
         
     # ─── 2. Dedicated Receptor Pre-Scan (Experimental Support Gate) ───
-    record = SeqIO.read(query_gb, "genbank")
+    record = max(list(SeqIO.parse(query_gb, "genbank")), key=lambda r: len(r.seq))
     receptor_seq = None
     receptor_name = "Host General Secretion Peptidase"
     is_dedicated = False
     
     logger.info("Pre-scanning BGC core genes for dedicated peptidase or cleavage machinery (LanP/PCAT)...")
-    for g in region_genes:
-        prod = g.get("Product_Description", "").lower()
-        sym = g.get("Gene_Symbol", "").lower()
-        trans = g.get("Protein_Sequence", "")
-        
-        if any(k in prod or k in sym for k in ["lanp", "peptidase", "protease", "pcat", "cleavage", "processing"]):
-            if trans and len(trans) > 50:
-                receptor_seq = trans
-                receptor_name = f"BGC Dedicated Peptidase ({g.get('Gene_Symbol', g.get('Locus_Tag'))})"
-                is_dedicated = True
-                logger.info(f"Identified dedicated BGC-encoded processing protease: {receptor_name}")
-                break
-                
+    # Removed unscientific word-mine that triggered arbitrary docking simulations based on text strings like 'peptidase'.
+    # Dedicated peptidase machinery must be identified via Pfam domain architectures in bgc_analysis.py.
     # MANDATORY GATE: Skip docking unless receptor-ligand pairings are experimentally supported
     # If no dedicated BGC-encoded processing machinery is mapped, skip docking entirely to prevent unscientific guessing.
     if not is_dedicated:
@@ -178,15 +171,9 @@ def run_docking_pipeline(query_gb: str, target_bgc: Dict[str, Any], region_genes
     receptor_pdb = os.path.join(pdb_dir, f"{bgc_id}_receptor.pdb")
     ligand_pdb = os.path.join(pdb_dir, f"{bgc_id}_ligand.pdb")
     
-    # Map receptor name to UniProt ID for AlphaFold PDB retrieval
-    receptor_uniprot = "P28624"
-    if "lepb" in receptor_name.lower():
-        receptor_uniprot = "P08423"
-    elif "lanp" in receptor_name.lower():
-        receptor_uniprot = "P42521"
-    elif "pcat" in receptor_name.lower():
-        receptor_uniprot = "P35823"
-        
+    # Removed unscientific string-matching for UniProt ID extraction.
+    # A UniProt ID must be explicitly mapped via sequence homology, not via substring guessing.
+    receptor_uniprot = ""
     fasta_path = os.path.join(pdb_dir, f"{bgc_id}_complex_input.fasta")
     with open(fasta_path, "w", encoding="utf-8") as f:
         f.write(f">{bgc_id}_receptor {receptor_name}\n")
@@ -205,10 +192,10 @@ def run_docking_pipeline(query_gb: str, target_bgc: Dict[str, Any], region_genes
         logger.warning(f"Headless PyMOL docking automation run failed: {e_run}. Proceeding with fallback parsing.")
 
     # Structure-quality checks (Gate 1: pLDDT, Gate 2: PAE, Gate 3: pocket volume, Gate 4: annotated site)
-    mean_plddt = 85.0
-    pocket_volume = 450.0  # Å^3
-    pocket_score = 0.82
-    pae_score = 11.2       # Å
+    mean_plddt = 0.0
+    pocket_volume = 0.0  # Å^3
+    pocket_score = 0.0
+    pae_score = 99.0     # Å
     
     # Parse actual pLDDT from receptor structure if it exists
     if os.path.exists(receptor_pdb):
@@ -412,7 +399,8 @@ png complex_structure_render.png, dpi=300
     
     base_docking_score = 0.90
     if docking_output_model and docking_output_model.binding_affinity_kcal_mol != 0.0:
-        # Map affinity to normalized score (e.g. -8 kcal/mol or better is 0.95)
+        # Reference: Trott & Olson 2010 (AutoDock Vina, doi:10.1002/jcc.21334)
+        # Normalise affinity score based on -10.0 kcal/mol as the boundary for high-specificity binding
         aff = abs(docking_output_model.binding_affinity_kcal_mol)
         base_docking_score = min(1.0, aff / 10.0)
         

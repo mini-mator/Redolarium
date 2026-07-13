@@ -5,7 +5,7 @@ import networkx as nx
 from collections import Counter
 from Bio import SeqIO
 
-# Standard host amino acid synthesis details (empirical ATP costs from Akashi & Gojobori 2002)
+# Standard host amino acid synthesis details (empirical ATP costs from Akashi & Gojobori 2002, doi:10.1073/pnas.062526999)
 AA_METABOLIC_PATHWAY = {
     'A': {'name': 'Alanine', 'pathway': 'map00250: Alanine/glutamate metabolism', 'genes': 'alaS, alaT', 'atp_base': 11.7},
     'R': {'name': 'Arginine', 'pathway': 'map00220: Arginine biosynthesis', 'genes': 'argS, argA, argB, argC', 'atp_base': 27.3},
@@ -29,27 +29,6 @@ AA_METABOLIC_PATHWAY = {
     'V': {'name': 'Valine', 'pathway': 'map00290: Valine/leucine/isoleucine biosynthesis', 'genes': 'valS, ilvB, ilvC', 'atp_base': 23.3}
 }
 
-def get_bioactive_peptide_product(desc):
-    desc_l = desc.lower()
-    if "surfactin" in desc_l:
-        return "ELLVDLL", "Surfactin Heptapeptide Product"
-    elif "fengycin" in desc_l:
-        return "EYLDVTTEFV", "Fengycin Decapeptide Product"
-    elif "plipastatin" in desc_l:
-        return "EYLDVTTEFV", "Plipastatin Decapeptide Product"
-    elif "iturin" in desc_l:
-        return "NDNYEPV", "Iturin Heptapeptide Product"
-    elif "nisin" in desc_l:
-        return "ITSISLCTPGCKGALMGGCNMKTATCHCSIHVSK", "Nisin Lanthipeptide Product"
-    elif "subtilin" in desc_l:
-        return "WKSESLCTPGCKGALLGGCNMKTATCHCSIHVSK", "Subtilin Lanthipeptide Product"
-    elif "subtilosin" in desc_l:
-        return "NKGCATCSIGAACLVDGPIPDFIAGIMGGG", "Subtilosin Sactipeptide Product"
-    elif "bacillibactin" in desc_l:
-        return "DGT", "Bacillibactin Tripeptide Product"
-    elif "bacilysin" in desc_l:
-        return "AD", "Bacilysin Dipeptide Product"
-    return None, None
 
 def extract_bgc_product_peptide(region_genes, target_bgc=None):
     # 1. Scan region genes for structural translations (RiPPs)
@@ -60,13 +39,6 @@ def extract_bgc_product_peptide(region_genes, target_bgc=None):
             return seq, "precursor_peptide"
             
     # 2. Try mapping compound name from target_bgc description/metadata (NRPS / others)
-    if target_bgc:
-        desc = target_bgc.get("BGC_Type", "")
-        desc_str = str(desc)
-        seq, label = get_bioactive_peptide_product(desc_str)
-        if seq:
-            return seq, "bioactive_peptide"
-    
     # 3. If none found, concatenate core BGC enzyme translations as stoichiometric target sequence
     concat_seq = ""
     for g in region_genes:
@@ -92,7 +64,8 @@ def calculate_housekeeping_baseline(record, logger, out_dir, bgc_id):
             trans = feat.qualifiers.get("translation", [""])[0]
             ltag = feat.qualifiers.get("locus_tag", [""])[0]
             
-            is_hk = any(m == g_sym for m in housekeeping_markers) or any(m in prod for m in ["ribosomal protein s", "ribosomal protein l", "rna polymerase subunit beta", "dna gyrase subunit"])
+            # Strictly enforce exact gene symbol match for housekeeping genes, no word-mine fallbacks on product strings
+            is_hk = any(m == g_sym for m in housekeeping_markers)
             
             if is_hk and trans:
                 atp_cost = 0.0
@@ -131,7 +104,7 @@ def run_linkage_pipeline(query_gb, region_genes, target_bgc, out_dir, logger):
         return []
         
     # Calculate thermodynamic baseline for housekeeping genes
-    record = SeqIO.read(query_gb, "genbank")
+    record = max(list(SeqIO.parse(query_gb, "genbank")), key=lambda r: len(r.seq))
     calculate_housekeeping_baseline(record, logger, out_dir, bgc_id)
     
     # Calculate amino acid counts of the BGC peptide
@@ -252,7 +225,7 @@ def run_linkage_pipeline(query_gb, region_genes, target_bgc, out_dir, logger):
             
     # If no specific KEGG pathways are mapped for this BGC, fall back to amino acid precursors
     if not found_pathways:
-        for aa_row in active_aas:
+        for aa_row in stoichiometry_rows:
             found_pathways.add(f"{aa_row['Amino_Acid']}\nMetabolism")
             
     # 3. Add dynamic edges based only on found pathways

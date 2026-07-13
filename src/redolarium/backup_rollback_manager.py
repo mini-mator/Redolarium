@@ -143,7 +143,23 @@ class RedolariumBackupRollbackManager:
                     
             # Extract tarball
             with tarfile.open(archive_path, "r:gz") as tar:
-                tar.extractall(path=root_dir)
+                def is_within_directory(directory, target):
+                    abs_directory = os.path.abspath(directory)
+                    abs_target = os.path.abspath(target)
+                    prefix = os.path.commonprefix([abs_directory, abs_target])
+                    return prefix == abs_directory
+                
+                for member in tar.getmembers():
+                    member_path = os.path.join(root_dir, member.name)
+                    if not is_within_directory(root_dir, member_path):
+                        raise Exception("Attempted Path Traversal (Zip Slip) in Tar File")
+                
+                # In Python 3.12+ we can use filter='data'
+                import sys
+                if sys.version_info >= (3, 12):
+                    tar.extractall(path=root_dir, filter='data')
+                else:
+                    tar.extractall(path=root_dir)
                 
             print("Extraction finished.")
             
