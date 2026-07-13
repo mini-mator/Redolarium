@@ -491,7 +491,6 @@ def detect_all_bgcs(query_gb, logger, out_dir=None):
         return bgcs
         
     record = max(list(SeqIO.parse(query_gb, "genbank")), key=lambda r: len(r.seq))
-    kw = CONFIG["bgc_keywords"]
     
     # Extract all genome proteins de novo for HMM scanning
     genome_proteins = []

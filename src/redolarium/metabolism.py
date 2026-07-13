@@ -83,6 +83,9 @@ def get_kegg_info_version(logger=None):
 def load_or_fetch_kegg_data(filename, url, force_refresh, logger):
     meta_cfg = CONFIG.get("metabolism", {})
     cache_dir = meta_cfg.get("kegg_cache_dir", "resources/kegg_cache")
+    if not os.path.isabs(cache_dir):
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        cache_dir = os.path.join(project_root, cache_dir)
     expiry_days = meta_cfg.get("kegg_cache_expiry_days", 7)
     
     os.makedirs(cache_dir, exist_ok=True)

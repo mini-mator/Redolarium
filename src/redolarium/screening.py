@@ -229,11 +229,12 @@ def run_screening_pipeline(query_gb, ortholog_mapping, out_dir, logger, qc_resul
     
     # Load central screening configuration files
     scr_cfg = CONFIG.get("screening", {})
-    qs_sigs_path = scr_cfg.get("qs_signatures_path", "config/qs_signatures.json")
-    vf_sigs_path = scr_cfg.get("vf_signatures_path", "config/vf_signatures.json")
-    risk_matrix_path = scr_cfg.get("risk_matrix_path", "config/risk_matrix.json")
-    manifest_path = scr_cfg.get("manifest_path", "resources/manifest.json")
-    hmm_db_path = scr_cfg.get("hmm_db_path", "resources/curated_screening.hmm")
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    qs_sigs_path = os.path.join(project_root, scr_cfg.get("qs_signatures_path", "config/qs_signatures.json"))
+    vf_sigs_path = os.path.join(project_root, scr_cfg.get("vf_signatures_path", "config/vf_signatures.json"))
+    risk_matrix_path = os.path.join(project_root, scr_cfg.get("risk_matrix_path", "config/risk_matrix.json"))
+    manifest_path = os.path.join(project_root, scr_cfg.get("manifest_path", "resources/manifest.json"))
+    hmm_db_path = os.path.join(project_root, scr_cfg.get("hmm_db_path", "resources/essential_bgc.hmm"))
     
     qs_signatures = load_json_config(qs_sigs_path)
     vf_signatures = load_json_config(vf_sigs_path)
