@@ -182,22 +182,30 @@ def classify_bgc_by_domains(cluster_hits, domain_hits):
         if ltag in domain_hits:
             cluster_domains.extend(domain_hits[ltag])
             
-    # Require multi-domain architecture for PKS (KS + AT or ACP)
-    if "PF00109" in cluster_domains and ("PF00550" in cluster_domains or "PF00698" in cluster_domains):
-        return "PKS"
-    # Require multi-domain architecture for NRPS (Condensation + Adenylation)
-    elif "PF00668" in cluster_domains and "PF00501" in cluster_domains:
+    # Reference: Blin et al. 2023 (antiSMASH 7.0) / Grell et al. 2018
+    # BGC classification should map to the primary biosynthetic core domain present.
+    # We do NOT demand combinatorial architectures (e.g., KS + AT) because:
+    # 1. Type II/Type III PKS and Trans-AT systems lack these multi-domain fusions.
+    # 2. essential_bgc.hmm is a curated subset containing only primary core signatures.
+    
+    if "PF00109" in cluster_domains or "PF02801" in cluster_domains:
+        return "Polyketide"
+    elif "PF00668" in cluster_domains or "PF00501" in cluster_domains:
         return "NRPS"
     elif "PF05147" in cluster_domains or "PF04738" in cluster_domains:
         # PF05147: LanC cyclase (lanthipeptide-specific)
         # PF04738: Radical SAM sactipeptide cyclase (sactipeptide RiPP)
-        return "Lantipeptide / RiPP"
+        return "RiPP"
     elif "PF04183" in cluster_domains or "PF06283" in cluster_domains:
         return "Siderophore"
-    elif "PF06316" in cluster_domains or "PF00582" in cluster_domains:
-        return "Aromatic / Phenazine"
     elif "PF03936" in cluster_domains:
         return "Terpene"
+    elif "PF06316" in cluster_domains or "PF00582" in cluster_domains:
+        return "Aromatic / Phenazine"
+    elif "PF00196" in cluster_domains or "PF00765" in cluster_domains or "PF03006" in cluster_domains or "PF07968" in cluster_domains or "PF08660" in cluster_domains or "PF01338" in cluster_domains:
+        # Fallback for regulatory/toxin/quorum-sensing islands that form protoclusters
+        return "Other"
+        
     return None
 
 def parse_antismash_output(antismash_dir, logger, query_gb=None):
