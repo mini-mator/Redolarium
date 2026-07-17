@@ -1334,8 +1334,16 @@ def run_annotation_pipeline(query_gb, ref_gb, cores, email, out_dir, logger, no_
             except Exception as e:
                 logger.warning(f"Failed to read reference GenBank {p}: {e}")
                 
-        # Primary closest reference for synteny mapping (first one)
-        ref_gb = local_ref_gb_files[0] if local_ref_gb_files else None
+        # Primary closest reference for synteny mapping (first one valid)
+        ref_gb = None
+        for p in local_ref_gb_files:
+            try:
+                recs = list(SeqIO.parse(p, "genbank"))
+                if recs:
+                    ref_gb = p
+                    break
+            except Exception:
+                pass
                 
     df_refs = pd.DataFrame({
         "Reference_Strain": ref_strains,
@@ -1388,6 +1396,7 @@ def run_annotation_pipeline(query_gb, ref_gb, cores, email, out_dir, logger, no_
     if ref_gb:
         recs = list(SeqIO.parse(ref_gb, "genbank"))
         ref_record = max(recs, key=lambda r: len(r.seq)) if recs else None
+        ref_cds = []
         if ref_record:
             ref_cds = [f for f in ref_record.features if f.type == "CDS"]
             ref_cds.sort(key=lambda x: int(x.location.start))
