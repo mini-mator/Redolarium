@@ -33,6 +33,7 @@ jobs:
       - name: Create Temporary Directories
         run: |
           mkdir -p workspace/input
+          mkdir -p workspace/references
           mkdir -p workspace/output
           
       - name: Download Input Sequence
@@ -49,8 +50,27 @@ jobs:
             curl -s -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$QUERY_URL" -o workspace/input/query.gbk
           fi
           
+      - name: Download Reference Sequences
+        env:
+          REF_ACC: ${{ github.event.client_payload.ref_acc }}
+          EMAIL: ${{ github.event.client_payload.email }}
+        run: |
+          if [ -n "$REF_ACC" ]; then
+            echo "Downloading references from NCBI Accessions: $REF_ACC"
+            IFS=',' read -ra ADDR <<< "$REF_ACC"
+            for acc in "${ADDR[@]}"; do
+              # Trim whitespace
+              acc=$(echo "$acc" | xargs)
+              if [ -n "$acc" ]; then
+                echo "Fetching $acc"
+                python -c "import sys; sys.path.insert(0, 'src'); from redolarium.main import download_genbank_from_ncbi; download_genbank_from_ncbi('$acc', '$EMAIL', 'workspace/references')"
+              fi
+            done
+          fi
+          
       - name: Execute Redolarium Pipeline
         env:
+          REF_ACC: ${{ github.event.client_payload.ref_acc }}
           TARGET_BGC: ${{ github.event.client_payload.target_bgc }}
           RUN_BLAST: ${{ github.event.client_payload.run_blast }}
           ADV_BGC_GAP: ${{ github.event.client_payload.adv_bgc_gap }}
@@ -69,6 +89,10 @@ jobs:
           export PYTHONPATH=$(pwd)/src:$PYTHONPATH
           
           CMD="python src/redolarium/main.py --query workspace/input/query.gbk --out workspace/output"
+          
+          if [ -n "$REF_ACC" ]; then
+            CMD="$CMD --ref workspace/references"
+          fi
           
           if [ "$TARGET_BGC" = "all" ]; then
             CMD="$CMD --target-bgc all"

@@ -198,6 +198,10 @@ def trigger_github_action(state):
         query_url = upload_to_github_jobs_branch(state.query_file_path, state.job_id, token)
         if not query_url:
             return False, "Failed to upload query sequence to GitHub"
+            
+    ref_acc = ""
+    if getattr(state, 'ref_type', "") == "NCBI Accession ID":
+        ref_acc = state.ref_accession
         
     repo = "mini-mator/Redolarium"
     url = f"https://api.github.com/repos/{repo}/dispatches"
@@ -214,6 +218,7 @@ def trigger_github_action(state):
             "job_id": state.job_id,
             "query_url": query_url,
             "query_acc": query_acc,
+            "ref_acc": ref_acc,
             "email": state.email_id,
             "target_bgc": "all" if state.analysis_bgc else "none",
             "run_blast": "true" if state.analysis_query_vs_ref else "false",
