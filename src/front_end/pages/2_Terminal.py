@@ -139,11 +139,12 @@ if st.session_state.local_mode:
                 st.switch_page("pages/3_Results.py")
 else:
     # 3. Cloud Mode Polling
-    st.markdown("### Cloud Execution in Progress ")
+    st.markdown("### Cloud Execution in Progress")
     st.markdown("Your job has been dispatched to GitHub Actions. This page will automatically poll for results.")
     st.markdown("**Please keep this window open.** Depending on your genome size, antiSMASH can take anywhere from 10 minutes to 3 hours.")
     
     status_placeholder = st.empty()
+    steps_placeholder = st.empty()
     
     # Check for completion via the jobs branch artifact
     import requests
@@ -155,7 +156,7 @@ else:
             r = requests.get(url)
             if r.status_code == 200:
                 result_url = r.text.strip()
-                st.success(f"Job Finished! Found results at {result_url}")
+                status_placeholder.success(f"Job Finished! Found results at {result_url}")
                 
                 # Automatically download and extract
                 st.info("Downloading and extracting results package...")
@@ -167,7 +168,58 @@ else:
                 else:
                     st.error("Failed to extract results package.")
             else:
-                status_placeholder.info(f"Job {job_id} is running... (Status: 404, waiting for completion marker)")
+                # If not finished, query GitHub API to get real-time step progress!
+                status_placeholder.info(f"Job {job_id} is running... waiting for completion marker.")
+                
+                try:
+                    import toml
+                    token = ""
+                    secrets_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".streamlit", "secrets.toml")
+                    if os.path.exists(secrets_path):
+                        with open(secrets_path, "r") as f:
+                            token = toml.load(f).get("GITHUB_TOKEN", "")
+                    
+                    if token:
+                        headers = {"Accept": "application/vnd.github.v3+json", "Authorization": f"Bearer {token}"}
+                        # Get latest run
+                        runs_req = requests.get("https://api.github.com/repos/mini-mator/Redolarium/actions/runs?per_page=1", headers=headers)
+                        if runs_req.status_code == 200:
+                            runs_data = runs_req.json()
+                            if runs_data.get("workflow_runs"):
+                                latest_run_id = runs_data["workflow_runs"][0]["id"]
+                                
+                                # Get jobs for this run
+                                jobs_req = requests.get(f"https://api.github.com/repos/mini-mator/Redolarium/actions/runs/{latest_run_id}/jobs", headers=headers)
+                                if jobs_req.status_code == 200:
+                                    jobs_data = jobs_req.json()
+                                    if jobs_data.get("jobs"):
+                                        steps = jobs_data["jobs"][0].get("steps", [])
+                                        
+                                        # Render steps
+                                        steps_md = "#### Pipeline Stages:\\n"
+                                        for step in steps:
+                                            name = step.get("name", "Unknown Step")
+                                            # Skip GitHub internal setup steps to keep UI clean
+                                            if name in ["Set up job", "Complete job", "Post Checkout Repository"]:
+                                                continue
+                                                
+                                            status = step.get("status")
+                                            conclusion = step.get("conclusion")
+                                            
+                                            if status == "completed":
+                                                if conclusion == "success":
+                                                    steps_md += f"- [x] {name}\\n"
+                                                else:
+                                                    steps_md += f"- [ ] **FAILED**: {name}\\n"
+                                            elif status == "in_progress":
+                                                steps_md += f"- [ ] **(In Progress...)** {name}\\n"
+                                            else:
+                                                steps_md += f"- [ ] {name}\\n"
+                                        
+                                        steps_placeholder.markdown(steps_md)
+                except Exception as e:
+                    pass # Silently fallback if API polling fails
+                
                 time.sleep(10)
                 st.rerun()
         except Exception as e:
