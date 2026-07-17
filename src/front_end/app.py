@@ -8,7 +8,7 @@ if _src_dir not in sys.path:
     sys.path.insert(0, _src_dir)
 
 from front_end.utils.state_manager import init_session_state
-from front_end.utils.validators import validate_ncbi_accession, parse_comma_separated_accessions
+from front_end.utils.validators import validate_ncbi_accession, parse_comma_separated_accessions, fetch_ncbi_summary_name
 
 st.set_page_config(
     page_title="Redolarium | Input Configuration",
@@ -95,7 +95,12 @@ elif query_type == "NCBI Accession ID":
     query_acc = st.text_input("Enter NCBI Accession ID (e.g., CP031675.1)", value=st.session_state.query_accession)
     if query_acc:
         if validate_ncbi_accession(query_acc):
-            st.success("Valid NCBI Accession Format.")
+            with st.spinner("Looking up organism..."):
+                title = fetch_ncbi_summary_name(query_acc)
+            if title:
+                st.success(f"Valid Accession Found: **{title}**")
+            else:
+                st.success("Valid NCBI Accession Format.")
             st.session_state.query_accession = query_acc
         else:
             st.error("Invalid NCBI Accession format. Please check and try again.")
@@ -117,7 +122,12 @@ elif ref_type == "NCBI Accession ID":
         if invalid:
             st.warning(f"The following IDs appear invalid: {', '.join(invalid)}")
         if valid:
-            st.success(f"Valid IDs ready for use: {', '.join(valid)}")
+            titles = []
+            with st.spinner("Looking up references..."):
+                for v in valid:
+                    t = fetch_ncbi_summary_name(v)
+                    titles.append(f"{v} ({t})" if t else v)
+            st.success(f"Valid IDs ready for use:\n- " + "\n- ".join(titles))
             st.session_state.ref_accession = ",".join(valid)
 elif ref_type == "BLAST":
     st.info("BLAST mode activated. No explicit reference file required; the pipeline will perform remote homolog searches.")

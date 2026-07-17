@@ -114,7 +114,7 @@ if num_bgcs > 0:
         
         with tab1:
             st.subheader(f"{selected_bgc} - Dual-Scale Synteny Map")
-            synteny_img = os.path.join(bgc_target_dir, "hgt_evolution", f"{selected_bgc}_hgt_synteny.png")
+            synteny_img = os.path.join(bgc_target_dir, "hgt_evolution", f"{selected_bgc}_bgc_synteny_blocks.png")
             if os.path.exists(synteny_img):
                 st.image(synteny_img, use_column_width=True)
             else:
@@ -130,7 +130,7 @@ if num_bgcs > 0:
                 
         with tab3:
             st.subheader(f"{selected_bgc} - Genome-Aware Cues")
-            cues_csv = os.path.join(bgc_target_dir, "regulatory_networks", f"{selected_bgc}_environmental_cues.csv")
+            cues_csv = os.path.join(bgc_target_dir, "bgc_motifs", f"{selected_bgc}_promoter_motifs.csv")
             if os.path.exists(cues_csv):
                 import pandas as pd
                 st.dataframe(pd.read_csv(cues_csv))

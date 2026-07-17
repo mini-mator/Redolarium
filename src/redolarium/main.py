@@ -168,6 +168,20 @@ def main():
     parser.add_argument("--force-kegg-refresh", action="store_true", help="Force refresh of cached KEGG pathway, EC, and KO databases")
     parser.add_argument("--use-snakemake", action="store_true", help="Trigger execution using Snakemake API")
     
+    # Advanced Sensitivity Parameters
+    parser.add_argument("--adv-bgc-gap", type=int, help="BGC Gene Clustering Gap (bp)")
+    parser.add_argument("--adv-bgc-flank", type=int, help="BGC Flanking Window Size (bp)")
+    parser.add_argument("--adv-hgt-zscore", type=float, help="HGT GC Z-Score Cutoff")
+    parser.add_argument("--adv-hgt-tnf-window", type=int, help="HGT TNF Sliding Window (bp)")
+    parser.add_argument("--adv-promoter-window", type=int, help="Promoter Search Window Upstream (bp)")
+    parser.add_argument("--adv-homology-identity", type=float, help="Homology Min Identity (%)")
+    parser.add_argument("--adv-homology-evalue", type=float, help="Homology Max E-value")
+    parser.add_argument("--adv-clock-multiplier", type=float, help="Speciation Clock Multiplier")
+    parser.add_argument("--adv-metabolic-mode", choices=["fast", "deep"], help="Metabolic Pipeline Mode")
+    parser.add_argument("--adv-cargo-identity", type=float, help="Cargo Identity Weight")
+    parser.add_argument("--adv-cargo-coverage", type=float, help="Cargo Coverage Weight")
+    parser.add_argument("--adv-cargo-bitscore", type=float, help="Cargo Bitscore Weight")
+    
     args = parser.parse_args()
     
     if args.query:
@@ -247,6 +261,33 @@ def main():
     for sub in subdirs:
         os.makedirs(os.path.join(out_dir, sub), exist_ok=True)
         
+    # --- Override CONFIG with advanced parameters ---
+    from redolarium.config import CONFIG
+    if args.adv_bgc_gap is not None:
+        CONFIG["bgc_clustering_gap_bp"] = args.adv_bgc_gap
+    if args.adv_bgc_flank is not None:
+        CONFIG["bgc_flank_window"] = args.adv_bgc_flank
+    if args.adv_hgt_zscore is not None:
+        CONFIG["hgt"]["gc_zscore_threshold"] = args.adv_hgt_zscore
+    if args.adv_hgt_tnf_window is not None:
+        CONFIG["hgt"]["tnf_window"] = args.adv_hgt_tnf_window
+    if args.adv_promoter_window is not None:
+        CONFIG["promoter_search_upstream"] = args.adv_promoter_window
+    if args.adv_homology_identity is not None:
+        CONFIG["screening"]["thresholds"]["min_identity"] = args.adv_homology_identity
+    if args.adv_homology_evalue is not None:
+        CONFIG["screening"]["thresholds"]["max_evalue"] = args.adv_homology_evalue
+    if args.adv_clock_multiplier is not None:
+        CONFIG["speciation_clock_multiplier"] = args.adv_clock_multiplier
+    if args.adv_metabolic_mode is not None:
+        CONFIG["metabolism"]["mode"] = args.adv_metabolic_mode
+    if args.adv_cargo_identity is not None:
+        CONFIG["screening"]["weights"]["identity"] = args.adv_cargo_identity
+    if args.adv_cargo_coverage is not None:
+        CONFIG["screening"]["weights"]["coverage"] = args.adv_cargo_coverage
+    if args.adv_cargo_bitscore is not None:
+        CONFIG["screening"]["weights"]["bitscore"] = args.adv_cargo_bitscore
+
     logger = setup_logging(out_dir)
     logger.info("Initializing Redolarium analytical run...")
     logger.info(f"Query file: {args.query}")

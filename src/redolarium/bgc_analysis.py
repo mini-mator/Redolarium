@@ -1065,9 +1065,17 @@ def run_bgc_pipeline(query_gb, ref_gb, ortholog_mapping, out_dir, logger, qc_res
     
     total_bitscore = 0.0
     for b in bgc_list:
-        # Sum bitscores of core hits. If parsing antiSMASH where bitscore is abstracted, 
-        # each core gene logically met the Trusted Cutoff (~150.0 bitscore).
-        b_bitscore = sum(h.get("score", 150.0) for h in b.get("Hits", []))
+        hits = b.get("Hits", [])
+        if hits:
+            # Sum bitscores of core hits.
+            b_bitscore = sum(h.get("score", 150.0) for h in hits)
+        else:
+            # If no discrete hits were perfectly mapped inside core boundaries but antiSMASH/HMM identified a region,
+            # estimate the number of core genes (roughly 1 per 2kb in dense secondary metabolite clusters).
+            core_size = max(0, b.get("Core_End", 0) - b.get("Core_Start", 0))
+            estimated_genes = max(1, int(core_size / 2000))
+            b_bitscore = 150.0 * estimated_genes
+            
         total_bitscore += b_bitscore
         
         # Empirical probability derived from Cumulative HMM Bitscore (Exponential CDF)

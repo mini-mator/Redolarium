@@ -541,37 +541,46 @@ def compile_bgc_excel_report(bgc_target, ortholog_mapping, ref_strains, reconstr
             
     _col_widths(ws, [16, 12, 12, 12, 10, 38, 16, 16, 14])
 
-    # 3. Promoter_Analysis
-    ws = wb.create_sheet(title="Promoter_Analysis")
-    ws.sheet_properties.tabColor = TAB_COLORS["Promoter_Analysis"]
+    # 3. BGC_Regulatory_Motifs (formerly Promoter_Analysis)
+    ws = wb.create_sheet(title="BGC_Regulatory_Motifs")
+    ws.sheet_properties.tabColor = TAB_COLORS.get("Promoter_Analysis", "70AD47")
     
-    ws.append(["Locus Tag", "Gene Symbol", "Motif Upstream Pos", "Sigma Factor Association", "-35 Box Motif", "Spacer (bp)", "-10 Box Motif", "Shine-Dalgarno", "Regulatory Box", "Quality Class"])
+    ws.append(["Locus Tag", "Gene Symbol", "Motif Upstream Pos", "Sigma Factor Association", "-35 Box Motif", "Spacer (bp)", "-10 Box Motif", "Shine-Dalgarno", "Regulatory Box", "Environmental Cue", "Quality Class"])
     for pm in promoter_records:
+        sigma = pm.get("Sigma_Factor", "-")
+        # Lookup induction / environmental cue from CONFIG
+        env_cue = "-"
+        for phylum, motifs in CONFIG.get("sigma_motifs", {}).items():
+            if sigma in motifs:
+                env_cue = motifs[sigma].get("induction", "-")
+                break
+                
         ws.append([
             pm.get("Locus_Tag", "-"),
             pm.get("Gene_Symbol", "-"),
             pm.get("Upstream_Position", "-"),
-            pm.get("Sigma_Factor", "-"),
+            sigma,
             pm.get("Minus35_Seq", "-"),
             pm.get("Spacer_Length", "-"),
             pm.get("Minus10_Seq", "-"),
             pm.get("Shine_Dalgarno", "-"),
             pm.get("Regulatory_Box", "-"),
+            env_cue,
             pm.get("Quality_Class", "-")
         ])
     _sheet_title(ws, "BGC Promoter & Shine-Dalgarno Motif Profile",
-                 "Transcription binding sites and ribosomal translation consensus motifs upstream of core genes")
+                 "Transcription binding sites, ribosomal translation consensus motifs, and Environmental Cues")
     _hdr(ws, 3, EXCEL_PALETTE["header_fill"])
     apply_thin_borders(ws, 4, ws.max_row)
     apply_general_cell_styles(ws, 4, ws.max_row)
     _alt_rows(ws, 4, ws.max_row, EXCEL_PALETTE["alt_row_fill"])
     
     for r in range(4, ws.max_row + 1):
-        q_val = ws.cell(row=r, column=10).value
+        q_val = ws.cell(row=r, column=11).value
         if "Strong" in str(q_val):
-            ws.cell(row=r, column=10).fill = PatternFill("solid", fgColor=EXCEL_PALETTE["positive_fill"])
+            ws.cell(row=r, column=11).fill = PatternFill("solid", fgColor=EXCEL_PALETTE["positive_fill"])
             
-    _col_widths(ws, [16, 12, 18, 22, 16, 12, 16, 16, 20, 16])
+    _col_widths(ws, [16, 12, 18, 22, 16, 12, 16, 16, 20, 26, 16])
 
     # 4. Phage_Artifacts
     ws = wb.create_sheet(title="Phage_Artifacts")

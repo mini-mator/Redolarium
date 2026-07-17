@@ -162,9 +162,15 @@ def upload_to_github_jobs_branch(file_path, job_id, token):
             data = r.json()
             return data["content"]["download_url"]
         else:
-            print(f"GitHub upload failed: {r.status_code} {r.text}")
+            err_msg = f"GitHub upload failed: {r.status_code} {r.text}"
+            print(err_msg)
+            with open("upload_error.txt", "w") as f_err:
+                f_err.write(err_msg)
     except Exception as e:
-        print(f"upload exception: {e}")
+        err_msg = f"upload exception: {e}"
+        print(err_msg)
+        with open("upload_error.txt", "w") as f_err:
+            f_err.write(err_msg)
     return None
 
 def trigger_github_action(state):
@@ -204,7 +210,19 @@ def trigger_github_action(state):
             "query_url": query_url,
             "email": state.email_id,
             "target_bgc": "all" if state.analysis_bgc else "none",
-            "run_blast": "true" if state.analysis_query_vs_ref else "false"
+            "run_blast": "true" if state.analysis_query_vs_ref else "false",
+            "adv_bgc_gap": getattr(state, 'adv_bgc_gap', 10000),
+            "adv_bgc_flank": getattr(state, 'adv_bgc_flank', 10000),
+            "adv_hgt_zscore": getattr(state, 'adv_hgt_zscore', 2.0),
+            "adv_hgt_tnf_window": getattr(state, 'adv_hgt_tnf_window', 5000),
+            "adv_promoter_window": getattr(state, 'adv_promoter_window', 600),
+            "adv_homology_identity": getattr(state, 'adv_homology_identity', 40.0),
+            "adv_homology_evalue": getattr(state, 'adv_homology_evalue', 1e-5),
+            "adv_clock_multiplier": getattr(state, 'adv_clock_multiplier', 15.0),
+            "adv_metabolic_mode": getattr(state, 'adv_metabolic_mode', 'fast'),
+            "adv_cargo_identity": getattr(state, 'adv_cargo_identity', 0.3),
+            "adv_cargo_coverage": getattr(state, 'adv_cargo_coverage', 0.3),
+            "adv_cargo_bitscore": getattr(state, 'adv_cargo_bitscore', 0.4)
         }
     }
     
