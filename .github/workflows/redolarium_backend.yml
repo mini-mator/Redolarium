@@ -62,41 +62,9 @@ jobs:
           echo "Executing: $CMD"
           eval $CMD
           
-      - name: Package Results
-        id: package
-        run: |
-          cd workspace/output
-          zip -r ../../redolarium_results_${{ github.event.client_payload.job_id }}.zip .
-          cd ../../
-          
-      - name: Write Status to Jobs Branch
-        run: |
-          # Configure Git
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Fetch all branches to check if 'jobs' exists
-          git fetch origin
-          
-          # Checkout or create 'jobs' branch
-          if git ls-remote --exit-code --heads origin jobs; then
-            git checkout jobs
-          else
-            git checkout --orphan jobs
-            git rm -rf .
-          fi
-          
-          # Copy results zip to branch root
-          cp redolarium_results_${{ github.event.client_payload.job_id }}.zip job_${{ github.event.client_payload.job_id }}_results.zip
-          
-          # URL to raw github content
-          RESULT_URL="https://raw.githubusercontent.com/mini-mator/Redolarium/jobs/job_${{ github.event.client_payload.job_id }}_results.zip"
-          
-          # Write the result URL to the specific job file
-          echo "$RESULT_URL" > job_${{ github.event.client_payload.job_id }}.txt
-          
-          # Commit and Push
-          git add job_${{ github.event.client_payload.job_id }}_results.zip
-          git add job_${{ github.event.client_payload.job_id }}.txt
-          git commit -m "Add result for job ${{ github.event.client_payload.job_id }}"
-          git push origin jobs
+      - name: Package and Upload Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: redolarium_results_${{ github.event.client_payload.job_id }}
+          path: workspace/output/
+          retention-days: 7
