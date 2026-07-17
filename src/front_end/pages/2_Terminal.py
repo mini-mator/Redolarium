@@ -149,13 +149,11 @@ else:
     
     # Check for completion via the Artifact API
     import requests
-    import toml
-    
-    token = ""
-    secrets_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".streamlit", "secrets.toml")
-    if os.path.exists(secrets_path):
-        with open(secrets_path, "r") as f:
-            token = toml.load(f).get("GITHUB_TOKEN", "")
+    token = None
+    try:
+        token = st.secrets.get("GITHUB_TOKEN", None)
+    except Exception:
+        pass
             
     job_id = st.session_state.job_id
     artifact_ready = False
