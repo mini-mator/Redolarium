@@ -252,7 +252,3 @@ else:
             
             time.sleep(10)
             st.rerun()
-    except Exception as e:
-        st.error(f"Polling error: {e}")
-        time.sleep(10)
-        st.rerun()
