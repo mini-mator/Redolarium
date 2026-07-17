@@ -24,6 +24,8 @@ def init_session_state():
         st.session_state.email_id = ""
     if 'num_cores' not in st.session_state:
         st.session_state.num_cores = 4
+    if 'local_mode' not in st.session_state:
+        st.session_state.local_mode = False
 
     # Page 2: Analysis Settings State
     if 'analysis_genome_annotation' not in st.session_state:

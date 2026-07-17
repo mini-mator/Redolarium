@@ -131,3 +131,79 @@ def start_subprocess(cmd, tmp_out_dir):
         status_dict['process_finished'] = True
         status_dict['returncode'] = -1
         return None, log_list, status_dict
+
+def upload_to_transfersh(file_path):
+    """Uploads a file to transfer.sh and returns the URL."""
+    try:
+        import requests
+        with open(file_path, 'rb') as f:
+            filename = os.path.basename(file_path)
+            response = requests.put(f'https://transfer.sh/{filename}', data=f)
+            if response.status_code == 200:
+                return response.text.strip()
+    except Exception:
+        pass
+    return None
+
+def trigger_github_action(state):
+    """Triggers the remote GitHub Actions workflow via repository_dispatch."""
+    import requests
+    import streamlit as st
+    
+    # Upload query sequence
+    if not hasattr(state, 'query_file_path') or not os.path.exists(state.query_file_path):
+        return False, "Query sequence file is missing."
+        
+    query_url = upload_to_transfersh(state.query_file_path)
+    if not query_url:
+        return False, "Failed to upload query sequence to transfer.sh"
+        
+    # Get GitHub token from secrets
+    token = st.secrets.get("GITHUB_TOKEN", None)
+    if not token:
+        return False, "GITHUB_TOKEN is missing in .streamlit/secrets.toml"
+        
+    # Trigger dispatch
+    repo = "mini-mator/Redolarium"
+    url = f"https://api.github.com/repos/{repo}/dispatches"
+    
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "Authorization": f"Bearer {token}",
+        "X-GitHub-Api-Version": "2022-11-28"
+    }
+    
+    payload = {
+        "event_type": "run_redolarium",
+        "client_payload": {
+            "job_id": state.job_id,
+            "query_url": query_url,
+            "email": state.email_id,
+            "target_bgc": "all" if state.analysis_bgc else "none",
+            "run_blast": "true" if state.analysis_query_vs_ref else "false"
+        }
+    }
+    
+    try:
+        r = requests.post(url, json=payload, headers=headers)
+        if r.status_code == 204:
+            return True, "Success"
+        else:
+            return False, f"GitHub API Error: {r.status_code} - {r.text}"
+    except Exception as e:
+        return False, str(e)
+
+def download_and_extract_results(url, tmp_out_dir):
+    """Downloads a zip file from transfer.sh and extracts it."""
+    import requests
+    import zipfile
+    import io
+    try:
+        r = requests.get(url, stream=True)
+        if r.status_code == 200:
+            z = zipfile.ZipFile(io.BytesIO(r.content))
+            z.extractall(tmp_out_dir)
+            return True
+        return False
+    except Exception:
+        return False

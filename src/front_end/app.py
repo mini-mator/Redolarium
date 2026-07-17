@@ -19,33 +19,40 @@ st.set_page_config(
 
 init_session_state()
 
-# NCBI Academic Aesthetic CSS
+# Professional Academic Aesthetic CSS (NCBI / Elsevier inspired)
 st.markdown("""
 <style>
     .reportview-container {
-        background: #f8f9fa;
+        background: #ffffff;
     }
     h1, h2, h3 {
-        color: #0b3d91;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        color: #222222;
+        font-family: 'Arial', sans-serif;
+        border-bottom: 1px solid #eaeaea;
+        padding-bottom: 5px;
     }
+    h1 { color: #0b3d91; }
     .stButton>button {
         background-color: #0b3d91;
         color: white;
-        border-radius: 4px;
-        border: none;
-        padding: 10px 24px;
-        font-weight: bold;
+        border-radius: 3px;
+        border: 1px solid #082d6b;
+        padding: 6px 16px;
+        font-size: 14px;
+        font-weight: 600;
     }
     .stButton>button:hover {
         background-color: #082d6b;
         color: white;
+        border-color: #061e47;
     }
     .disclaimer {
         font-size: 0.85em;
-        color: #555;
-        border-left: 3px solid #0b3d91;
-        padding-left: 10px;
+        color: #444;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-left: 4px solid #0b3d91;
+        padding: 12px;
         margin-bottom: 20px;
     }
 </style>
@@ -53,17 +60,26 @@ st.markdown("""
 
 st.title("Redolarium Pipeline Setup")
 st.markdown("""
-Welcome to **Redolarium v3.0.0**, a universal genomic, metabolic, and BGC analysis pipeline.
+Welcome to **Redolarium v1.0.0**, a universal genomic, metabolic, and BGC analysis pipeline.
 Please configure your analysis parameters below.
 """)
 
 st.markdown("""
 <div class='disclaimer'>
-    <strong>Data Retention Policy:</strong> All results and submitted sequences are strictly kept for 7 days and then automatically and permanently deleted from our servers.
+    <strong>Data Retention Policy:</strong> All results and submitted sequences are kept for 7 days and then automatically deleted from our cloud servers.
     <br>
-    <a href="https://github.com/Redolarium/Redolarium/blob/main/LICENSE" target="_blank">View Software License</a>
+    <a href="https://github.com/mini-mator/Redolarium/blob/main/LICENSE" target="_blank" style="color: #0b3d91; text-decoration: none;">View Software License</a>
 </div>
 """, unsafe_allow_html=True)
+
+with st.sidebar:
+    st.markdown("### Developer Options")
+    st.session_state.local_mode = st.checkbox(
+        "Run Locally (Bypass Cloud)", 
+        value=st.session_state.local_mode,
+        help="If checked, the pipeline will execute natively on your machine instead of using GitHub Actions."
+    )
+    st.markdown("---")
 
 # 1. Query Sequence
 st.header("1. Query Sequence")

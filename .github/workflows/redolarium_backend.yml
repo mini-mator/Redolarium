@@ -1,0 +1,102 @@
+name: Redolarium Cloud Compute Pipeline
+
+on:
+  repository_dispatch:
+    types: [run_redolarium]
+
+jobs:
+  execute-pipeline:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y hmmer prodigal diamond-aligner fasttree muscle mafft ncbi-blast+ 
+          
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install biopython pandas requests matplotlib networkx 
+          
+      - name: Create Temporary Directories
+        run: |
+          mkdir -p workspace/input
+          mkdir -p workspace/output
+          
+      - name: Download Input Sequence
+        env:
+          QUERY_URL: ${{ github.event.client_payload.query_url }}
+        run: |
+          echo "Downloading query from $QUERY_URL"
+          curl -s -L "$QUERY_URL" -o workspace/input/query.gbk
+          
+      - name: Execute Redolarium Pipeline
+        env:
+          TARGET_BGC: ${{ github.event.client_payload.target_bgc }}
+          RUN_BLAST: ${{ github.event.client_payload.run_blast }}
+        run: |
+          export PYTHONPATH=$(pwd)/src:$PYTHONPATH
+          
+          CMD="python src/redolarium/main.py --query workspace/input/query.gbk --out workspace/output"
+          
+          if [ "$TARGET_BGC" = "all" ]; then
+            CMD="$CMD --target-bgc all"
+          fi
+          
+          if [ "$RUN_BLAST" = "true" ]; then
+            CMD="$CMD --run-blast"
+          fi
+          
+          echo "Executing: $CMD"
+          eval $CMD
+          
+      - name: Package Results
+        id: package
+        run: |
+          cd workspace/output
+          zip -r ../../redolarium_results_${{ github.event.client_payload.job_id }}.zip .
+          cd ../../
+          
+      - name: Upload to transfer.sh
+        id: upload
+        run: |
+          URL=$(curl -s --upload-file redolarium_results_${{ github.event.client_payload.job_id }}.zip https://transfer.sh/redolarium_results.zip)
+          echo "RESULT_URL=$URL" >> $GITHUB_ENV
+          echo "Result uploaded to $URL"
+          
+      - name: Write Status to Jobs Branch
+        run: |
+          # Configure Git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Fetch all branches to check if 'jobs' exists
+          git fetch origin
+          
+          # Checkout or create 'jobs' branch
+          if git ls-remote --exit-code --heads origin jobs; then
+            git checkout jobs
+          else
+            git checkout --orphan jobs
+            git rm -rf .
+          fi
+          
+          # Write the result URL to the specific job file
+          echo "${{ env.RESULT_URL }}" > job_${{ github.event.client_payload.job_id }}.txt
+          
+          # Commit and Push
+          git add job_${{ github.event.client_payload.job_id }}.txt
+          git commit -m "Add result for job ${{ github.event.client_payload.job_id }}"
+          git push origin jobs

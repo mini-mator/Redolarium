@@ -77,18 +77,8 @@ st.session_state.analysis_bgc = st.checkbox(
 )
 
 if st.session_state.analysis_bgc:
-    st.markdown("### BGC Execution Mode")
-    st.markdown("<p class='tooltip-text'>Note: If you select 'Pause after prediction', you must remain on the Terminal page to select specific BGCs once the initial detection phase completes.</p>", unsafe_allow_html=True)
-    
-    bgc_opt = st.radio(
-        "Select BGC run strategy:",
-        (
-            "Option A: Analyze all predicted BGCs automatically",
-            "Option B: Pause after prediction to select specific BGCs for downstream analysis"
-        ),
-        index=0 if "Option A" in st.session_state.bgc_option else 1
-    )
-    st.session_state.bgc_option = bgc_opt
+    st.info("BGC Execution Mode: Analyze all predicted BGCs automatically (Required for Cloud/Batch execution)")
+    st.session_state.bgc_option = "Option A: Analyze all predicted BGCs automatically"
 
 st.markdown("---")
 if st.button("Proceed to Terminal & Execution"):

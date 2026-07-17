@@ -13,8 +13,8 @@ from front_end.utils.execution import build_command_args, start_subprocess
 from redolarium.main import download_genbank_from_ncbi
 
 st.set_page_config(
-    page_title="Redolarium | Terminal",
-    page_icon="🖥️",
+    page_title="Redolarium | Execution",
+    page_icon="🧬",
     layout="wide"
 )
 
@@ -38,7 +38,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.title("Execution Terminal")
+st.title("Pipeline Execution")
 
 if not st.session_state.email_id:
     st.error("Missing required inputs. Please go back to the Input Configuration page.")
@@ -50,6 +50,7 @@ if not st.session_state.tmp_out_dir:
     
 if not st.session_state.process_started:
     st.session_state.process_started = True
+    st.session_state.job_id = str(os.urandom(8).hex())
     
     with st.spinner("Preparing input files..."):
         # Handle Query
@@ -92,71 +93,84 @@ if not st.session_state.process_started:
         else:
             st.session_state.ref_file_path = "" # BLAST mode
 
-    # Build command and start subprocess
-    cmd = build_command_args(st.session_state)
-    st.session_state.logs.append(f"$ {' '.join(cmd)}\n")
-    
-    process, log_list, status_dict = start_subprocess(cmd, st.session_state.tmp_out_dir)
-    
-    # Store references in session state so we can access them across reruns
-    st.session_state.subprocess_obj = process
-    st.session_state.subprocess_log_list = log_list
-    st.session_state.subprocess_status_dict = status_dict
+    if st.session_state.local_mode:
+        st.info("Running in Local Developer Mode. Check terminal logs below.")
+        cmd = build_command_args(st.session_state)
+        st.session_state.logs.append(f"$ {' '.join(cmd)}\n")
+        
+        process, log_list, status_dict = start_subprocess(cmd, st.session_state.tmp_out_dir)
+        st.session_state.subprocess_obj = process
+        st.session_state.subprocess_log_list = log_list
+        st.session_state.subprocess_status_dict = status_dict
+    else:
+        st.info("Initiating Cloud Compute via GitHub Actions...")
+        from front_end.utils.execution import trigger_github_action
+        success, msg = trigger_github_action(st.session_state)
+        if not success:
+            st.error(f"Failed to trigger Cloud Compute: {msg}")
+            st.stop()
+        st.session_state.cloud_triggered = True
 
-# Ensure we have the references
-if 'subprocess_log_list' in st.session_state:
+# --- RENDER LOGIC ---
+if st.session_state.local_mode:
+    # 2. Render Terminal output (Local Mode)
+    if 'subprocess_log_list' not in st.session_state:
+        st.error("Subprocess state lost. Please restart.")
+        st.stop()
+        
     log_list = st.session_state.subprocess_log_list
     status_dict = st.session_state.subprocess_status_dict
-    process = st.session_state.subprocess_obj
-else:
-    st.error("Subprocess state lost. Please restart.")
-    st.stop()
-
-# 2. Render Terminal output
-terminal_placeholder = st.empty()
-
-# Helper function to render logs
-def render_terminal():
-    display_text = "".join(log_list[-100:]) # Show last 100 lines to prevent lag
-    terminal_placeholder.markdown(f"<div class='terminal-box'>{display_text}</div>", unsafe_allow_html=True)
-
-# 3. Handle Interactive BGC Input Phase
-if status_dict.get('needs_input', False):
-    render_terminal()
-    st.warning("Pipeline Paused: Please select BGC(s) for downstream analysis.")
     
-    # Simple form to take input
-    with st.form("bgc_input_form"):
-        user_input = st.text_input("Enter BGC number(s) (e.g., '1', '1, 2', 'A' for all, 'Q' to quit):")
-        submitted = st.form_submit_button("Submit")
-        if submitted:
-            if user_input.strip():
-                # Write to stdin
-                try:
-                    process.stdin.write(f"{user_input.strip()}\n")
-                    process.stdin.flush()
-                    # Reset flag
-                    status_dict['needs_input'] = False
-                    log_list.append(f"> {user_input.strip()}\n")
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"Error writing to process: {e}")
-            else:
-                st.error("Input cannot be empty.")
-else:
-    # 4. Auto-refresh Loop for live logs
+    terminal_placeholder = st.empty()
+    display_text = "".join(log_list[-100:])
+    terminal_placeholder.markdown(f"<div class='terminal-box'>{display_text}</div>", unsafe_allow_html=True)
+    
     if not status_dict.get('process_finished', False):
-        render_terminal()
         time.sleep(1)
         st.rerun()
     else:
-        # Process Finished
-        render_terminal()
         if status_dict.get('returncode') == 0:
-            st.success("Pipeline Execution Completed Successfully!")
-            if st.button("Proceed to Results & Download"):
+            st.success("Local Pipeline Execution Completed Successfully!")
+            if st.button("Proceed to Results Dashboard"):
                 st.switch_page("pages/3_Results.py")
         else:
             st.error(f"Pipeline Terminated with errors (Exit Code: {status_dict.get('returncode')})")
             if st.button("Proceed to Results (Partial)"):
                 st.switch_page("pages/3_Results.py")
+else:
+    # 3. Cloud Mode Polling
+    st.markdown("### Cloud Execution in Progress ☁️")
+    st.markdown("Your job has been dispatched to GitHub Actions. This page will automatically poll for results.")
+    st.markdown("**Please keep this window open.** Depending on your genome size, antiSMASH can take anywhere from 10 minutes to 3 hours.")
+    
+    status_placeholder = st.empty()
+    
+    # Check for completion via the jobs branch artifact
+    import requests
+    job_id = st.session_state.job_id
+    url = f"https://raw.githubusercontent.com/mini-mator/Redolarium/jobs/job_{job_id}.txt"
+    
+    with st.spinner(f"Polling GitHub for Job {job_id}..."):
+        try:
+            r = requests.get(url)
+            if r.status_code == 200:
+                result_url = r.text.strip()
+                st.success(f"Job Finished! Found results at {result_url}")
+                
+                # Automatically download and extract
+                st.info("Downloading and extracting results package...")
+                from front_end.utils.execution import download_and_extract_results
+                if download_and_extract_results(result_url, st.session_state.tmp_out_dir):
+                    st.success("Ready!")
+                    if st.button("Proceed to Results Dashboard"):
+                        st.switch_page("pages/3_Results.py")
+                else:
+                    st.error("Failed to extract results package.")
+            else:
+                status_placeholder.info(f"Job {job_id} is running... (Status: 404, waiting for completion marker)")
+                time.sleep(10)
+                st.rerun()
+        except Exception as e:
+            st.error(f"Polling error: {e}")
+            time.sleep(10)
+            st.rerun()
