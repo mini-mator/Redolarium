@@ -40,18 +40,7 @@ jobs:
           QUERY_URL: ${{ github.event.client_payload.query_url }}
         run: |
           echo "Downloading query from $QUERY_URL"
-          python -c "
-          import urllib.request, re, sys
-          url = sys.argv[1]
-          if 'tmpfiles.org' in url:
-              req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-              html = urllib.request.urlopen(req).read().decode('utf-8')
-              match = re.search(r'class=\"download\" href=\"([^\"]+)\"', html)
-              if match:
-                  url = match.group(1)
-          print('Real URL:', url)
-          urllib.request.urlretrieve(url, 'workspace/input/query.gbk')
-          " "$QUERY_URL"
+          curl -s -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$QUERY_URL" -o workspace/input/query.gbk
           
       - name: Execute Redolarium Pipeline
         env:
@@ -80,15 +69,6 @@ jobs:
           zip -r ../../redolarium_results_${{ github.event.client_payload.job_id }}.zip .
           cd ../../
           
-      - name: Upload to tmpfiles.org
-        id: upload
-        run: |
-          RESPONSE=$(curl -s -F "file=@redolarium_results_${{ github.event.client_payload.job_id }}.zip" https://tmpfiles.org/api/v1/upload)
-          echo "Response: $RESPONSE"
-          URL=$(echo $RESPONSE | jq -r .data.url | sed 's/tmpfiles.org\//tmpfiles.org\/dl\//')
-          echo "RESULT_URL=$URL" >> $GITHUB_ENV
-          echo "Result uploaded to $URL"
-          
       - name: Write Status to Jobs Branch
         run: |
           # Configure Git
@@ -106,10 +86,17 @@ jobs:
             git rm -rf .
           fi
           
+          # Copy results zip to branch root
+          cp redolarium_results_${{ github.event.client_payload.job_id }}.zip job_${{ github.event.client_payload.job_id }}_results.zip
+          
+          # URL to raw github content
+          RESULT_URL="https://raw.githubusercontent.com/mini-mator/Redolarium/jobs/job_${{ github.event.client_payload.job_id }}_results.zip"
+          
           # Write the result URL to the specific job file
-          echo "${{ env.RESULT_URL }}" > job_${{ github.event.client_payload.job_id }}.txt
+          echo "$RESULT_URL" > job_${{ github.event.client_payload.job_id }}.txt
           
           # Commit and Push
+          git add job_${{ github.event.client_payload.job_id }}_results.zip
           git add job_${{ github.event.client_payload.job_id }}.txt
           git commit -m "Add result for job ${{ github.event.client_payload.job_id }}"
           git push origin jobs

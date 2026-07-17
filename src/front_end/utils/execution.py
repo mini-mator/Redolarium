@@ -132,24 +132,39 @@ def start_subprocess(cmd, tmp_out_dir):
         status_dict['returncode'] = -1
         return None, log_list, status_dict
 
-def upload_to_tmpfiles(file_path):
-    """Uploads a file to tmpfiles.org and returns the raw download URL."""
+def upload_to_github_jobs_branch(file_path, job_id, token):
+    """Uploads a file directly to the GitHub jobs branch."""
+    import requests
+    import base64
+    import os
+    
     try:
-        import requests
         with open(file_path, 'rb') as f:
-            files = {'file': f}
-            response = requests.post('https://tmpfiles.org/api/v1/upload', files=files)
-            if response.status_code == 200:
-                data = response.json()
-                if data.get("status") == "success":
-                    url = data["data"]["url"]
-                    # Convert to direct download link
-                    return url.replace('tmpfiles.org/', 'tmpfiles.org/dl/')
-            print(f"tmpfiles.org returned status {response.status_code}: {response.text}")
+            content = f.read()
+        
+        b64_content = base64.b64encode(content).decode('utf-8')
+        filename = f"job_{job_id}_query.gbk"
+        url = f"https://api.github.com/repos/mini-mator/Redolarium/contents/{filename}"
+        
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github.v3+json"
+        }
+        
+        payload = {
+            "message": f"Upload query for job {job_id}",
+            "content": b64_content,
+            "branch": "jobs"
+        }
+        
+        r = requests.put(url, json=payload, headers=headers)
+        if r.status_code in [200, 201]:
+            data = r.json()
+            return data["content"]["download_url"]
+        else:
+            print(f"GitHub upload failed: {r.status_code} {r.text}")
     except Exception as e:
-        print(f"upload_to_tmpfiles exception: {e}")
-        import traceback
-        traceback.print_exc()
+        print(f"upload exception: {e}")
     return None
 
 def trigger_github_action(state):
@@ -157,15 +172,9 @@ def trigger_github_action(state):
     import requests
     import streamlit as st
     
-    # Upload query sequence
     if not hasattr(state, 'query_file_path') or not os.path.exists(state.query_file_path):
         return False, "Query sequence file is missing."
         
-    query_url = upload_to_tmpfiles(state.query_file_path)
-    if not query_url:
-        return False, "Failed to upload query sequence to tmpfiles.org"
-        
-    # Get GitHub token from secrets safely
     token = None
     try:
         token = st.secrets.get("GITHUB_TOKEN", None)
@@ -175,7 +184,10 @@ def trigger_github_action(state):
     if not token:
         return False, "GITHUB_TOKEN is missing in .streamlit/secrets.toml"
         
-    # Trigger dispatch
+    query_url = upload_to_github_jobs_branch(state.query_file_path, state.job_id, token)
+    if not query_url:
+        return False, "Failed to upload query sequence to GitHub"
+        
     repo = "mini-mator/Redolarium"
     url = f"https://api.github.com/repos/{repo}/dispatches"
     
