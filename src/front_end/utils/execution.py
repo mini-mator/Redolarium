@@ -212,6 +212,20 @@ def trigger_github_action(state):
         "X-GitHub-Api-Version": "2022-11-28"
     }
     
+    opts = []
+    if getattr(state, 'adv_bgc_gap', None): opts.extend(["--adv-bgc-gap", str(state.adv_bgc_gap)])
+    if getattr(state, 'adv_bgc_flank', None): opts.extend(["--adv-bgc-flank", str(state.adv_bgc_flank)])
+    if getattr(state, 'adv_hgt_zscore', None): opts.extend(["--adv-hgt-zscore", str(state.adv_hgt_zscore)])
+    if getattr(state, 'adv_hgt_tnf_window', None): opts.extend(["--adv-hgt-tnf-window", str(state.adv_hgt_tnf_window)])
+    if getattr(state, 'adv_promoter_window', None): opts.extend(["--adv-promoter-window", str(state.adv_promoter_window)])
+    if getattr(state, 'adv_homology_identity', None): opts.extend(["--adv-homology-identity", str(state.adv_homology_identity)])
+    if getattr(state, 'adv_homology_evalue', None): opts.extend(["--adv-homology-evalue", str(state.adv_homology_evalue)])
+    if getattr(state, 'adv_clock_multiplier', None): opts.extend(["--adv-clock-multiplier", str(state.adv_clock_multiplier)])
+    if getattr(state, 'adv_metabolic_mode', None): opts.extend(["--adv-metabolic-mode", str(state.adv_metabolic_mode)])
+    if getattr(state, 'adv_cargo_identity', None): opts.extend(["--adv-cargo-identity", str(state.adv_cargo_identity)])
+    if getattr(state, 'adv_cargo_coverage', None): opts.extend(["--adv-cargo-coverage", str(state.adv_cargo_coverage)])
+    if getattr(state, 'adv_cargo_bitscore', None): opts.extend(["--adv-cargo-bitscore", str(state.adv_cargo_bitscore)])
+    
     payload = {
         "event_type": "run_redolarium",
         "client_payload": {
@@ -222,18 +236,7 @@ def trigger_github_action(state):
             "email": state.email_id,
             "target_bgc": "all" if state.analysis_bgc else "none",
             "run_blast": "true" if state.analysis_query_vs_ref else "false",
-            "adv_bgc_gap": getattr(state, 'adv_bgc_gap', 10000),
-            "adv_bgc_flank": getattr(state, 'adv_bgc_flank', 10000),
-            "adv_hgt_zscore": getattr(state, 'adv_hgt_zscore', 2.0),
-            "adv_hgt_tnf_window": getattr(state, 'adv_hgt_tnf_window', 5000),
-            "adv_promoter_window": getattr(state, 'adv_promoter_window', 600),
-            "adv_homology_identity": getattr(state, 'adv_homology_identity', 40.0),
-            "adv_homology_evalue": getattr(state, 'adv_homology_evalue', 1e-5),
-            "adv_clock_multiplier": getattr(state, 'adv_clock_multiplier', 15.0),
-            "adv_metabolic_mode": getattr(state, 'adv_metabolic_mode', 'fast'),
-            "adv_cargo_identity": getattr(state, 'adv_cargo_identity', 0.3),
-            "adv_cargo_coverage": getattr(state, 'adv_cargo_coverage', 0.3),
-            "adv_cargo_bitscore": getattr(state, 'adv_cargo_bitscore', 0.4)
+            "opts": " ".join(opts)
         }
     }
     

@@ -73,18 +73,7 @@ jobs:
           REF_ACC: ${{ github.event.client_payload.ref_acc }}
           TARGET_BGC: ${{ github.event.client_payload.target_bgc }}
           RUN_BLAST: ${{ github.event.client_payload.run_blast }}
-          ADV_BGC_GAP: ${{ github.event.client_payload.adv_bgc_gap }}
-          ADV_BGC_FLANK: ${{ github.event.client_payload.adv_bgc_flank }}
-          ADV_HGT_ZSCORE: ${{ github.event.client_payload.adv_hgt_zscore }}
-          ADV_HGT_TNF_WINDOW: ${{ github.event.client_payload.adv_hgt_tnf_window }}
-          ADV_PROMOTER_WINDOW: ${{ github.event.client_payload.adv_promoter_window }}
-          ADV_HOMOLOGY_IDENTITY: ${{ github.event.client_payload.adv_homology_identity }}
-          ADV_HOMOLOGY_EVALUE: ${{ github.event.client_payload.adv_homology_evalue }}
-          ADV_CLOCK_MULTIPLIER: ${{ github.event.client_payload.adv_clock_multiplier }}
-          ADV_METABOLIC_MODE: ${{ github.event.client_payload.adv_metabolic_mode }}
-          ADV_CARGO_IDENTITY: ${{ github.event.client_payload.adv_cargo_identity }}
-          ADV_CARGO_COVERAGE: ${{ github.event.client_payload.adv_cargo_coverage }}
-          ADV_CARGO_BITSCORE: ${{ github.event.client_payload.adv_cargo_bitscore }}
+          OPTS: ${{ github.event.client_payload.opts }}
         run: |
           export PYTHONPATH=$(pwd)/src:$PYTHONPATH
           
@@ -102,18 +91,9 @@ jobs:
             CMD="$CMD --run-blast"
           fi
           
-          if [ -n "$ADV_BGC_GAP" ]; then CMD="$CMD --adv-bgc-gap $ADV_BGC_GAP"; fi
-          if [ -n "$ADV_BGC_FLANK" ]; then CMD="$CMD --adv-bgc-flank $ADV_BGC_FLANK"; fi
-          if [ -n "$ADV_HGT_ZSCORE" ]; then CMD="$CMD --adv-hgt-zscore $ADV_HGT_ZSCORE"; fi
-          if [ -n "$ADV_HGT_TNF_WINDOW" ]; then CMD="$CMD --adv-hgt-tnf-window $ADV_HGT_TNF_WINDOW"; fi
-          if [ -n "$ADV_PROMOTER_WINDOW" ]; then CMD="$CMD --adv-promoter-window $ADV_PROMOTER_WINDOW"; fi
-          if [ -n "$ADV_HOMOLOGY_IDENTITY" ]; then CMD="$CMD --adv-homology-identity $ADV_HOMOLOGY_IDENTITY"; fi
-          if [ -n "$ADV_HOMOLOGY_EVALUE" ]; then CMD="$CMD --adv-homology-evalue $ADV_HOMOLOGY_EVALUE"; fi
-          if [ -n "$ADV_CLOCK_MULTIPLIER" ]; then CMD="$CMD --adv-clock-multiplier $ADV_CLOCK_MULTIPLIER"; fi
-          if [ -n "$ADV_METABOLIC_MODE" ]; then CMD="$CMD --adv-metabolic-mode $ADV_METABOLIC_MODE"; fi
-          if [ -n "$ADV_CARGO_IDENTITY" ]; then CMD="$CMD --adv-cargo-identity $ADV_CARGO_IDENTITY"; fi
-          if [ -n "$ADV_CARGO_COVERAGE" ]; then CMD="$CMD --adv-cargo-coverage $ADV_CARGO_COVERAGE"; fi
-          if [ -n "$ADV_CARGO_BITSCORE" ]; then CMD="$CMD --adv-cargo-bitscore $ADV_CARGO_BITSCORE"; fi
+          if [ -n "$OPTS" ]; then
+            CMD="$CMD $OPTS"
+          fi
           
           echo "Executing: $CMD"
           eval $CMD
