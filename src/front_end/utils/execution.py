@@ -217,26 +217,53 @@ def trigger_github_action(state):
     except Exception as e:
         return False, str(e)
 
-def download_and_extract_results(url, tmp_out_dir):
-    """Downloads a zip file from transfer.sh or tmpfiles.org and extracts it."""
+def download_github_artifact(artifact_url, token, tmp_out_dir):
+    """Downloads and extracts an artifact zip from GitHub Actions."""
     import requests
     import zipfile
     import io
-    import re
+    
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json"
+    }
+    
     try:
-        # Handle tmpfiles.org indirect download links
-        if "tmpfiles.org" in url:
-            html_req = requests.get(url)
-            match = re.search(r'class="download" href="([^"]+)"', html_req.text)
-            if match:
-                url = match.group(1)
-                
-        r = requests.get(url, stream=True)
+        r = requests.get(artifact_url, headers=headers, stream=True)
         if r.status_code == 200:
             z = zipfile.ZipFile(io.BytesIO(r.content))
             z.extractall(tmp_out_dir)
             return True
-        return False
+        else:
+            print(f"Failed to download artifact: {r.status_code} {r.text}")
     except Exception as e:
-        print(f"Error extracting zip: {e}")
-        return False
+        print(f"Error extracting artifact: {e}")
+    return False
+
+def cleanup_github_jobs_branch(job_id, token):
+    """Deletes the temporary query file from the jobs branch to keep the repo clean."""
+    import requests
+    
+    filename = f"job_{job_id}_query.gbk"
+    url = f"https://api.github.com/repos/mini-mator/Redolarium/contents/{filename}?ref=jobs"
+    
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    
+    # 1. Get the SHA of the file (required for deletion)
+    r = requests.get(url, headers=headers)
+    if r.status_code == 200:
+        sha = r.json()["sha"]
+        
+        # 2. Delete the file
+        del_payload = {
+            "message": f"Cleanup query for job {job_id}",
+            "sha": sha,
+            "branch": "jobs"
+        }
+        del_r = requests.delete(f"https://api.github.com/repos/mini-mator/Redolarium/contents/{filename}", json=del_payload, headers=headers)
+        if del_r.status_code == 200:
+            return True
+    return False

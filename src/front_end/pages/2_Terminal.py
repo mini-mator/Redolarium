@@ -147,40 +147,54 @@ else:
     steps_placeholder = st.empty()
     cloud_terminal_placeholder = st.empty()
     
-    # Check for completion via the jobs branch artifact
+    # Check for completion via the Artifact API
     import requests
-    job_id = st.session_state.job_id
-    url = f"https://raw.githubusercontent.com/mini-mator/Redolarium/jobs/job_{job_id}.txt"
+    import toml
     
-    try:
-        r = requests.get(url)
-        if r.status_code == 200:
-            result_url = r.text.strip()
-            status_placeholder.success(f"Job Finished! Found results at {result_url}")
+    token = ""
+    secrets_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".streamlit", "secrets.toml")
+    if os.path.exists(secrets_path):
+        with open(secrets_path, "r") as f:
+            token = toml.load(f).get("GITHUB_TOKEN", "")
             
-            # Automatically download and extract
-            st.info("Downloading and extracting results package...")
-            from front_end.utils.execution import download_and_extract_results
-            if download_and_extract_results(result_url, st.session_state.tmp_out_dir):
-                st.success("Ready!")
-                if st.button("Proceed to Results Dashboard"):
-                    st.switch_page("pages/3_Results.py")
-            else:
-                st.error("Failed to extract results package.")
-        else:
+    job_id = st.session_state.job_id
+    artifact_ready = False
+    
+    if token:
+        headers = {"Accept": "application/vnd.github.v3+json", "Authorization": f"Bearer {token}"}
+        
+        try:
+            # Poll for the Artifact
+            artifacts_req = requests.get(f"https://api.github.com/repos/mini-mator/Redolarium/actions/artifacts?name=redolarium_results_{job_id}", headers=headers)
+            if artifacts_req.status_code == 200:
+                artifacts_data = artifacts_req.json()
+                if artifacts_data.get("total_count", 0) > 0:
+                    artifact = artifacts_data["artifacts"][0]
+                    if not artifact.get("expired"):
+                        artifact_ready = True
+                        result_url = artifact["archive_download_url"]
+                        status_placeholder.success(f"Job Finished! Downloading Artifact...")
+                        
+                        # Automatically download and extract
+                        st.info("Extracting results package and cleaning up...")
+                        from front_end.utils.execution import download_github_artifact, cleanup_github_jobs_branch
+                        
+                        if download_github_artifact(result_url, token, st.session_state.tmp_out_dir):
+                            cleanup_github_jobs_branch(job_id, token)
+                            st.success("Ready!")
+                            if st.button("Proceed to Results Dashboard"):
+                                st.switch_page("pages/3_Results.py")
+                        else:
+                            st.error("Failed to download or extract results package.")
+        except Exception as e:
+            st.error(f"Error querying artifacts: {e}")
+            
+        if not artifact_ready:
             # If not finished, query GitHub API to get real-time step progress!
             status_placeholder.info(f"Job {job_id} is running... waiting for completion marker.")
             
-            try:
-                import toml
-                token = ""
-                secrets_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".streamlit", "secrets.toml")
-                if os.path.exists(secrets_path):
-                    with open(secrets_path, "r") as f:
-                        token = toml.load(f).get("GITHUB_TOKEN", "")
-                
-                if token:
-                    headers = {"Accept": "application/vnd.github.v3+json", "Authorization": f"Bearer {token}"}
+            if token:
+                try:
                     # Get latest run
                     runs_req = requests.get("https://api.github.com/repos/mini-mator/Redolarium/actions/runs?per_page=1", headers=headers)
                     if runs_req.status_code == 200:
@@ -233,8 +247,8 @@ else:
                                             
                                         display_text = "\n".join(clean_lines)
                                         cloud_terminal_placeholder.markdown(f"<div class='terminal-box'>{display_text}</div>", unsafe_allow_html=True)
-            except Exception as e:
-                pass # Silently fallback if API polling fails
+                except Exception as e:
+                    pass # Silently fallback if API polling fails
             
             time.sleep(10)
             st.rerun()
