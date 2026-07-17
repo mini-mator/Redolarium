@@ -14,7 +14,7 @@ from redolarium.main import download_genbank_from_ncbi
 
 st.set_page_config(
     page_title="Redolarium | Execution",
-    page_icon="🧬",
+    page_icon="",
     layout="wide"
 )
 
@@ -139,7 +139,7 @@ if st.session_state.local_mode:
                 st.switch_page("pages/3_Results.py")
 else:
     # 3. Cloud Mode Polling
-    st.markdown("### Cloud Execution in Progress ☁️")
+    st.markdown("### Cloud Execution in Progress ")
     st.markdown("Your job has been dispatched to GitHub Actions. This page will automatically poll for results.")
     st.markdown("**Please keep this window open.** Depending on your genome size, antiSMASH can take anywhere from 10 minutes to 3 hours.")
     

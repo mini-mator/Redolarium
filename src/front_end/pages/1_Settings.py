@@ -10,7 +10,7 @@ from front_end.utils.state_manager import init_session_state
 
 st.set_page_config(
     page_title="Redolarium | Settings",
-    page_icon="⚙️",
+    page_icon="",
     layout="wide"
 )
 

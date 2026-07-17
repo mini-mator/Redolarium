@@ -12,7 +12,7 @@ from front_end.utils.validators import validate_ncbi_accession, parse_comma_sepa
 
 st.set_page_config(
     page_title="Redolarium | Input Configuration",
-    page_icon="🧬",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="expanded"
 )

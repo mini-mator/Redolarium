@@ -148,7 +148,7 @@ def run_pipeline_thread(query, ref, out_dir, email, cores, run_blast, target_bgc
 
 def main():
     st.set_page_config(page_title="Redolarium Dashboard", layout="wide")
-    st.title("🧬 Redolarium: Genomic and Secondary Metabolism Delineation")
+    st.title(" Redolarium: Genomic and Secondary Metabolism Delineation")
     
     st.sidebar.header("Execution Parameters")
     query_file = st.sidebar.text_input("Query GenBank Path", "sequence_ksm_I.fasta")
