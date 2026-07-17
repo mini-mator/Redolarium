@@ -470,7 +470,7 @@ def main():
             
             # Create nested BGC directory structure
             bgc_out_dir = os.path.join(out_dir, "bgc", bgc_id)
-            for sub in ["phylogeny_trees", "tabular_data", "metabolic_pathways", "comparative_genomics", "hgt_evolution", "screening_cazymes", "bgc_motifs"]:
+            for sub in ["tabular_data", "metabolic_pathways", "comparative_genomics", "hgt_evolution", "screening_cazymes", "bgc_motifs"]:
                 os.makedirs(os.path.join(bgc_out_dir, sub), exist_ok=True)
             
             # 5a. Delineate core and flanking genes layout
@@ -515,12 +515,8 @@ def main():
             except Exception as e:
                 logger.error(f"[ERROR] Stage 5c (HGT signatures) failed for {bgc_id}: {e}")
             
-            # 5d. Molecular Clocking & Phylogenetics of top 25 reference strains
+            # 5d. Molecular clocking and individual phylogeny tree for BGC removed for debloating
             result_phy = None
-            try:
-                result_phy = run_phylogeny_pipeline(args.query, ref_strains, identities, sim_matrix, bgc_out_dir, logger, bgc_blast_results=blast_rows, qc_result=qc_result)
-            except Exception as e:
-                logger.error(f"[ERROR] Stage 5d (Phylogeny) failed for {bgc_id}: {e}")
             
             # 5f. Precursor stoichiometric ATP synthesis cost calculation
             stoichiometry_data = {}
