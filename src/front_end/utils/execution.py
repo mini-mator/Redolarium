@@ -165,8 +165,13 @@ def trigger_github_action(state):
     if not query_url:
         return False, "Failed to upload query sequence to tmpfiles.org"
         
-    # Get GitHub token from secrets
-    token = st.secrets.get("GITHUB_TOKEN", None)
+    # Get GitHub token from secrets safely
+    token = None
+    try:
+        token = st.secrets.get("GITHUB_TOKEN", None)
+    except FileNotFoundError:
+        return False, "secrets.toml not found. Please create .streamlit/secrets.toml with your GITHUB_TOKEN."
+        
     if not token:
         return False, "GITHUB_TOKEN is missing in .streamlit/secrets.toml"
         
