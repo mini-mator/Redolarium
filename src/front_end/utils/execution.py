@@ -192,16 +192,16 @@ def trigger_github_action(state):
         
     query_url = ""
     query_acc = ""
-    if getattr(state, 'query_type', "") == "NCBI Accession ID":
-        query_acc = state.query_accession
+    if state.get('query_type', "") == "NCBI Accession ID":
+        query_acc = state.get('query_accession', "")
     else:
-        query_url = upload_to_github_jobs_branch(state.query_file_path, state.job_id, token)
+        query_url = upload_to_github_jobs_branch(state.get('query_file_path', ""), state.get('job_id', ""), token)
         if not query_url:
             return False, "Failed to upload query sequence to GitHub"
             
     ref_acc = ""
-    if getattr(state, 'ref_type', "") == "NCBI Accession ID":
-        ref_acc = state.ref_accession
+    if state.get('ref_type', "") == "NCBI Accession ID":
+        ref_acc = state.get('ref_accession', "")
         
     repo = "mini-mator/Redolarium"
     url = f"https://api.github.com/repos/{repo}/dispatches"
@@ -213,29 +213,29 @@ def trigger_github_action(state):
     }
     
     opts = []
-    if getattr(state, 'adv_bgc_gap', None): opts.extend(["--adv-bgc-gap", str(state.adv_bgc_gap)])
-    if getattr(state, 'adv_bgc_flank', None): opts.extend(["--adv-bgc-flank", str(state.adv_bgc_flank)])
-    if getattr(state, 'adv_hgt_zscore', None): opts.extend(["--adv-hgt-zscore", str(state.adv_hgt_zscore)])
-    if getattr(state, 'adv_hgt_tnf_window', None): opts.extend(["--adv-hgt-tnf-window", str(state.adv_hgt_tnf_window)])
-    if getattr(state, 'adv_promoter_window', None): opts.extend(["--adv-promoter-window", str(state.adv_promoter_window)])
-    if getattr(state, 'adv_homology_identity', None): opts.extend(["--adv-homology-identity", str(state.adv_homology_identity)])
-    if getattr(state, 'adv_homology_evalue', None): opts.extend(["--adv-homology-evalue", str(state.adv_homology_evalue)])
-    if getattr(state, 'adv_clock_multiplier', None): opts.extend(["--adv-clock-multiplier", str(state.adv_clock_multiplier)])
-    if getattr(state, 'adv_metabolic_mode', None): opts.extend(["--adv-metabolic-mode", str(state.adv_metabolic_mode)])
-    if getattr(state, 'adv_cargo_identity', None): opts.extend(["--adv-cargo-identity", str(state.adv_cargo_identity)])
-    if getattr(state, 'adv_cargo_coverage', None): opts.extend(["--adv-cargo-coverage", str(state.adv_cargo_coverage)])
-    if getattr(state, 'adv_cargo_bitscore', None): opts.extend(["--adv-cargo-bitscore", str(state.adv_cargo_bitscore)])
+    if state.get('adv_bgc_gap'): opts.extend(["--adv-bgc-gap", str(state.get('adv_bgc_gap'))])
+    if state.get('adv_bgc_flank'): opts.extend(["--adv-bgc-flank", str(state.get('adv_bgc_flank'))])
+    if state.get('adv_hgt_zscore'): opts.extend(["--adv-hgt-zscore", str(state.get('adv_hgt_zscore'))])
+    if state.get('adv_hgt_tnf_window'): opts.extend(["--adv-hgt-tnf-window", str(state.get('adv_hgt_tnf_window'))])
+    if state.get('adv_promoter_window'): opts.extend(["--adv-promoter-window", str(state.get('adv_promoter_window'))])
+    if state.get('adv_homology_identity'): opts.extend(["--adv-homology-identity", str(state.get('adv_homology_identity'))])
+    if state.get('adv_homology_evalue'): opts.extend(["--adv-homology-evalue", str(state.get('adv_homology_evalue'))])
+    if state.get('adv_clock_multiplier'): opts.extend(["--adv-clock-multiplier", str(state.get('adv_clock_multiplier'))])
+    if state.get('adv_metabolic_mode'): opts.extend(["--adv-metabolic-mode", str(state.get('adv_metabolic_mode'))])
+    if state.get('adv_cargo_identity'): opts.extend(["--adv-cargo-identity", str(state.get('adv_cargo_identity'))])
+    if state.get('adv_cargo_coverage'): opts.extend(["--adv-cargo-coverage", str(state.get('adv_cargo_coverage'))])
+    if state.get('adv_cargo_bitscore'): opts.extend(["--adv-cargo-bitscore", str(state.get('adv_cargo_bitscore'))])
     
     payload = {
         "event_type": "run_redolarium",
         "client_payload": {
-            "job_id": state.job_id,
+            "job_id": state.get('job_id', ""),
             "query_url": query_url,
             "query_acc": query_acc,
             "ref_acc": ref_acc,
-            "email": state.email_id,
-            "target_bgc": "all" if state.analysis_bgc else "none",
-            "run_blast": "true" if state.analysis_query_vs_ref else "false",
+            "email": state.get('email_id', ""),
+            "target_bgc": "all" if state.get('analysis_bgc', False) else "none",
+            "run_blast": "true" if state.get('analysis_query_vs_ref', False) else "false",
             "opts": " ".join(opts)
         }
     }
