@@ -30,11 +30,12 @@ def evaluate_predictions():
     for _, row in df_manifest.iterrows():
         acc = row["Genome_Accession"]
         mibig_id = row["MIBiG_ID"]
+        category = row.get("Category", "Unknown")
         gt_start = int(row["Start_Coord"])
         gt_end = int(row["End_Coord"])
         gt_class = row["BGC_Class"]
         
-        summary_file = os.path.join(RESULTS_DIR, acc, "bgc", "BGC_Comprehensive_Summary.xlsx")
+        summary_file = os.path.join(RESULTS_DIR, category, acc, "bgc", "BGC_Comprehensive_Summary.xlsx")
         
         detected = False
         pred_id = "None"
@@ -75,13 +76,12 @@ def evaluate_predictions():
             "Genome": acc,
             "MIBiG_ID": mibig_id,
             "Ground_Truth_Class": gt_class,
+            "Category": category,
             "Status": "True Positive" if detected else "False Negative",
             "Predicted_BGC_ID": pred_id,
             "Overlap_Percent": f"{overlap_pct:.1f}%"
         })
         
-    recall = (true_positives / total_mibig_clusters) * 100 if total_mibig_clusters > 0 else 0
-    
     os.makedirs(ANALYTICS_DIR, exist_ok=True)
     df_val = pd.DataFrame(validation_records)
     df_val.to_csv(os.path.join(ANALYTICS_DIR, "Validation_Matrix.csv"), index=False)
@@ -89,10 +89,16 @@ def evaluate_predictions():
     print("\n" + "="*50)
     print(" GROUND TRUTH VALIDATION RESULTS (Phase 3)")
     print("="*50)
-    print(f"Total MIBiG Reference BGCs: {total_mibig_clusters}")
-    print(f"Successfully Detected (True Positives): {true_positives}")
-    print(f"Missed (False Negatives): {false_negatives}")
-    print(f"PIPELINE SENSITIVITY (RECALL): {recall:.2f}%")
+    
+    if not df_val.empty:
+        for cat in df_val["Category"].unique():
+            cat_df = df_val[df_val["Category"] == cat]
+            tot = len(cat_df)
+            tp = len(cat_df[cat_df["Status"] == "True Positive"])
+            fn = tot - tp
+            recall = (tp / tot) * 100 if tot > 0 else 0
+            print(f"[{cat}] Total: {tot} | True Positives: {tp} | Missed: {fn} | Recall: {recall:.2f}%")
+            
     print("="*50)
     print("NOTE: Precision requires manual curation of 'novel' predictions which MIBiG lacks.")
     print("="*50 + "\n")

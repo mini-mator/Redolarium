@@ -1,0 +1,6 @@
+REDOLARIUM PIPELINE PROVENANCE LOG
+==================================
+Redolarium Pipeline: v1.1.0 (Strict HMM Branch)
+antiSMASH Version: 7.0.0 (via Docker)
+PyHMMER Version: 0.10.4
+Ground Truth Database: MIBiG JSON 3.1

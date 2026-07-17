@@ -1,0 +1,1142 @@
+
+==================================================
+FAILURE: BN001301.1 (Worker 3)
+==================================================
+
+==================================================
+
+==================================================
+FAILURE: AL123456.3 (Worker 4)
+==================================================
+
+==================================================
+
+==================================================
+FAILURE: FN667741.1 (Worker 3)
+==================================================
+
+==================================================
+
+==================================================
+FAILURE: AP008208.2 (Worker 2)
+==================================================
+
+==================================================
+
+==================================================
+FAILURE: FR845719.1 (Worker 1)
+==================================================
+
+==================================================
+
+==================================================
+FAILURE: KV411304.1 (Worker 0)
+==================================================
+2026-07-14 16:58:18,018 - INFO - Initializing Redolarium analytical run...
+2026-07-14 16:58:18,018 - INFO - Query file: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\genomes\KV411304.1.gbk
+2026-07-14 16:58:18,019 - INFO - Reference file: None
+2026-07-14 16:58:18,019 - INFO - Output directory structure initialized under: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\KV411304.1
+2026-07-14 16:58:18,019 - INFO - Dynamically generated Snakefile for workflow reproduction at: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\KV411304.1\Snakefile
+2026-07-14 16:58:18,019 - INFO - Stage 0: Running Genome Assembly Quality Control (QC)...
+2026-07-14 16:58:18,396 - INFO - Input sequence loaded in GenBank format.
+2026-07-14 16:58:18,427 - INFO - Assembly QC finished. Closure Status: Draft, Completeness: 100.00%, N50: 4638951 bp
+2026-07-14 16:58:18,461 - INFO - Stage 1 & 2: Annotation & Comparative Genomics...
+2026-07-14 16:58:18,888 - INFO - No reference genome provided. Running dynamic NCBI BLAST queries...
+2026-07-14 16:58:19,238 - INFO - Extracting core housekeeping marker for phylogenetic reference selection...
+2026-07-14 16:58:19,242 - INFO - Identified core marker gene: trpB. Initializing BLASTp against 'trpB' marker...
+2026-07-14 16:58:19,243 - INFO - Tier 1 Gate: Sweeping local BLAST database...
+2026-07-14 16:58:19,244 - INFO - NCBI BLAST+ local binary and local database 'ref_markers_db' detected (Mode 1: Offline). Initializing offline query...
+2026-07-14 16:58:19,245 - INFO - Executing command: F:\IITk\Redolarium\redolarium_github\src\redolarium\blast\ncbi-blast-2.17.0+\bin\blastp.EXE -query [SECURE_LOCAL_PATH]\AppData\Local\Temp\tmpcvr0qf14 -db ref_markers_db -outfmt 5 -out [SECURE_LOCAL_PATH]\AppData\Local\Temp\tmpcvr0qf14.xml
+2026-07-14 16:58:20,427 - WARNING - Local execution check failed: Command '['F:\\IITk\\Redolarium\\redolarium_github\\src\\redolarium\\blast\\ncbi-blast-2.17.0+\\bin\\blastp.EXE', '-query', 'C:\\Users\\antog\\AppData\\Local\\Temp\\tmpcvr0qf14', '-db', 'ref_markers_db', '-outfmt', '5', '-out', 'C:\\Users\\antog\\AppData\\Local\\Temp\\tmpcvr0qf14.xml']' returned non-zero exit status 3221225786.. Reverting to remote BLAST fallback...
+==================================================
+
+==================================================
+FAILURE: CP008953.1 (Worker 4)
+==================================================
+2026-07-14 16:57:16,204 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia pseudomallei (ID: 39.3%).
+2026-07-14 16:57:16,204 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia pseudomallei (ID: 39.3%).
+2026-07-14 16:57:16,204 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia pseudomallei (ID: 39.3%).
+2026-07-14 16:57:16,204 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia perseverans (ID: 40.4%).
+2026-07-14 16:57:16,204 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia ambifaria (ID: 39.7%).
+2026-07-14 16:57:16,204 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia ambifaria (ID: 39.7%).
+2026-07-14 16:57:16,204 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia ambifaria (ID: 39.7%).
+2026-07-14 16:57:16,204 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia ambifaria (ID: 39.7%).
+2026-07-14 16:57:16,204 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia ambifaria (ID: 39.7%).
+2026-07-14 16:57:16,204 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter sp. D009 (ID: 45.2%).
+2026-07-14 16:57:16,204 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia ambifaria (ID: 39.7%).
+2026-07-14 16:57:16,204 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter schindleri (ID: 41.9%).
+2026-07-14 16:57:16,204 - INFO - [Local_DB] Ignored low-identity hit: Pandoraea pnomenusa (ID: 40.1%).
+2026-07-14 16:57:16,204 - INFO - [Local_DB] Ignored low-identity hit: Pandoraea pnomenusa (ID: 39.8%).
+2026-07-14 16:57:16,204 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.2%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 44.5%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter junii (ID: 44.3%).
+2026-07-14 16:57:16,205 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces sp. II-2-2-2 (ID: 39.7%).
+2026-07-14 16:57:16,206 - INFO - [Local_DB] Ignored low-identity hit: Escherichia coli str. K-12 substr. DH10B (ID: 26.7%).
+2026-07-14 16:57:16,206 - INFO - [Local_DB] Ignored low-identity hit: Amycolatopsis keratiniphila (ID: 30.0%).
+2026-07-14 16:57:16,206 - INFO - [Local_DB] Ignored low-identity hit: Rhodococcus sp. PSBB049 (ID: 26.1%).
+2026-07-14 16:57:16,206 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia cenocepacia (ID: 27.8%).
+2026-07-14 16:57:16,206 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia pseudosolanacearum (ID: 33.3%).
+2026-07-14 16:57:16,206 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia vietnamiensis (ID: 33.3%).
+2026-07-14 16:57:16,206 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia multivorans (ID: 27.0%).
+2026-07-14 16:57:16,206 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia solanacearum (ID: 29.2%).
+2026-07-14 16:57:16,206 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia sp. (ID: 22.4%).
+2026-07-14 16:57:16,206 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia ubonensis (ID: 21.3%).
+2026-07-14 16:57:16,206 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia thailandensis (ID: 27.1%).
+2026-07-14 16:57:16,206 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia pseudomallei (ID: 28.6%).
+2026-07-14 16:57:16,207 - INFO - [Local_DB] Ignored low-identity hit: Bacillus subtilis (ID: 26.8%).
+2026-07-14 16:57:16,207 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia solanacearum (ID: 25.9%).
+2026-07-14 16:57:16,207 - INFO - Tier 2 Gate: Local references (4) below target 10. Triggering remote BLAST expansion...
+2026-07-14 16:57:16,207 - INFO - Waiting for lock to perform remote NCBI BLAST query (preventing parallel IP throttling)...
+2026-07-14 16:57:31,211 - INFO - Lock acquired. Executing remote NCBI BLAST query for reference expansion...
+==================================================
+
+==================================================
+FAILURE: BN001301.1 (Worker 3)
+==================================================
+2026-07-14 16:50:11,050 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter schindleri (ID: 37.2%).
+2026-07-14 16:50:11,050 - INFO - [Local_DB] Ignored low-identity hit: Rhodococcus sp. P-2 (ID: 35.6%).
+2026-07-14 16:50:11,050 - INFO - [Local_DB] Ignored low-identity hit: Rhodococcus sp. (in: high G+C Gram-positive bacteria) (ID: 35.8%).
+2026-07-14 16:50:11,050 - INFO - [Local_DB] Ignored low-identity hit: Rhodococcus qingshengii (ID: 35.8%).
+2026-07-14 16:50:11,050 - INFO - [Local_DB] Ignored low-identity hit: Nocardia yunnanensis (ID: 36.9%).
+2026-07-14 16:50:11,050 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces hawaiiensis (ID: 36.6%).
+2026-07-14 16:50:11,050 - INFO - [Local_DB] Ignored low-identity hit: Prescottella equi (ID: 35.3%).
+2026-07-14 16:50:11,050 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces xiamenensis (ID: 36.8%).
+2026-07-14 16:50:11,050 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces spectabilis (ID: 38.4%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces sp. EMB26 (ID: 37.1%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces sp. FW42 (ID: 37.1%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Nocardia seriolae (ID: 36.9%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces vietnamensis (ID: 36.8%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter junii (ID: 36.9%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces alboniger (ID: 37.5%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Nocardia seriolae (ID: 36.5%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces lincolnensis (ID: 36.9%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Vibrio cholerae (ID: 35.8%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces sp. II-2-2-2 (ID: 36.8%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces coeruleorubidus (ID: 36.9%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces chartreusis (ID: 36.4%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Pseudomonas [fluorescens (ID: 35.4%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Pseudomonas syringae pv. tomato str. DC3000 (ID: 34.6%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces pluripotens (ID: 36.7%).
+2026-07-14 16:50:11,051 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces ambofaciens ATCC 23877 (ID: 36.6%).
+2026-07-14 16:50:11,052 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces prasinus (ID: 37.6%).
+2026-07-14 16:50:11,052 - INFO - [Local_DB] Ignored low-identity hit: Pseudomonas putida KT2440 (ID: 35.4%).
+2026-07-14 16:50:11,052 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces cinereoruber (ID: 35.7%).
+2026-07-14 16:50:11,052 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces coelicolor A3(2) (ID: 36.2%).
+2026-07-14 16:50:11,052 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces sp. ARC32 (ID: 36.1%).
+2026-07-14 16:50:11,052 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia perseverans (ID: 34.4%).
+2026-07-14 16:50:11,052 - INFO - [Local_DB] Ignored low-identity hit: Streptomyces sp. BRB040 (ID: 35.9%).
+2026-07-14 16:50:11,052 - INFO - [Local_DB] Ignored low-identity hit: Clostridium sporogenes (ID: 36.3%).
+2026-07-14 16:50:11,052 - INFO - [Local_DB] Ignored low-identity hit: Clostridium sporogenes (ID: 36.3%).
+2026-07-14 16:50:11,052 - INFO - [Local_DB] Ignored low-identity hit: Erwinia aphidicola (ID: 35.7%).
+2026-07-14 16:50:11,052 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia cepacia (ID: 34.6%).
+2026-07-14 16:50:11,052 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia thailandensis (ID: 32.9%).
+2026-07-14 16:50:11,052 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia vietnamiensis (ID: 31.8%).
+2026-07-14 16:50:11,053 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia solanacearum (ID: 29.9%).
+2026-07-14 16:50:11,053 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia pseudosolanacearum (ID: 29.4%).
+2026-07-14 16:50:11,053 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia solanacearum (ID: 29.4%).
+2026-07-14 16:50:11,053 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia solanacearum (ID: 30.1%).
+2026-07-14 16:50:11,053 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia solanacearum (ID: 30.1%).
+2026-07-14 16:50:11,053 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia solanacearum (ID: 30.1%).
+2026-07-14 16:50:11,053 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia solanacearum (ID: 30.1%).
+2026-07-14 16:50:11,053 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia solanacearum (ID: 30.1%).
+2026-07-14 16:50:11,053 - INFO - [Local_DB] Ignored low-identity hit: Escherichia coli str. K-12 substr. DH10B (ID: 30.3%).
+2026-07-14 16:50:11,053 - INFO - [Local_DB] Ignored low-identity hit: Vibrio paracholerae (ID: 30.5%).
+2026-07-14 16:50:11,053 - INFO - Tier 2 Gate: Local references (0) below target 10. Triggering remote BLAST expansion...
+2026-07-14 16:50:11,054 - INFO - Waiting for lock to perform remote NCBI BLAST query (preventing parallel IP throttling)...
+==================================================
+
+==================================================
+FAILURE: CP001778.1 (Worker 2)
+==================================================
+2026-07-14 16:57:32,222 - INFO - [Remote_DB] Ignored low-identity hit: unclassified Micromonospora (ID: 61.1%).
+2026-07-14 16:57:32,222 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora marina (ID: 61.5%).
+2026-07-14 16:57:32,222 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora sp. WMMA1998 (ID: 62.0%).
+2026-07-14 16:57:32,222 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora sp. NPDC051925 (ID: 62.4%).
+2026-07-14 16:57:32,222 - INFO - [Remote_DB] Ignored low-identity hit: unclassified Micromonospora (ID: 62.4%).
+2026-07-14 16:57:32,222 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora sp. WMMD1076 (ID: 61.1%).
+2026-07-14 16:57:32,222 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora costi (ID: 63.1%).
+2026-07-14 16:57:32,222 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora sp. GCM10011542 (ID: 61.4%).
+2026-07-14 16:57:32,222 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora sp. NPDC051006 (ID: 62.4%).
+2026-07-14 16:57:32,222 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora sp. 15K316 (ID: 63.2%).
+2026-07-14 16:57:32,222 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora sediminicola (ID: 63.0%).
+2026-07-14 16:57:32,222 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora tulbaghiae (ID: 61.1%).
+2026-07-14 16:57:32,222 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora sp. WMMD998 (ID: 60.8%).
+2026-07-14 16:57:32,222 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora sp. (ID: 62.2%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora marina (ID: 62.3%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora (ID: 62.9%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora tulbaghiae (ID: 61.1%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora rifamycinica (ID: 62.5%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora sp. NPDC049366 (ID: 63.5%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora nigra (ID: 62.0%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora sediminicola (ID: 63.0%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: unclassified Micromonospora (ID: 61.9%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora chalcea (ID: 61.7%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora tulbaghiae (ID: 60.8%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora (ID: 62.2%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora avicenniae (ID: 62.4%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora tulbaghiae (ID: 61.4%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Pilimelia sp. (ID: 64.1%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora chalcea (ID: 61.7%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora sp. NPDC005367 (ID: 62.7%).
+2026-07-14 16:57:32,223 - INFO - [Remote_DB] Ignored low-identity hit: Micromonospora vinacea (ID: 61.1%).
+[CRITICAL_WARNING]: Exhausted all available BLAST search modes. Comparative analysis proceeding with 0 reference organisms (Below threshold of 10).
+2026-07-14 16:57:32,224 - WARNING - [CRITICAL_WARNING]: Exhausted all available BLAST search modes. Comparative analysis proceeding with 0 reference organisms (Below threshold of 10).
+2026-07-14 16:57:32,224 - INFO - Results provenance report saved to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP001778.1\results_provenance.csv
+2026-07-14 16:57:32,224 - WARNING - [CRITICAL_WARNING] Failed to retrieve any reference assemblies from NCBI. Falling back to self-comparison to prevent pipeline crash.
+2026-07-14 16:57:32,224 - INFO - [INFO] Proceeding with 1 valid reference assemblies.
+2026-07-14 16:57:32,576 - INFO - Using cached GenBank record for reference strain: resources/reference_genomes_cache\CP001778.1.gb
+2026-07-14 16:57:32,590 - INFO - Saved comparative reference BLAST list to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP001778.1\comparative_genomics\comparative_reference_blast.csv
+2026-07-14 16:57:32,590 - INFO - Estimating operon density from genome annotation...
+2026-07-14 16:57:32,604 - INFO - Operon estimation completed. Total predicted operons: 3394, Mean operon length: 1.88 genes
+2026-07-14 16:57:32,604 - INFO - Adaptive ortholog window calculated dynamically: 10 genes (based on mean operon length: 1.88)
+2026-07-14 16:57:33,208 - INFO - Launching parallel synteny comparative mapping over 4 cores...
+Traceback (most recent call last):
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\multiprocessing\queues.py", line 266, in _feed
+send_bytes(obj)
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\multiprocessing\connection.py", line 184, in send_bytes
+self._check_closed()
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\multiprocessing\connection.py", line 137, in _check_closed
+raise OSError("handle is closed")
+OSError: handle is closed
+==================================================
+
+==================================================
+FAILURE: NZ_GG657756.1 (Worker 4)
+==================================================
+2026-07-14 16:57:59,102 - INFO - Evaluating targeted cluster of interest: BGC_80 (Other)...
+2026-07-14 16:58:00,317 - INFO - Stage 10: Genome-Aware Promoter Identification and PSSM Extraction...
+2026-07-14 16:58:01,234 - INFO - Extracted organism taxonomy mapped to phylum: Actinomycetota. Genus: Streptomyces. Applying Actinomycetota motif PSSMs.
+2026-07-14 16:58:01,316 - INFO - Detected 4 putative regulatory elements in BGC BGC_80. Architecture: Unknown (No promoters found)
+2026-07-14 16:58:01,319 - INFO - Saved targeted BGC promoter motifs data to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\bgc_motifs\BGC_80_promoter_motifs.csv
+2026-07-14 16:58:01,342 - INFO - Saved prophage flanking artifacts to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\tabular_data\BGC_80_phage_artifacts.csv
+2026-07-14 16:58:03,483 - INFO - Saved BGC synteny blocks visual to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\hgt_evolution\BGC_80_bgc_synteny_blocks.png
+2026-07-14 16:58:03,505 - INFO - Stage 10: Genome-Aware Promoter Identification and PSSM Extraction...
+2026-07-14 16:58:04,413 - INFO - Extracted organism taxonomy mapped to phylum: Actinomycetota. Genus: Streptomyces. Applying Actinomycetota motif PSSMs.
+2026-07-14 16:58:04,495 - INFO - Detected 4 putative regulatory elements in BGC BGC_80. Architecture: Unknown (No promoters found)
+2026-07-14 16:58:04,497 - INFO - Saved targeted BGC promoter motifs data to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\bgc_motifs\BGC_80_promoter_motifs.csv
+2026-07-14 16:58:04,524 - INFO - Stage 6: Running Evolutionary & Acquisition (HGT) Analysis...
+2026-07-14 16:58:05,670 - INFO - Vectorizing genome-wide GC and TNF signatures...
+2026-07-14 16:58:06,907 - INFO - Calculating genome-wide codon baseline vector...
+2026-07-14 16:58:09,984 - INFO - Saved Pydantic-validated HGT JSON payload to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\hgt_evolution\BGC_80_hgt_validated.json
+2026-07-14 16:58:09,988 - INFO - Saved sliding window HGT CSV to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\hgt_evolution\BGC_80_hgt_sliding_windows.csv
+2026-07-14 16:58:10,782 - INFO - Saved HGT GC/TNF line plots to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\hgt_evolution\BGC_80_hgt_signatures.png
+2026-07-14 16:58:10,812 - INFO - Stage 7: Conducting Molecular Clocking & Phylogenetics...
+2026-07-14 16:58:11,721 - INFO - Saved BGC presence/absence matrix to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\tabular_data\bgc_presence_absence.csv
+2026-07-14 16:58:11,723 - INFO - Saved real divergence timeline dataset to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\tabular_data\divergence_events.csv
+C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\site-packages\scipy\cluster\hierarchy\_hierarchy_impl.py:2877: UserWarning: Attempting to set identical low and high xlims makes transformation singular; automatically expanding.
+ax.set_xlim([dvw, 0])
+F:\IITk\Redolarium\redolarium_github\src\redolarium\phylogeny.py:165: UserWarning: Glyph 9733 (\N{BLACK STAR}) missing from font(s) Arial.
+plt.tight_layout()
+F:\IITk\Redolarium\redolarium_github\src\redolarium\utils.py:98: UserWarning: Glyph 9733 (\N{BLACK STAR}) missing from font(s) Arial.
+plt.savefig(fig_path, dpi=dpi, bbox_inches='tight')
+F:\IITk\Redolarium\redolarium_github\src\redolarium\utils.py:100: UserWarning: Glyph 9733 (\N{BLACK STAR}) missing from font(s) Arial.
+plt.savefig(svg_path, format="svg", bbox_inches='tight')
+2026-07-14 16:58:12,134 - INFO - Saved UPGMA phylogenetic tree placement to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\phylogeny_trees\phylogenetic_tree.png
+2026-07-14 16:58:12,427 - INFO - Saved speciation timeline flowchart to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\phylogeny_trees\divergence_timeline.png
+2026-07-14 16:58:12,456 - INFO - Stage 9: Mapping Metabolic-BGC Linkage and Stoichiometry...
+2026-07-14 16:58:13,357 - INFO - Calculating thermodynamic baselines for core housekeeping proteins...
+2026-07-14 16:58:13,379 - INFO - Saved housekeeping thermodynamic baseline stoichiometry to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\tabular_data\BGC_80_housekeeping_atp_stoichiometry.csv
+2026-07-14 16:58:13,379 - INFO - Prepropeptide parsed (length: 642 aa, type: biosynthetic_enzymes). Mapped AA demand: {'M': 11, 'R': 64, 'V': 61, 'L': 89, 'A': 87, 'E': 40, 'D': 38, 'F': 18, 'G': 57, 'H': 9, 'I': 24, 'T': 33, 'P': 32, 'S': 27, 'Q': 15, 'C': 4, 'Y': 9, 'K': 8, 'N': 7, 'W': 9}
+2026-07-14 16:58:13,381 - INFO - Saved ATP stoichiometry details to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\tabular_data\BGC_80_atp_stoichiometry.csv
+2026-07-14 16:58:14,172 - INFO - Saved precursor burden dual-axis plot to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\metabolic_pathways\BGC_80_precursor_burden.png
+2026-07-14 16:58:15,195 - INFO - Saved metabolic linkage map to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\metabolic_pathways\BGC_80_metabolic_linkage.png
+2026-07-14 16:58:15,233 - INFO - Synthesizing Evidence Graph DAG across all analysis checkpoints...
+2026-07-14 16:58:15,234 - INFO - Saved Evidence Graph JSON payload to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\tabular_data\evidence_graph.json
+2026-07-14 16:58:15,622 - INFO - Saved Evidence Flowchart rendering to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\phylogeny_trees\evidence_flowchart.png
+2026-07-14 16:58:16,777 - INFO - Compiling 12-sheet Excel workbook for BGC_80...
+2026-07-14 16:58:17,346 - INFO - Drafting comprehensive Word report for BGC_80...
+2026-07-14 16:58:17,387 - INFO - Word report compiled successfully: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_80\BGC_80_BGC_Report.docx
+2026-07-14 16:58:17,388 - INFO - Starting downstream analysis for target: BGC_81 (Other)
+2026-07-14 16:58:17,390 - INFO - Evaluating targeted cluster of interest: BGC_81 (Other)...
+2026-07-14 16:58:18,315 - INFO - Stage 10: Genome-Aware Promoter Identification and PSSM Extraction...
+2026-07-14 16:58:19,513 - INFO - Extracted organism taxonomy mapped to phylum: Actinomycetota. Genus: Streptomyces. Applying Actinomycetota motif PSSMs.
+2026-07-14 16:58:19,557 - INFO - Detected 2 putative regulatory elements in BGC BGC_81. Architecture: Unknown (No promoters found)
+2026-07-14 16:58:19,559 - INFO - Saved targeted BGC promoter motifs data to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_81\bgc_motifs\BGC_81_promoter_motifs.csv
+2026-07-14 16:58:19,582 - INFO - Saved prophage flanking artifacts to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_GG657756.1\bgc\BGC_81\tabular_data\BGC_81_phage_artifacts.csv
+==================================================
+
+==================================================
+FAILURE: CP002395.1 (Worker 2)
+==================================================
+2026-07-16 10:20:33,007 - INFO - Drafting comprehensive Word report for BGC_05...
+2026-07-16 10:20:33,045 - INFO - Word report compiled successfully: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_05\BGC_05_BGC_Report.docx
+2026-07-16 10:20:33,045 - INFO - Starting downstream analysis for target: BGC_06 (Other)
+2026-07-16 10:20:33,047 - INFO - Evaluating targeted cluster of interest: BGC_06 (Other)...
+2026-07-16 10:20:33,426 - INFO - Stage 10: Genome-Aware Promoter Identification and PSSM Extraction...
+2026-07-16 10:20:33,623 - WARNING - Proteobacteria detected, but genus is Asticcacaulis. Rule R4 prohibits cross-genus motif mapping. Aborting promoter prediction.
+2026-07-16 10:20:33,623 - WARNING - No validated promoter motifs exist for genus Asticcacaulis. Returning empty dataset per Rule R4.
+2026-07-16 10:20:33,631 - INFO - Saved prophage flanking artifacts to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\tabular_data\BGC_06_phage_artifacts.csv
+2026-07-16 10:20:35,222 - INFO - Saved BGC synteny blocks visual to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\hgt_evolution\BGC_06_bgc_synteny_blocks.png
+2026-07-16 10:20:35,229 - INFO - Stage 10: Genome-Aware Promoter Identification and PSSM Extraction...
+2026-07-16 10:20:35,583 - WARNING - Proteobacteria detected, but genus is Asticcacaulis. Rule R4 prohibits cross-genus motif mapping. Aborting promoter prediction.
+2026-07-16 10:20:35,583 - WARNING - No validated promoter motifs exist for genus Asticcacaulis. Returning empty dataset per Rule R4.
+2026-07-16 10:20:35,591 - INFO - Stage 6: Running Evolutionary & Acquisition (HGT) Analysis...
+2026-07-16 10:20:35,798 - INFO - Vectorizing genome-wide GC and TNF signatures...
+2026-07-16 10:20:36,402 - INFO - Calculating genome-wide codon baseline vector...
+2026-07-16 10:20:37,989 - INFO - Saved Pydantic-validated HGT JSON payload to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\hgt_evolution\BGC_06_hgt_validated.json
+2026-07-16 10:20:37,992 - INFO - Saved sliding window HGT CSV to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\hgt_evolution\BGC_06_hgt_sliding_windows.csv
+2026-07-16 10:20:38,816 - INFO - Saved HGT GC/TNF line plots to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\hgt_evolution\BGC_06_hgt_signatures.png
+2026-07-16 10:20:38,825 - INFO - Stage 7: Conducting Molecular Clocking & Phylogenetics...
+2026-07-16 10:20:39,164 - INFO - Saved BGC presence/absence matrix to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\tabular_data\bgc_presence_absence.csv
+2026-07-16 10:20:39,167 - INFO - Saved real divergence timeline dataset to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\tabular_data\divergence_events.csv
+F:\IITk\Redolarium\redolarium_github\src\redolarium\phylogeny.py:165: UserWarning: Glyph 9733 (\N{BLACK STAR}) missing from font(s) Arial.
+plt.tight_layout()
+F:\IITk\Redolarium\redolarium_github\src\redolarium\utils.py:98: UserWarning: Glyph 9733 (\N{BLACK STAR}) missing from font(s) Arial.
+plt.savefig(fig_path, dpi=dpi, bbox_inches='tight')
+F:\IITk\Redolarium\redolarium_github\src\redolarium\utils.py:100: UserWarning: Glyph 9733 (\N{BLACK STAR}) missing from font(s) Arial.
+plt.savefig(svg_path, format="svg", bbox_inches='tight')
+2026-07-16 10:20:39,600 - INFO - Saved UPGMA phylogenetic tree placement to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\phylogeny_trees\phylogenetic_tree.png
+2026-07-16 10:20:39,956 - INFO - Saved speciation timeline flowchart to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\phylogeny_trees\divergence_timeline.png
+2026-07-16 10:20:39,964 - INFO - Stage 9: Mapping Metabolic-BGC Linkage and Stoichiometry...
+2026-07-16 10:20:40,170 - INFO - Calculating thermodynamic baselines for core housekeeping proteins...
+2026-07-16 10:20:40,178 - INFO - Saved housekeeping thermodynamic baseline stoichiometry to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\tabular_data\BGC_06_housekeeping_atp_stoichiometry.csv
+2026-07-16 10:20:40,178 - INFO - Prepropeptide parsed (length: 239 aa, type: biosynthetic_enzymes). Mapped AA demand: {'M': 11, 'L': 34, 'C': 2, 'N': 3, 'R': 10, 'V': 24, 'I': 16, 'D': 6, 'P': 15, 'Q': 4, 'S': 8, 'H': 8, 'Y': 7, 'T': 11, 'W': 8, 'A': 30, 'G': 26, 'F': 11, 'K': 5}
+2026-07-16 10:20:40,181 - INFO - Saved ATP stoichiometry details to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\tabular_data\BGC_06_atp_stoichiometry.csv
+2026-07-16 10:20:41,204 - INFO - Saved precursor burden dual-axis plot to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\metabolic_pathways\BGC_06_precursor_burden.png
+2026-07-16 10:20:42,259 - INFO - Saved metabolic linkage map to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\metabolic_pathways\BGC_06_metabolic_linkage.png
+2026-07-16 10:20:42,267 - INFO - Synthesizing Evidence Graph DAG across all analysis checkpoints...
+2026-07-16 10:20:42,268 - INFO - Saved Evidence Graph JSON payload to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\tabular_data\evidence_graph.json
+2026-07-16 10:20:42,680 - INFO - Saved Evidence Flowchart rendering to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\phylogeny_trees\evidence_flowchart.png
+2026-07-16 10:20:42,901 - INFO - Compiling 12-sheet Excel workbook for BGC_06...
+2026-07-16 10:20:43,502 - INFO - Drafting comprehensive Word report for BGC_06...
+2026-07-16 10:20:43,542 - INFO - Word report compiled successfully: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP002395.1\bgc\BGC_06\BGC_06_BGC_Report.docx
+2026-07-16 10:20:43,542 - INFO - Starting downstream analysis for target: BGC_07 (Saccharide)
+Traceback (most recent call last):
+File "F:\IITk\Redolarium\redolarium_github\src\redolarium\main.py", line 619, in <module>
+main()
+File "F:\IITk\Redolarium\redolarium_github\src\redolarium\main.py", line 433, in main
+os.makedirs(os.path.join(bgc_out_dir, sub), exist_ok=True)
+File "<frozen os>", line 225, in makedirs
+OSError: [WinError 112] There is not enough space on the disk: 'F:\\IITk\\Redolarium\\redolarium_github\\benchmarks_ground_truth\\data\\results\\CP002395.1\\bgc\\BGC_07\\screening_cazymes'
+==================================================
+
+==================================================
+FAILURE: CP000850.1 (Worker 4)
+==================================================
+2026-07-16 10:21:04,405 - INFO - Word report compiled successfully: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP000850.1\bgc\BGC_31\BGC_31_BGC_Report.docx
+2026-07-16 10:21:04,405 - INFO - Starting downstream analysis for target: BGC_32 (Saccharide)
+2026-07-16 10:21:04,407 - INFO - Evaluating targeted cluster of interest: BGC_32 (Saccharide)...
+2026-07-16 10:21:05,190 - INFO - Stage 10: Genome-Aware Promoter Identification and PSSM Extraction...
+2026-07-16 10:21:05,986 - WARNING - Actinobacteria detected, but genus is Salinispora. Rule R4 prohibits cross-genus motif mapping. Aborting promoter prediction.
+2026-07-16 10:21:05,987 - WARNING - No validated promoter motifs exist for genus Salinispora. Returning empty dataset per Rule R4.
+2026-07-16 10:21:06,001 - INFO - Saved prophage flanking artifacts to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP000850.1\bgc\BGC_32\tabular_data\BGC_32_phage_artifacts.csv
+2026-07-16 10:21:07,815 - ERROR - [ERROR] Stage 5a (BGC Evaluation) failed for BGC_32: [Errno 28] No space left on device
+2026-07-16 10:21:07,830 - INFO - Stage 10: Genome-Aware Promoter Identification and PSSM Extraction...
+2026-07-16 10:21:08,578 - WARNING - Actinobacteria detected, but genus is Salinispora. Rule R4 prohibits cross-genus motif mapping. Aborting promoter prediction.
+2026-07-16 10:21:08,579 - WARNING - No validated promoter motifs exist for genus Salinispora. Returning empty dataset per Rule R4.
+2026-07-16 10:21:08,595 - INFO - Stage 6: Running Evolutionary & Acquisition (HGT) Analysis...
+2026-07-16 10:21:09,087 - INFO - Vectorizing genome-wide GC and TNF signatures...
+2026-07-16 10:21:10,290 - INFO - Calculating genome-wide codon baseline vector...
+2026-07-16 10:21:13,449 - ERROR - [ERROR] Stage 5c (HGT signatures) failed for BGC_32: [Errno 28] No space left on device
+2026-07-16 10:21:13,469 - INFO - Stage 7: Conducting Molecular Clocking & Phylogenetics...
+2026-07-16 10:21:14,224 - INFO - Saved BGC presence/absence matrix to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP000850.1\bgc\BGC_32\tabular_data\bgc_presence_absence.csv
+2026-07-16 10:21:14,226 - INFO - Saved real divergence timeline dataset to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP000850.1\bgc\BGC_32\tabular_data\divergence_events.csv
+F:\IITk\Redolarium\redolarium_github\src\redolarium\phylogeny.py:165: UserWarning: Glyph 9733 (\N{BLACK STAR}) missing from font(s) Arial.
+plt.tight_layout()
+F:\IITk\Redolarium\redolarium_github\src\redolarium\utils.py:98: UserWarning: Glyph 9733 (\N{BLACK STAR}) missing from font(s) Arial.
+plt.savefig(fig_path, dpi=dpi, bbox_inches='tight')
+2026-07-16 10:21:14,529 - WARNING - Failed to generate UPGMA phylogenetic dendrogram: [Errno 28] No space left on device
+2026-07-16 10:21:14,861 - WARNING - Failed to generate Speciation Timeline Flowchart: [Errno 28] No space left on device
+2026-07-16 10:21:14,880 - INFO - Stage 9: Mapping Metabolic-BGC Linkage and Stoichiometry...
+2026-07-16 10:21:14,882 - WARNING - No suitable precursor peptide sequence or BGC enzymes found for linkage stoichiometry. Skipping linkage pipeline for BGC BGC_32.
+2026-07-16 10:21:14,882 - INFO - Synthesizing Evidence Graph DAG across all analysis checkpoints...
+2026-07-16 10:21:14,884 - INFO - Saved Evidence Graph JSON payload to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP000850.1\bgc\BGC_32\tabular_data\evidence_graph.json
+2026-07-16 10:21:15,200 - ERROR - [ERROR] Evidence Graph synthesis failed for BGC_32: [Errno 28] No space left on device
+2026-07-16 10:21:15,988 - INFO - Compiling 12-sheet Excel workbook for BGC_32...
+Traceback (most recent call last):
+File "F:\IITk\Redolarium\redolarium_github\src\redolarium\main.py", line 619, in <module>
+main()
+File "F:\IITk\Redolarium\redolarium_github\src\redolarium\main.py", line 508, in main
+compile_bgc_excel_report(
+File "F:\IITk\Redolarium\redolarium_github\src\redolarium\utils.py", line 909, in compile_bgc_excel_report
+wb.save(out_path)
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\site-packages\openpyxl\workbook\workbook.py", line 386, in save
+save_workbook(self, filename)
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\site-packages\openpyxl\writer\excel.py", line 294, in save_workbook
+writer.save()
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\site-packages\openpyxl\writer\excel.py", line 275, in save
+self.write_data()
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\site-packages\openpyxl\writer\excel.py", line 66, in write_data
+archive.writestr(ARC_THEME, theme_xml)
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\zipfile\__init__.py", line 1900, in writestr
+with self.open(zinfo, mode='w') as dest:
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\zipfile\__init__.py", line 1254, in close
+self._fileobj.seek(self._zinfo.header_offset)
+OSError: [Errno 28] No space left on device
+==================================================
+
+==================================================
+FAILURE: CM000914.1 (Worker 3)
+==================================================
+2026-07-16 10:23:31,073 - INFO - Extracted organism taxonomy mapped to phylum: Actinomycetota. Genus: Streptomyces. Applying Actinomycetota motif PSSMs.
+2026-07-16 10:23:31,073 - INFO - No promoter motifs detected in BGC BGC_19 (threshold > 3.0).
+2026-07-16 10:23:31,075 - INFO - Saved targeted BGC promoter motifs data to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CM000914.1\bgc\BGC_19\bgc_motifs\BGC_19_promoter_motifs.csv
+2026-07-16 10:23:31,079 - INFO - Stage 6: Running Evolutionary & Acquisition (HGT) Analysis...
+2026-07-16 10:23:31,193 - INFO - Vectorizing genome-wide GC and TNF signatures...
+2026-07-16 10:23:31,671 - INFO - Calculating genome-wide codon baseline vector...
+2026-07-16 10:23:33,288 - INFO - Saved Pydantic-validated HGT JSON payload to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CM000914.1\bgc\BGC_19\hgt_evolution\BGC_19_hgt_validated.json
+2026-07-16 10:23:33,292 - INFO - Saved sliding window HGT CSV to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CM000914.1\bgc\BGC_19\hgt_evolution\BGC_19_hgt_sliding_windows.csv
+2026-07-16 10:23:33,659 - ERROR - [ERROR] Stage 5c (HGT signatures) failed for BGC_19: [Errno 28] No space left on device
+2026-07-16 10:23:33,665 - INFO - Stage 7: Conducting Molecular Clocking & Phylogenetics...
+2026-07-16 10:23:33,775 - INFO - Saved BGC presence/absence matrix to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CM000914.1\bgc\BGC_19\tabular_data\bgc_presence_absence.csv
+2026-07-16 10:23:33,777 - INFO - Saved real divergence timeline dataset to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CM000914.1\bgc\BGC_19\tabular_data\divergence_events.csv
+F:\IITk\Redolarium\redolarium_github\src\redolarium\phylogeny.py:165: UserWarning: Glyph 9733 (\N{BLACK STAR}) missing from font(s) Arial.
+plt.tight_layout()
+F:\IITk\Redolarium\redolarium_github\src\redolarium\utils.py:98: UserWarning: Glyph 9733 (\N{BLACK STAR}) missing from font(s) Arial.
+plt.savefig(fig_path, dpi=dpi, bbox_inches='tight')
+F:\IITk\Redolarium\redolarium_github\src\redolarium\utils.py:100: UserWarning: Glyph 9733 (\N{BLACK STAR}) missing from font(s) Arial.
+plt.savefig(svg_path, format="svg", bbox_inches='tight')
+2026-07-16 10:23:34,166 - WARNING - Failed to generate UPGMA phylogenetic dendrogram: [Errno 28] No space left on device
+2026-07-16 10:23:34,347 - WARNING - Failed to generate Speciation Timeline Flowchart: [Errno 28] No space left on device
+2026-07-16 10:23:34,353 - INFO - Stage 9: Mapping Metabolic-BGC Linkage and Stoichiometry...
+2026-07-16 10:23:34,353 - WARNING - No suitable precursor peptide sequence or BGC enzymes found for linkage stoichiometry. Skipping linkage pipeline for BGC BGC_19.
+2026-07-16 10:23:34,353 - INFO - Synthesizing Evidence Graph DAG across all analysis checkpoints...
+2026-07-16 10:23:34,354 - INFO - Saved Evidence Graph JSON payload to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CM000914.1\bgc\BGC_19\tabular_data\evidence_graph.json
+2026-07-16 10:23:34,603 - ERROR - [ERROR] Evidence Graph synthesis failed for BGC_19: [Errno 28] No space left on device
+2026-07-16 10:23:34,869 - INFO - Compiling 12-sheet Excel workbook for BGC_19...
+Traceback (most recent call last):
+File "F:\IITk\Redolarium\redolarium_github\src\redolarium\main.py", line 619, in <module>
+main()
+File "F:\IITk\Redolarium\redolarium_github\src\redolarium\main.py", line 508, in main
+compile_bgc_excel_report(
+File "F:\IITk\Redolarium\redolarium_github\src\redolarium\utils.py", line 909, in compile_bgc_excel_report
+wb.save(out_path)
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\site-packages\openpyxl\workbook\workbook.py", line 386, in save
+save_workbook(self, filename)
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\site-packages\openpyxl\writer\excel.py", line 294, in save_workbook
+writer.save()
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\site-packages\openpyxl\writer\excel.py", line 275, in save
+self.write_data()
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\site-packages\openpyxl\writer\excel.py", line 77, in write_data
+self._write_worksheets()
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\site-packages\openpyxl\writer\excel.py", line 215, in _write_worksheets
+self.write_worksheet(ws)
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\site-packages\openpyxl\writer\excel.py", line 203, in write_worksheet
+self._archive.write(writer.out, ws.path[1:])
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\zipfile\__init__.py", line 1859, in write
+with open(filename, "rb") as src, self.open(zinfo, 'w') as dest:
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\zipfile\__init__.py", line 1254, in close
+self._fileobj.seek(self._zinfo.header_offset)
+OSError: [Errno 28] No space left on device
+==================================================
+
+==================================================
+FAILURE: AM920431.1 (Worker 4)
+==================================================
+2026-07-16 10:30:08,900 - INFO - Stage 6: Running Evolutionary & Acquisition (HGT) Analysis...
+2026-07-16 10:30:09,492 - INFO - Vectorizing genome-wide GC and TNF signatures...
+2026-07-16 10:30:10,228 - INFO - Calculating genome-wide codon baseline vector...
+2026-07-16 10:30:12,580 - INFO - Saved Pydantic-validated HGT JSON payload to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\AM920431.1\bgc\BGC_05\hgt_evolution\BGC_05_hgt_validated.json
+2026-07-16 10:30:12,584 - INFO - Saved sliding window HGT CSV to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\AM920431.1\bgc\BGC_05\hgt_evolution\BGC_05_hgt_sliding_windows.csv
+2026-07-16 10:30:13,468 - INFO - Saved HGT GC/TNF line plots to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\AM920431.1\bgc\BGC_05\hgt_evolution\BGC_05_hgt_signatures.png
+2026-07-16 10:30:13,484 - INFO - Stage 7: Conducting Molecular Clocking & Phylogenetics...
+2026-07-16 10:30:14,160 - INFO - Saved BGC presence/absence matrix to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\AM920431.1\bgc\BGC_05\tabular_data\bgc_presence_absence.csv
+2026-07-16 10:30:14,162 - INFO - Saved real divergence timeline dataset to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\AM920431.1\bgc\BGC_05\tabular_data\divergence_events.csv
+F:\IITk\Redolarium\redolarium_github\src\redolarium\phylogeny.py:165: UserWarning: Glyph 9733 (\N{BLACK STAR}) missing from font(s) Arial.
+plt.tight_layout()
+F:\IITk\Redolarium\redolarium_github\src\redolarium\utils.py:98: UserWarning: Glyph 9733 (\N{BLACK STAR}) missing from font(s) Arial.
+plt.savefig(fig_path, dpi=dpi, bbox_inches='tight')
+F:\IITk\Redolarium\redolarium_github\src\redolarium\utils.py:100: UserWarning: Glyph 9733 (\N{BLACK STAR}) missing from font(s) Arial.
+plt.savefig(svg_path, format="svg", bbox_inches='tight')
+2026-07-16 10:30:14,693 - INFO - Saved UPGMA phylogenetic tree placement to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\AM920431.1\bgc\BGC_05\phylogeny_trees\phylogenetic_tree.png
+2026-07-16 10:30:15,139 - INFO - Saved speciation timeline flowchart to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\AM920431.1\bgc\BGC_05\phylogeny_trees\divergence_timeline.png
+2026-07-16 10:30:15,160 - INFO - Stage 9: Mapping Metabolic-BGC Linkage and Stoichiometry...
+2026-07-16 10:30:15,848 - INFO - Calculating thermodynamic baselines for core housekeeping proteins...
+2026-07-16 10:30:15,856 - INFO - Saved housekeeping thermodynamic baseline stoichiometry to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\AM920431.1\bgc\BGC_05\tabular_data\BGC_05_housekeeping_atp_stoichiometry.csv
+2026-07-16 10:30:15,856 - INFO - Prepropeptide parsed (length: 592 aa, type: biosynthetic_enzymes). Mapped AA demand: {'M': 7, 'S': 52, 'T': 37, 'R': 39, 'F': 26, 'P': 31, 'L': 78, 'I': 24, 'A': 57, 'C': 11, 'H': 20, 'N': 18, 'Q': 21, 'K': 21, 'D': 29, 'V': 36, 'G': 37, 'E': 20, 'Y': 18, 'W': 10}
+2026-07-16 10:30:15,858 - ERROR - [ERROR] Stage 5f (Stoichiometry) failed for BGC_05: [Errno 28] No space left on device
+2026-07-16 10:30:15,874 - INFO - Synthesizing Evidence Graph DAG across all analysis checkpoints...
+2026-07-16 10:30:15,876 - ERROR - [ERROR] Evidence Graph synthesis failed for BGC_05: [Errno 28] No space left on device
+2026-07-16 10:30:16,704 - INFO - Compiling 12-sheet Excel workbook for BGC_05...
+Traceback (most recent call last):
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\zipfile\__init__.py", line 1958, in close
+self._write_end_record()
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\zipfile\__init__.py", line 2056, in _write_end_record
+self.fp.flush()
+OSError: [Errno 28] No space left on device
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+File "F:\IITk\Redolarium\redolarium_github\src\redolarium\main.py", line 619, in <module>
+main()
+File "F:\IITk\Redolarium\redolarium_github\src\redolarium\main.py", line 508, in main
+compile_bgc_excel_report(
+File "F:\IITk\Redolarium\redolarium_github\src\redolarium\utils.py", line 909, in compile_bgc_excel_report
+wb.save(out_path)
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\site-packages\openpyxl\workbook\workbook.py", line 386, in save
+save_workbook(self, filename)
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\site-packages\openpyxl\writer\excel.py", line 294, in save_workbook
+writer.save()
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\site-packages\openpyxl\writer\excel.py", line 276, in save
+self._archive.close()
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\zipfile\__init__.py", line 1962, in close
+self._fpclose(fp)
+File "C:\Users\antog\AppData\Local\Programs\Python\Python312\Lib\zipfile\__init__.py", line 2062, in _fpclose
+fp.close()
+OSError: [Errno 28] No space left on device
+==================================================
+
+==================================================
+FAILURE: CP009816.1 (Worker 4)
+==================================================
+2026-07-16 10:30:22,887 - INFO - Initializing Redolarium analytical run...
+2026-07-16 10:30:22,887 - INFO - Query file: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\genomes\CP009816.1.gbk
+2026-07-16 10:30:22,887 - INFO - Reference file: None
+2026-07-16 10:30:22,887 - INFO - Output directory structure initialized under: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP009816.1
+2026-07-16 10:30:22,888 - INFO - Dynamically generated Snakefile for workflow reproduction at: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP009816.1\Snakefile
+2026-07-16 10:30:22,888 - INFO - Stage 0: Running Genome Assembly Quality Control (QC)...
+2026-07-16 10:30:23,113 - INFO - Input sequence loaded in GenBank format.
+2026-07-16 10:30:23,126 - INFO - Assembly QC finished. Closure Status: Draft, Completeness: 100.00%, N50: 2352958 bp
+2026-07-16 10:30:23,154 - INFO - Stage 1 & 2: Annotation & Comparative Genomics...
+2026-07-16 10:30:23,317 - INFO - No reference genome provided. Running dynamic NCBI BLAST queries...
+2026-07-16 10:30:23,668 - INFO - Extracting core housekeeping marker for phylogenetic reference selection...
+2026-07-16 10:30:23,670 - WARNING - No standard housekeeping marker identified. Extracting 16S rRNA for BLASTn...
+2026-07-16 10:30:23,670 - INFO - Attempting 16S rRNA extraction using sequence homology anchors...
+2026-07-16 10:30:23,679 - WARNING - No 16S rRNA anchor found. Using first 2000 bp as final fallback.
+2026-07-16 10:30:23,680 - INFO - Tier 1 Gate: Sweeping local BLAST database...
+2026-07-16 10:30:23,680 - INFO - [Local_DB] Bypassing Tier 1 sweep. Cannot run blastn against protein database (ref_markers_db).
+2026-07-16 10:30:23,680 - INFO - Tier 1 Gate check succeeded with 0 local reference genomes.
+[CRITICAL_WARNING]: Exhausted all available BLAST search modes. Comparative analysis proceeding with 0 reference organisms (Below threshold of 10).
+2026-07-16 10:30:23,681 - WARNING - [CRITICAL_WARNING]: Exhausted all available BLAST search modes. Comparative analysis proceeding with 0 reference organisms (Below threshold of 10).
+2026-07-16 10:30:23,681 - INFO - Results provenance report saved to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP009816.1\results_provenance.csv
+2026-07-16 10:30:23,682 - WARNING - [CRITICAL_WARNING] Failed to retrieve any reference assemblies from NCBI. Falling back to self-comparison to prevent pipeline crash.
+2026-07-16 10:30:23,682 - INFO - [INFO] Proceeding with 1 valid reference assemblies.
+2026-07-16 10:30:24,034 - INFO - Using cached GenBank record for reference strain: resources/reference_genomes_cache\CP009816.1.gb
+2026-07-16 10:30:24,043 - INFO - Saved comparative reference BLAST list to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP009816.1\comparative_genomics\comparative_reference_blast.csv
+2026-07-16 10:30:24,043 - INFO - Estimating operon density from genome annotation...
+2026-07-16 10:30:24,047 - INFO - Operon estimation completed. Total predicted operons: 681, Mean operon length: 1.10 genes
+2026-07-16 10:30:24,048 - INFO - Adaptive ortholog window calculated dynamically: 10 genes (based on mean operon length: 1.10)
+2026-07-16 10:30:24,266 - INFO - Launching parallel synteny comparative mapping over 4 cores...
+2026-07-16 10:30:29,226 - INFO - Saved tabular mapping dataset to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP009816.1\comparative_genomics\comparative_annotation.csv
+2026-07-16 10:30:29,226 - INFO - Generating comparative presence/absence matrix using mmseqs2...
+==================================================
+
+==================================================
+FAILURE: CP000020.2 (Worker 3)
+==================================================
+2026-07-16 10:30:21,757 - INFO - Initializing Redolarium analytical run...
+2026-07-16 10:30:21,757 - INFO - Query file: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\genomes\CP000020.2.gbk
+2026-07-16 10:30:21,757 - INFO - Reference file: None
+2026-07-16 10:30:21,757 - INFO - Output directory structure initialized under: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP000020.2
+2026-07-16 10:30:21,758 - INFO - Dynamically generated Snakefile for workflow reproduction at: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP000020.2\Snakefile
+2026-07-16 10:30:21,758 - INFO - Stage 0: Running Genome Assembly Quality Control (QC)...
+2026-07-16 10:30:22,050 - INFO - Input sequence loaded in GenBank format.
+2026-07-16 10:30:22,069 - INFO - Assembly QC finished. Closure Status: Closed, Completeness: 100.00%, N50: 2897536 bp
+2026-07-16 10:30:22,096 - INFO - Stage 1 & 2: Annotation & Comparative Genomics...
+2026-07-16 10:30:22,383 - INFO - No reference genome provided. Running dynamic NCBI BLAST queries...
+2026-07-16 10:30:22,734 - INFO - Extracting core housekeeping marker for phylogenetic reference selection...
+2026-07-16 10:30:22,734 - INFO - Identified core marker gene: dnaA. Initializing BLASTp against 'dnaA' marker...
+2026-07-16 10:30:22,745 - INFO - Tier 1 Gate: Sweeping local BLAST database...
+2026-07-16 10:30:22,746 - INFO - NCBI BLAST+ local binary and local database 'ref_markers_db' detected (Mode 1: Offline). Initializing offline query...
+2026-07-16 10:30:22,748 - INFO - Executing command: F:\IITk\Redolarium\redolarium_github\src\redolarium\blast\ncbi-blast-2.17.0+\bin\blastp.EXE -query [SECURE_LOCAL_PATH]\AppData\Local\Temp\tmp0839dx9d -db ref_markers_db -outfmt 5 -out [SECURE_LOCAL_PATH]\AppData\Local\Temp\tmp0839dx9d.xml
+2026-07-16 10:30:29,264 - WARNING - Local execution check failed: Command '['F:\\IITk\\Redolarium\\redolarium_github\\src\\redolarium\\blast\\ncbi-blast-2.17.0+\\bin\\blastp.EXE', '-query', 'C:\\Users\\antog\\AppData\\Local\\Temp\\tmp0839dx9d', '-db', 'ref_markers_db', '-outfmt', '5', '-out', 'C:\\Users\\antog\\AppData\\Local\\Temp\\tmp0839dx9d.xml']' returned non-zero exit status 3221225786.. Reverting to remote BLAST fallback...
+==================================================
+
+==================================================
+FAILURE: AL009126.3 (Worker 2)
+==================================================
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 23 vs 357. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 23 vs 377. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 23 vs 351. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 23 vs 143. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 23 vs 407. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 23 vs 316. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 23 vs 428. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 23 vs 272. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 23 vs 239. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 106 vs 627. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 106 vs 798. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 152 vs 798. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 114 vs 627. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 114 vs 798. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 89 vs 627. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 89 vs 484. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 89 vs 798. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 627. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 380. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 343. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 484. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 798. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 357. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 377. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 351. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 407. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 316. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 428. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 272. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 151 vs 798. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 1217 vs 155. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 1217 vs 143. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 118 vs 627. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 118 vs 798. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 63 vs 627. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 63 vs 380. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 63 vs 343. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 63 vs 484. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 63 vs 798. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 63 vs 357. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 63 vs 377. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 63 vs 351. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 63 vs 407. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 63 vs 316. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 63 vs 428. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 104 vs 627. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 104 vs 798. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 131 vs 798. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 120 vs 627. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 120 vs 798. Possible annotation error.
+==================================================
+
+==================================================
+FAILURE: NZ_DS999644.1 (Worker 0)
+==================================================
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 355 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 1309 vs 162. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 369 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 2575 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 394 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 448 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 464 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 396 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 397 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 418 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 344 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 493 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 350 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 490 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 58 vs 394. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 58 vs 416. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 277. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 394. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 416. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 286. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 44 vs 277. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 44 vs 394. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 44 vs 416. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 44 vs 286. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 405 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 77 vs 394. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 77 vs 416. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 535 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 371 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 492 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 44 vs 277. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 44 vs 394. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 44 vs 416. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 44 vs 286. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 767 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 76 vs 394. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 76 vs 416. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 718 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 715 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 769 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 342 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 750 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 426 vs 68. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 700 vs 68. Possible annotation error.
+2026-07-16 10:30:07,886 - INFO - Saved tabular mapping dataset to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_DS999644.1\comparative_genomics\comparative_annotation.csv
+2026-07-16 10:30:07,887 - INFO - Generating comparative presence/absence matrix using mmseqs2...
+2026-07-16 10:30:15,046 - WARNING - Error parsing reference F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NZ_DS999644.1\reference_genomes\CP021080.1.gb for matrix: [Errno 28] No space left on device
+Subprocess/Docker execution failed: Command '['wsl', '-e', 'bash', '-c', "mmseqs easy-search /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NZ_DS999644.1/comparative_genomics/query.faa /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NZ_DS999644.1/comparative_genomics/references.faa /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NZ_DS999644.1/comparative_genomics/mmseqs_out.tsv /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NZ_DS999644.1/comparative_genomics/mmseqs_tmp --format-output 'query,target,pident,qcov,tcov' --min-seq-id 0.3 -c 0.5"]' returned non-zero exit status 4294967295.. Retrying in 3.0s (Attempt 1/3)...
+Subprocess/Docker execution failed: Command '['wsl', '-e', 'bash', '-c', "mmseqs easy-search /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NZ_DS999644.1/comparative_genomics/query.faa /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NZ_DS999644.1/comparative_genomics/references.faa /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NZ_DS999644.1/comparative_genomics/mmseqs_out.tsv /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NZ_DS999644.1/comparative_genomics/mmseqs_tmp --format-output 'query,target,pident,qcov,tcov' --min-seq-id 0.3 -c 0.5"]' returned non-zero exit status 4294967295.. Retrying in 9.0s (Attempt 2/3)...
+2026-07-16 10:30:27,408 - WARNING - mmseqs failed: Command '['wsl', '-e', 'bash', '-c', "mmseqs easy-search /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NZ_DS999644.1/comparative_genomics/query.faa /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NZ_DS999644.1/comparative_genomics/references.faa /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NZ_DS999644.1/comparative_genomics/mmseqs_out.tsv /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NZ_DS999644.1/comparative_genomics/mmseqs_tmp --format-output 'query,target,pident,qcov,tcov' --min-seq-id 0.3 -c 0.5"]' returned non-zero exit status 4294967295.. Comparative matrix will be skipped.
+==================================================
+
+==================================================
+FAILURE: NC_003888.3 (Worker 0)
+==================================================
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 107 vs 706. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 40 vs 225. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 40 vs 853. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 40 vs 783. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 40 vs 315. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 40 vs 706. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 40 vs 368. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 40 vs 363. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 40 vs 269. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 40 vs 410. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 889 vs 148. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 889 vs 116. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 889 vs 111. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 889 vs 136. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 889 vs 96. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 889 vs 92. Possible annotation error.
+2026-07-16 10:13:45,712 - INFO - Saved tabular mapping dataset to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NC_003888.3\comparative_genomics\comparative_annotation.csv
+2026-07-16 10:13:45,712 - INFO - Generating comparative presence/absence matrix using mmseqs2...
+Subprocess/Docker execution failed: Command '['wsl', '-e', 'bash', '-c', "mmseqs easy-search /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NC_003888.3/comparative_genomics/query.faa /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NC_003888.3/comparative_genomics/references.faa /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NC_003888.3/comparative_genomics/mmseqs_out.tsv /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NC_003888.3/comparative_genomics/mmseqs_tmp --format-output 'query,target,pident,qcov,tcov' --min-seq-id 0.3 -c 0.5"]' returned non-zero exit status 1.. Retrying in 3.0s (Attempt 1/3)...
+Subprocess/Docker execution failed: Command '['wsl', '-e', 'bash', '-c', "mmseqs easy-search /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NC_003888.3/comparative_genomics/query.faa /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NC_003888.3/comparative_genomics/references.faa /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NC_003888.3/comparative_genomics/mmseqs_out.tsv /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NC_003888.3/comparative_genomics/mmseqs_tmp --format-output 'query,target,pident,qcov,tcov' --min-seq-id 0.3 -c 0.5"]' returned non-zero exit status 1.. Retrying in 9.0s (Attempt 2/3)...
+2026-07-16 10:14:10,831 - WARNING - mmseqs failed: Command '['wsl', '-e', 'bash', '-c', "mmseqs easy-search /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NC_003888.3/comparative_genomics/query.faa /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NC_003888.3/comparative_genomics/references.faa /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NC_003888.3/comparative_genomics/mmseqs_out.tsv /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NC_003888.3/comparative_genomics/mmseqs_tmp --format-output 'query,target,pident,qcov,tcov' --min-seq-id 0.3 -c 0.5"]' returned non-zero exit status 1.. Comparative matrix will be skipped.
+2026-07-16 10:15:07,471 - INFO - Running empirical validation checks on identity matrix...
+2026-07-16 10:15:08,625 - INFO - Saved reference identity matrix heatmap to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NC_003888.3\comparative_genomics\identity_matrix.png
+2026-07-16 10:15:08,682 - INFO - Stage 3: Reconstructing Metabolic Pathways via KEGG REST API...
+2026-07-16 10:15:09,748 - INFO - Annotation mapping summary: EC qualifier: 2123, KO qualifier: 0, Gene Symbol: 4, Product Regex: 0
+2026-07-16 10:15:09,749 - INFO - Fetching / Loading KEGG pathway list...
+2026-07-16 10:15:09,749 - INFO - Reading cached KEGG data for pathways.tsv
+2026-07-16 10:15:09,750 - INFO - Fetching / Loading KEGG EC-to-pathway links...
+2026-07-16 10:15:09,751 - INFO - Reading cached KEGG data for ec_links.tsv
+2026-07-16 10:15:09,764 - INFO - Fetching / Loading KEGG KO-to-pathway links...
+2026-07-16 10:15:09,765 - INFO - Reading cached KEGG data for ko_links.tsv
+2026-07-16 10:15:09,874 - INFO - Parsing KEGG BRITE pathway hierarchy...
+2026-07-16 10:15:09,875 - INFO - Reading cached KEGG data for brite_ko00001.keg
+2026-07-16 10:15:09,904 - INFO - Fetching / Loading KEGG EC-to-KO links...
+2026-07-16 10:15:09,905 - INFO - Reading cached KEGG data for ec_to_ko.tsv
+2026-07-16 10:15:10,043 - INFO - Saved enzyme pathway mapping to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NC_003888.3\metabolic_pathways\kegg_enzymes.csv
+2026-07-16 10:15:10,078 - INFO - Saved pathway completeness & topological scores to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NC_003888.3\metabolic_pathways\pathway_completeness.csv
+2026-07-16 10:15:12,988 - INFO - Saved validated SBML Level 3 model to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NC_003888.3\metabolic_pathways\query_metabolism.xml
+2026-07-16 10:15:13,830 - INFO - Saved metabolic pathway distribution bar plot to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NC_003888.3\metabolic_pathways\pathway_distribution.png
+2026-07-16 10:15:13,865 - INFO - Stage 8: Running Application Screening & Phenotypic Profit Mapping...
+2026-07-16 10:15:14,803 - INFO - Loaded screening signatures. HMM Library version: 1.0.0
+2026-07-16 10:15:15,122 - INFO - Running pyhmmer validation: 27 profiles against 7593 candidate proteins...
+2026-07-16 10:15:19,503 - INFO - Screened application cargo table generated in memory.
+2026-07-16 10:15:20,110 - INFO - Saved Excel Phenotypic Profit Catalog to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NC_003888.3\screening_cazymes\phenotypic_profit.xlsx
+2026-07-16 10:15:22,268 - INFO - Saved directional linear genomic cargo map to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\NC_003888.3\screening_cazymes\cargo_distribution.png
+2026-07-16 10:15:22,301 - INFO - Running Stage 4 & 5: Biosynthetic Gene Cluster (BGC) Pipeline Stage...
+2026-07-16 10:15:22,302 - INFO - Detecting Biosynthetic Gene Clusters (BGCs) in query genome...
+2026-07-16 10:15:22,302 - INFO - Checking for Docker/antiSMASH container to run core BGC detection...
+2026-07-16 10:15:22,720 - INFO - Windows native Docker connection failed. Attempting to start/verify WSL Docker (docker-desktop)...
+2026-07-16 10:15:28,119 - INFO - Executing: wsl docker run --user 1000:1000 --rm -v /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/genomes:/input:ro -v /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/NC_003888.3/antismash_results:/output antismash/standalone:latest NC_003888.3.gbk --output-dir /output --taxon bacteria
+==================================================
+
+==================================================
+FAILURE: NZ_DS999645.1 (Worker 0)
+==================================================
+
+==================================================
+
+==================================================
+FAILURE: CP000117.1 (Worker 4)
+==================================================
+2026-07-16 11:00:58,376 - INFO - Initializing Redolarium analytical run...
+2026-07-16 11:00:58,376 - INFO - Query file: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\genomes\CP000117.1.gbk
+2026-07-16 11:00:58,376 - INFO - Reference file: None
+2026-07-16 11:00:58,376 - INFO - Output directory structure initialized under: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP000117.1
+2026-07-16 11:00:58,377 - INFO - Dynamically generated Snakefile for workflow reproduction at: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CP000117.1\Snakefile
+2026-07-16 11:00:58,377 - INFO - Stage 0: Running Genome Assembly Quality Control (QC)...
+2026-07-16 11:00:58,898 - INFO - Input sequence loaded in GenBank format.
+2026-07-16 11:00:58,929 - INFO - Assembly QC finished. Closure Status: Closed, Completeness: 100.00%, N50: 6365727 bp
+2026-07-16 11:00:58,957 - INFO - Stage 1 & 2: Annotation & Comparative Genomics...
+2026-07-16 11:00:59,378 - INFO - No reference genome provided. Running dynamic NCBI BLAST queries...
+2026-07-16 11:00:59,729 - INFO - Extracting core housekeeping marker for phylogenetic reference selection...
+2026-07-16 11:00:59,733 - INFO - Identified core marker gene: gyrB. Initializing BLASTp against 'gyrB' marker...
+2026-07-16 11:00:59,733 - INFO - Tier 1 Gate: Sweeping local BLAST database...
+2026-07-16 11:00:59,734 - INFO - NCBI BLAST+ local binary and local database 'ref_markers_db' detected (Mode 1: Offline). Initializing offline query...
+2026-07-16 11:00:59,735 - INFO - Executing command: F:\IITk\Redolarium\redolarium_github\src\redolarium\blast\ncbi-blast-2.17.0+\bin\blastp.EXE -query [SECURE_LOCAL_PATH]\AppData\Local\Temp\tmpgvxp20fh -db ref_markers_db -outfmt 5 -out [SECURE_LOCAL_PATH]\AppData\Local\Temp\tmpgvxp20fh.xml
+2026-07-16 11:00:59,757 - WARNING - Local execution check failed: Command '['F:\\IITk\\Redolarium\\redolarium_github\\src\\redolarium\\blast\\ncbi-blast-2.17.0+\\bin\\blastp.EXE', '-query', 'C:\\Users\\antog\\AppData\\Local\\Temp\\tmpgvxp20fh', '-db', 'ref_markers_db', '-outfmt', '5', '-out', 'C:\\Users\\antog\\AppData\\Local\\Temp\\tmpgvxp20fh.xml']' returned non-zero exit status 3221225786.. Reverting to remote BLAST fallback...
+==================================================
+
+==================================================
+FAILURE: BN001304.1 (Worker 1)
+==================================================
+2026-07-16 11:00:58,381 - INFO - Initializing Redolarium analytical run...
+2026-07-16 11:00:58,381 - INFO - Query file: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\genomes\BN001304.1.gbk
+2026-07-16 11:00:58,381 - INFO - Reference file: None
+2026-07-16 11:00:58,381 - INFO - Output directory structure initialized under: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\BN001304.1
+2026-07-16 11:00:58,382 - INFO - Dynamically generated Snakefile for workflow reproduction at: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\BN001304.1\Snakefile
+2026-07-16 11:00:58,382 - INFO - Stage 0: Running Genome Assembly Quality Control (QC)...
+2026-07-16 11:00:58,854 - INFO - Input sequence loaded in GenBank format.
+2026-07-16 11:00:58,870 - INFO - Assembly QC finished. Closure Status: Draft, Completeness: 100.00%, N50: 2831538 bp
+2026-07-16 11:00:58,897 - INFO - Stage 1 & 2: Annotation & Comparative Genomics...
+2026-07-16 11:00:59,122 - INFO - No reference genome provided. Running dynamic NCBI BLAST queries...
+2026-07-16 11:00:59,473 - INFO - Extracting core housekeeping marker for phylogenetic reference selection...
+2026-07-16 11:00:59,475 - WARNING - No standard housekeeping marker identified. Extracting 16S rRNA for BLASTn...
+2026-07-16 11:00:59,475 - INFO - Attempting 16S rRNA extraction using sequence homology anchors...
+2026-07-16 11:00:59,485 - WARNING - No 16S rRNA anchor found. Using first 2000 bp as final fallback.
+2026-07-16 11:00:59,486 - INFO - Tier 1 Gate: Sweeping local BLAST database...
+2026-07-16 11:00:59,486 - INFO - [Local_DB] Bypassing Tier 1 sweep. Cannot run blastn against protein database (ref_markers_db).
+2026-07-16 11:00:59,486 - INFO - Tier 1 Gate check succeeded with 0 local reference genomes.
+[CRITICAL_WARNING]: Exhausted all available BLAST search modes. Comparative analysis proceeding with 0 reference organisms (Below threshold of 10).
+2026-07-16 11:00:59,486 - WARNING - [CRITICAL_WARNING]: Exhausted all available BLAST search modes. Comparative analysis proceeding with 0 reference organisms (Below threshold of 10).
+2026-07-16 11:00:59,487 - INFO - Results provenance report saved to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\BN001304.1\results_provenance.csv
+2026-07-16 11:00:59,487 - WARNING - [CRITICAL_WARNING] Failed to retrieve any reference assemblies from NCBI. Falling back to self-comparison to prevent pipeline crash.
+2026-07-16 11:00:59,487 - INFO - [INFO] Proceeding with 1 valid reference assemblies.
+==================================================
+
+==================================================
+FAILURE: CM000171.1 (Worker 3)
+==================================================
+2026-07-16 11:00:58,382 - INFO - Initializing Redolarium analytical run...
+2026-07-16 11:00:58,382 - INFO - Query file: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\genomes\CM000171.1.gbk
+2026-07-16 11:00:58,382 - INFO - Reference file: None
+2026-07-16 11:00:58,382 - INFO - Output directory structure initialized under: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CM000171.1
+2026-07-16 11:00:58,383 - INFO - Dynamically generated Snakefile for workflow reproduction at: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CM000171.1\Snakefile
+2026-07-16 11:00:58,383 - INFO - Stage 0: Running Genome Assembly Quality Control (QC)...
+2026-07-16 11:00:58,694 - INFO - Input sequence loaded in GenBank format.
+2026-07-16 11:00:58,717 - INFO - Assembly QC finished. Closure Status: Draft, Completeness: 100.00%, N50: 4079167 bp
+2026-07-16 11:00:58,745 - INFO - Stage 1 & 2: Annotation & Comparative Genomics...
+2026-07-16 11:00:59,048 - INFO - No reference genome provided. Running dynamic NCBI BLAST queries...
+2026-07-16 11:00:59,399 - INFO - Extracting core housekeeping marker for phylogenetic reference selection...
+2026-07-16 11:00:59,401 - WARNING - No standard housekeeping marker identified. Extracting 16S rRNA for BLASTn...
+2026-07-16 11:00:59,401 - INFO - Attempting 16S rRNA extraction using sequence homology anchors...
+2026-07-16 11:00:59,416 - WARNING - No 16S rRNA anchor found. Using first 2000 bp as final fallback.
+2026-07-16 11:00:59,423 - INFO - Tier 1 Gate: Sweeping local BLAST database...
+2026-07-16 11:00:59,423 - INFO - [Local_DB] Bypassing Tier 1 sweep. Cannot run blastn against protein database (ref_markers_db).
+2026-07-16 11:00:59,423 - INFO - Tier 1 Gate check succeeded with 0 local reference genomes.
+[CRITICAL_WARNING]: Exhausted all available BLAST search modes. Comparative analysis proceeding with 0 reference organisms (Below threshold of 10).
+2026-07-16 11:00:59,423 - WARNING - [CRITICAL_WARNING]: Exhausted all available BLAST search modes. Comparative analysis proceeding with 0 reference organisms (Below threshold of 10).
+2026-07-16 11:00:59,424 - INFO - Results provenance report saved to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CM000171.1\results_provenance.csv
+2026-07-16 11:00:59,424 - WARNING - [CRITICAL_WARNING] Failed to retrieve any reference assemblies from NCBI. Falling back to self-comparison to prevent pipeline crash.
+2026-07-16 11:00:59,424 - INFO - [INFO] Proceeding with 1 valid reference assemblies.
+2026-07-16 11:00:59,774 - INFO - Using cached GenBank record for reference strain: resources/reference_genomes_cache\CM000171.1.gb
+2026-07-16 11:00:59,785 - INFO - Saved comparative reference BLAST list to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\CM000171.1\comparative_genomics\comparative_reference_blast.csv
+2026-07-16 11:00:59,785 - INFO - Estimating operon density from genome annotation...
+2026-07-16 11:00:59,794 - INFO - Operon estimation completed. Total predicted operons: 1357, Mean operon length: 1.00 genes
+2026-07-16 11:00:59,795 - INFO - Adaptive ortholog window calculated dynamically: 10 genes (based on mean operon length: 1.00)
+==================================================
+
+==================================================
+FAILURE: KV411304.1 (Worker 0)
+==================================================
+2026-07-16 11:00:58,381 - INFO - Initializing Redolarium analytical run...
+2026-07-16 11:00:58,381 - INFO - Query file: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\genomes\KV411304.1.gbk
+2026-07-16 11:00:58,381 - INFO - Reference file: None
+2026-07-16 11:00:58,382 - INFO - Output directory structure initialized under: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\KV411304.1
+2026-07-16 11:00:58,382 - INFO - Dynamically generated Snakefile for workflow reproduction at: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\KV411304.1\Snakefile
+2026-07-16 11:00:58,382 - INFO - Stage 0: Running Genome Assembly Quality Control (QC)...
+2026-07-16 11:00:58,764 - INFO - Input sequence loaded in GenBank format.
+2026-07-16 11:00:58,797 - INFO - Assembly QC finished. Closure Status: Draft, Completeness: 100.00%, N50: 4638951 bp
+2026-07-16 11:00:58,825 - INFO - Stage 1 & 2: Annotation & Comparative Genomics...
+2026-07-16 11:00:59,269 - INFO - No reference genome provided. Running dynamic NCBI BLAST queries...
+2026-07-16 11:00:59,620 - INFO - Extracting core housekeeping marker for phylogenetic reference selection...
+2026-07-16 11:00:59,623 - INFO - Identified core marker gene: trpB. Initializing BLASTp against 'trpB' marker...
+2026-07-16 11:00:59,624 - INFO - Tier 1 Gate: Sweeping local BLAST database...
+2026-07-16 11:00:59,625 - INFO - NCBI BLAST+ local binary and local database 'ref_markers_db' detected (Mode 1: Offline). Initializing offline query...
+2026-07-16 11:00:59,626 - INFO - Executing command: F:\IITk\Redolarium\redolarium_github\src\redolarium\blast\ncbi-blast-2.17.0+\bin\blastp.EXE -query [SECURE_LOCAL_PATH]\AppData\Local\Temp\tmp_hovxz8d -db ref_markers_db -outfmt 5 -out [SECURE_LOCAL_PATH]\AppData\Local\Temp\tmp_hovxz8d.xml
+2026-07-16 11:00:59,762 - WARNING - Local execution check failed: Command '['F:\\IITk\\Redolarium\\redolarium_github\\src\\redolarium\\blast\\ncbi-blast-2.17.0+\\bin\\blastp.EXE', '-query', 'C:\\Users\\antog\\AppData\\Local\\Temp\\tmp_hovxz8d', '-db', 'ref_markers_db', '-outfmt', '5', '-out', 'C:\\Users\\antog\\AppData\\Local\\Temp\\tmp_hovxz8d.xml']' returned non-zero exit status 3221225786.. Reverting to remote BLAST fallback...
+==================================================
+
+==================================================
+FAILURE: CR543861.1 (Worker 1)
+==================================================
+2026-07-16 18:08:11,858 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 27.4%).
+2026-07-16 18:08:11,858 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 27.4%).
+2026-07-16 18:08:11,858 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 27.4%).
+2026-07-16 18:08:11,858 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 27.4%).
+2026-07-16 18:08:11,859 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 27.4%).
+2026-07-16 18:08:11,859 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 28.6%).
+2026-07-16 18:08:11,859 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 28.6%).
+2026-07-16 18:08:11,859 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 28.6%).
+2026-07-16 18:08:11,859 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 28.6%).
+2026-07-16 18:08:11,859 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 31.9%).
+2026-07-16 18:08:11,859 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 29.8%).
+2026-07-16 18:08:11,859 - INFO - [Local_DB] Ignored low-identity hit: Rhodococcus sp. PSBB049 (ID: 28.2%).
+2026-07-16 18:08:11,859 - INFO - [Local_DB] Ignored low-identity hit: Bacillus subtilis (ID: 32.9%).
+2026-07-16 18:08:11,859 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia thailandensis (ID: 27.3%).
+2026-07-16 18:08:11,859 - INFO - [Local_DB] Ignored low-identity hit: Rhodococcus opacus (ID: 27.6%).
+2026-07-16 18:08:11,860 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia solanacearum (ID: 30.4%).
+2026-07-16 18:08:11,860 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 27.0%).
+2026-07-16 18:08:11,860 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 27.0%).
+2026-07-16 18:08:11,860 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 27.0%).
+2026-07-16 18:08:11,860 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter baumannii (ID: 27.0%).
+2026-07-16 18:08:11,861 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia solanacearum (ID: 30.4%).
+2026-07-16 18:08:11,861 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia pseudosolanacearum (ID: 26.4%).
+2026-07-16 18:08:11,861 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia vietnamiensis (ID: 26.4%).
+2026-07-16 18:08:11,861 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter schindleri (ID: 26.3%).
+2026-07-16 18:08:11,861 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia ubonensis (ID: 25.7%).
+2026-07-16 18:08:11,861 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia multivorans (ID: 28.8%).
+2026-07-16 18:08:11,861 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia cenocepacia (ID: 28.8%).
+2026-07-16 18:08:11,861 - INFO - [Local_DB] Ignored low-identity hit: Ralstonia solanacearum (ID: 25.5%).
+2026-07-16 18:08:11,862 - INFO - [Local_DB] Ignored low-identity hit: Cupriavidus sp. BIC8F (ID: 25.0%).
+2026-07-16 18:08:11,862 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter sp. D009 (ID: 25.7%).
+2026-07-16 18:08:11,862 - INFO - [Local_DB] Ignored low-identity hit: Burkholderia pseudomallei (ID: 26.4%).
+2026-07-16 18:08:11,863 - INFO - [Local_DB] Ignored low-identity hit: Acinetobacter junii (ID: 26.6%).
+2026-07-16 18:08:11,864 - INFO - Tier 1 Gate check succeeded with 20 local reference genomes.
+2026-07-16 18:08:11,864 - INFO - Results provenance report saved to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\Out-of-Scope Control\CR543861.1\results_provenance.csv
+2026-07-16 18:08:11,867 - INFO - [INFO] Proceeding with 20 valid reference assemblies.
+2026-07-16 18:08:12,219 - INFO - Using cached GenBank record for reference strain: resources/reference_genomes_cache\CP140481.1.gb
+2026-07-16 18:08:12,579 - INFO - Using cached GenBank record for reference strain: resources/reference_genomes_cache\CP151886.1.gb
+2026-07-16 18:08:12,955 - INFO - Using cached GenBank record for reference strain: resources/reference_genomes_cache\CP187942.1.gb
+2026-07-16 18:08:13,328 - INFO - Using cached GenBank record for reference strain: resources/reference_genomes_cache\CP190362.1.gb
+2026-07-16 18:08:13,692 - INFO - Using cached GenBank record for reference strain: resources/reference_genomes_cache\CP191205.1.gb
+2026-07-16 18:08:14,063 - INFO - Using cached GenBank record for reference strain: resources/reference_genomes_cache\CP157212.1.gb
+2026-07-16 18:08:14,423 - INFO - Using cached GenBank record for reference strain: resources/reference_genomes_cache\CP155446.1.gb
+2026-07-16 18:08:14,784 - INFO - Using cached GenBank record for reference strain: resources/reference_genomes_cache\CP155443.1.gb
+2026-07-16 18:08:15,155 - INFO - Using cached GenBank record for reference strain: resources/reference_genomes_cache\CP151169.1.gb
+2026-07-16 18:08:15,518 - INFO - Using cached GenBank record for reference strain: resources/reference_genomes_cache\CP097354.1.gb
+2026-07-16 18:08:15,538 - INFO - Saved comparative reference BLAST list to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\Out-of-Scope Control\CR543861.1\comparative_genomics\comparative_reference_blast.csv
+2026-07-16 18:08:15,538 - INFO - Estimating operon density from genome annotation...
+2026-07-16 18:08:15,559 - INFO - Operon estimation completed. Total predicted operons: 1795, Mean operon length: 1.84 genes
+2026-07-16 18:08:15,559 - INFO - Adaptive ortholog window calculated dynamically: 10 genes (based on mean operon length: 1.84)
+2026-07-16 18:08:16,395 - INFO - Launching parallel synteny comparative mapping over 4 cores...
+==================================================
+
+==================================================
+FAILURE: KZ195574.1 (Worker 4)
+==================================================
+2026-07-16 18:03:55,035 - INFO - [Local_DB] Ignored low-identity hit: Pyxidicoccus parkwayensis (ID: 48.6%).
+2026-07-16 18:03:55,036 - INFO - Tier 1 Gate check succeeded with 0 local reference genomes.
+[CRITICAL_WARNING]: Exhausted all available BLAST search modes. Comparative analysis proceeding with 0 reference organisms (Below threshold of 10).
+2026-07-16 18:03:55,036 - WARNING - [CRITICAL_WARNING]: Exhausted all available BLAST search modes. Comparative analysis proceeding with 0 reference organisms (Below threshold of 10).
+2026-07-16 18:03:55,036 - INFO - Results provenance report saved to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\KZ195574.1\results_provenance.csv
+2026-07-16 18:03:55,036 - WARNING - [CRITICAL_WARNING] Failed to retrieve any reference assemblies from NCBI. Falling back to self-comparison to prevent pipeline crash.
+2026-07-16 18:03:55,036 - INFO - [INFO] Proceeding with 1 valid reference assemblies.
+2026-07-16 18:03:55,387 - INFO - Using cached GenBank record for reference strain: resources/reference_genomes_cache\KZ195574.1.gb
+2026-07-16 18:03:55,405 - INFO - Saved comparative reference BLAST list to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\KZ195574.1\comparative_genomics\comparative_reference_blast.csv
+2026-07-16 18:03:55,405 - INFO - Estimating operon density from genome annotation...
+2026-07-16 18:03:55,421 - INFO - Operon estimation completed. Total predicted operons: 4704, Mean operon length: 1.65 genes
+2026-07-16 18:03:55,421 - INFO - Adaptive ortholog window calculated dynamically: 10 genes (based on mean operon length: 1.65)
+2026-07-16 18:03:56,118 - INFO - Launching parallel synteny comparative mapping over 4 cores...
+2026-07-16 18:07:25,526 - INFO - Saved tabular mapping dataset to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\KZ195574.1\comparative_genomics\comparative_annotation.csv
+2026-07-16 18:07:25,527 - INFO - Generating comparative presence/absence matrix using mmseqs2...
+F:\IITk\Redolarium\redolarium_github\src\redolarium\annotation.py:1110: ParserWarning: Falling back to the 'python' engine because the 'c' engine does not support regex separators (separators > 1 char and different from '\s+' are interpreted as regex); you can avoid this warning by specifying engine='python'.
+df_hits = pd.read_csv(out_tsv, sep="\\t", names=["query", "target", "pident", "qcov", "tcov"])
+2026-07-16 18:07:52,905 - INFO - Comparative presence/absence matrix saved to F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\KZ195574.1\comparative_genomics\query_vs_references_matrix.csv
+2026-07-16 18:07:55,388 - INFO - Formatted Comparative matrix saved to F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\KZ195574.1\comparative_genomics\query_vs_references_matrix.xlsx
+2026-07-16 18:07:55,411 - INFO - Computing Average Amino Acid Identity (AAI) directly from mmseqs2 comparative matrix...
+2026-07-16 18:07:55,415 - INFO - Running empirical validation checks on identity matrix...
+2026-07-16 18:07:56,120 - INFO - Saved reference identity matrix heatmap to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\KZ195574.1\comparative_genomics\identity_matrix.png
+2026-07-16 18:07:56,167 - INFO - Stage 3: Reconstructing Metabolic Pathways via KEGG REST API...
+2026-07-16 18:07:57,169 - INFO - Annotation mapping summary: EC qualifier: 0, KO qualifier: 0, Gene Symbol: 1, Product Regex: 0
+2026-07-16 18:07:57,169 - INFO - Fetching / Loading KEGG pathway list...
+2026-07-16 18:07:57,171 - INFO - Reading cached KEGG data for pathways.tsv
+2026-07-16 18:07:57,173 - INFO - Fetching / Loading KEGG EC-to-pathway links...
+2026-07-16 18:07:57,177 - INFO - Reading cached KEGG data for ec_links.tsv
+2026-07-16 18:07:57,201 - INFO - Fetching / Loading KEGG KO-to-pathway links...
+2026-07-16 18:07:57,202 - INFO - Reading cached KEGG data for ko_links.tsv
+2026-07-16 18:07:57,388 - INFO - Parsing KEGG BRITE pathway hierarchy...
+2026-07-16 18:07:57,388 - INFO - Reading cached KEGG data for brite_ko00001.keg
+2026-07-16 18:07:57,445 - INFO - Fetching / Loading KEGG EC-to-KO links...
+2026-07-16 18:07:57,446 - INFO - Reading cached KEGG data for ec_to_ko.tsv
+2026-07-16 18:07:57,460 - INFO - Saved enzyme pathway mapping to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\KZ195574.1\metabolic_pathways\kegg_enzymes.csv
+2026-07-16 18:07:57,502 - INFO - Saved pathway completeness & topological scores to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\KZ195574.1\metabolic_pathways\pathway_completeness.csv
+2026-07-16 18:08:01,306 - INFO - Saved validated SBML Level 3 model to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\KZ195574.1\metabolic_pathways\query_metabolism.xml
+2026-07-16 18:08:01,801 - INFO - Saved metabolic pathway distribution bar plot to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\KZ195574.1\metabolic_pathways\pathway_distribution.png
+2026-07-16 18:08:01,857 - INFO - Stage 8: Running Application Screening & Phenotypic Profit Mapping...
+2026-07-16 18:08:03,191 - INFO - Loaded screening signatures. HMM Library version: 1.0.0
+2026-07-16 18:08:03,326 - INFO - Running pyhmmer validation: 27 profiles against 7534 candidate proteins...
+2026-07-16 18:08:09,047 - INFO - Screened application cargo table generated in memory.
+2026-07-16 18:08:10,018 - INFO - Saved Excel Phenotypic Profit Catalog to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\KZ195574.1\screening_cazymes\phenotypic_profit.xlsx
+2026-07-16 18:08:13,160 - INFO - Saved directional linear genomic cargo map to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\KZ195574.1\screening_cazymes\cargo_distribution.png
+2026-07-16 18:08:13,225 - INFO - Running Stage 4 & 5: Biosynthetic Gene Cluster (BGC) Pipeline Stage...
+2026-07-16 18:08:13,225 - INFO - Detecting Biosynthetic Gene Clusters (BGCs) in query genome...
+2026-07-16 18:08:13,227 - INFO - Checking for Docker/antiSMASH container to run core BGC detection...
+2026-07-16 18:08:14,138 - INFO - Windows native Docker connection failed. Attempting to start/verify WSL Docker (docker-desktop)...
+2026-07-16 18:08:15,583 - INFO - WSL Docker backend is active and ready.
+2026-07-16 18:08:15,583 - INFO - Executing: wsl docker run --user 1000:1000 --rm -v /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/genomes:/input:ro -v /mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/In-Scope Positive/KZ195574.1/antismash_results:/output antismash/standalone:latest KZ195574.1.gbk --output-dir /output --taxon bacteria
+==================================================
+
+==================================================
+FAILURE: AL645882.2 (Worker 2)
+==================================================
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 409 vs 60. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 401 vs 74. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 401 vs 69. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 409 vs 74. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 409 vs 69. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 66 vs 408. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 46 vs 320. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 46 vs 408. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 71 vs 408. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 318 vs 60. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 77 vs 408. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 319 vs 60. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 317 vs 60. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 326 vs 60. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 549 vs 60. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 549 vs 74. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 549 vs 69. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 549 vs 85. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 67 vs 408. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 410 vs 60. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 410 vs 74. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 410 vs 69. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 363 vs 60. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 363 vs 69. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 706 vs 132. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 368 vs 60. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 368 vs 69. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 783 vs 132. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 315 vs 60. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 706 vs 60. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 853 vs 132. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 706 vs 74. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 706 vs 69. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 783 vs 153. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 706 vs 85. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 783 vs 60. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 853 vs 164. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 853 vs 60. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 783 vs 74. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 853 vs 74. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 853 vs 69. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 783 vs 69. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 853 vs 151. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 783 vs 151. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 783 vs 85. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 853 vs 85. Possible annotation error.
+2026-07-16 18:07:40,562 - INFO - Saved tabular mapping dataset to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\AL645882.2\comparative_genomics\comparative_annotation.csv
+2026-07-16 18:07:40,562 - INFO - Generating comparative presence/absence matrix using mmseqs2...
+Subprocess/Docker execution failed: Command '['wsl', '-e', 'bash', '-c', "mmseqs easy-search '/mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/In-Scope Positive/AL645882.2/comparative_genomics/query.faa' '/mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/In-Scope Positive/AL645882.2/comparative_genomics/references.faa' '/mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/In-Scope Positive/AL645882.2/comparative_genomics/mmseqs_out.tsv' '/mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/In-Scope Positive/AL645882.2/comparative_genomics/mmseqs_tmp' --format-output 'query,target,pident,qcov,tcov' --min-seq-id 0.3 -c 0.5"]' returned non-zero exit status 2.. Retrying in 3.0s (Attempt 1/3)...
+Subprocess/Docker execution failed: Command '['wsl', '-e', 'bash', '-c', "mmseqs easy-search '/mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/In-Scope Positive/AL645882.2/comparative_genomics/query.faa' '/mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/In-Scope Positive/AL645882.2/comparative_genomics/references.faa' '/mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/In-Scope Positive/AL645882.2/comparative_genomics/mmseqs_out.tsv' '/mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/In-Scope Positive/AL645882.2/comparative_genomics/mmseqs_tmp' --format-output 'query,target,pident,qcov,tcov' --min-seq-id 0.3 -c 0.5"]' returned non-zero exit status 3221225786.. Retrying in 9.0s (Attempt 2/3)...
+==================================================
+
+==================================================
+FAILURE: GG657742.1 (Worker 1)
+==================================================
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 37 vs 266. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 37 vs 1047. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 37 vs 228. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 500 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 515 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 377 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 403 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 87 vs 1047. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 102 vs 1047. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 621 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 621 vs 103. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 621 vs 110. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 266. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 51 vs 1047. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 727 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 727 vs 103. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 727 vs 110. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 507 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 359 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 170 vs 1047. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 798 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 798 vs 103. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 798 vs 110. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 140 vs 1047. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 446 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 109 vs 1047. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 93 vs 1047. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 64 vs 1047. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 451 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 425 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 395 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 1047 vs 187. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 112 vs 1047. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 1047 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 1047 vs 103. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 1047 vs 110. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 441 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 463 vs 71. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 101 vs 1047. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 72 vs 1047. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 169 vs 1047. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 121 vs 1047. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 370 vs 71. Possible annotation error.
+2026-07-16 18:06:42,780 - INFO - Saved tabular mapping dataset to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\GG657742.1\comparative_genomics\comparative_annotation.csv
+2026-07-16 18:06:42,781 - INFO - Generating comparative presence/absence matrix using mmseqs2...
+F:\IITk\Redolarium\redolarium_github\src\redolarium\annotation.py:1110: ParserWarning: Falling back to the 'python' engine because the 'c' engine does not support regex separators (separators > 1 char and different from '\s+' are interpreted as regex); you can avoid this warning by specifying engine='python'.
+df_hits = pd.read_csv(out_tsv, sep="\\t", names=["query", "target", "pident", "qcov", "tcov"])
+2026-07-16 18:07:54,680 - INFO - Comparative presence/absence matrix saved to F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\GG657742.1\comparative_genomics\query_vs_references_matrix.csv
+2026-07-16 18:08:11,540 - INFO - Formatted Comparative matrix saved to F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\GG657742.1\comparative_genomics\query_vs_references_matrix.xlsx
+2026-07-16 18:08:11,590 - INFO - Computing Average Amino Acid Identity (AAI) directly from mmseqs2 comparative matrix...
+==================================================
+
+==================================================
+FAILURE: AP009493.1 (Worker 0)
+==================================================
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 36 vs 258. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 36 vs 216. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 36 vs 351. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 36 vs 488. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 36 vs 344. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 36 vs 286. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 36 vs 418. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 36 vs 388. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 36 vs 263. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 53 vs 387. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 53 vs 301. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 53 vs 490. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 53 vs 351. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 53 vs 488. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 53 vs 344. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 53 vs 286. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 53 vs 418. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 53 vs 388. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 48 vs 387. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 48 vs 301. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 48 vs 490. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 48 vs 258. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 48 vs 351. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 48 vs 488. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 48 vs 344. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 48 vs 286. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 48 vs 418. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 48 vs 388. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 48 vs 263. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 83 vs 490. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 83 vs 488. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 83 vs 418. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 91 vs 490. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 91 vs 488. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 87 vs 490. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 87 vs 488. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 64 vs 387. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 64 vs 490. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 64 vs 351. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 64 vs 488. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 64 vs 344. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 64 vs 418. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 64 vs 388. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 1180 vs 186. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 79 vs 490. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 79 vs 488. Possible annotation error.
+[Annotation Validation Warning] Extreme length mismatch detected during alignment: 79 vs 418. Possible annotation error.
+2026-07-16 18:07:21,495 - INFO - Saved tabular mapping dataset to: F:\IITk\Redolarium\redolarium_github\benchmarks_ground_truth\data\results\In-Scope Positive\AP009493.1\comparative_genomics\comparative_annotation.csv
+2026-07-16 18:07:21,495 - INFO - Generating comparative presence/absence matrix using mmseqs2...
+Subprocess/Docker execution failed: Command '['wsl', '-e', 'bash', '-c', "mmseqs easy-search '/mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/In-Scope Positive/AP009493.1/comparative_genomics/query.faa' '/mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/In-Scope Positive/AP009493.1/comparative_genomics/references.faa' '/mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/In-Scope Positive/AP009493.1/comparative_genomics/mmseqs_out.tsv' '/mnt/f/IITk/Redolarium/redolarium_github/benchmarks_ground_truth/data/results/In-Scope Positive/AP009493.1/comparative_genomics/mmseqs_tmp' --format-output 'query,target,pident,qcov,tcov' --min-seq-id 0.3 -c 0.5"]' returned non-zero exit status 3221225786.. Retrying in 3.0s (Attempt 1/3)...
+==================================================
+
+==================================================
+FAILURE: BN001301.1 (Worker 2)
+==================================================
+
+==================================================
+
+==================================================
+FAILURE: LIRD01000002.1 (Worker 1)
+==================================================
+
+==================================================
+
+==================================================
+FAILURE: AE016853.1 (Worker 0)
+==================================================
+
+==================================================
+
+==================================================
+FAILURE: CM000913.1 (Worker 0)
+==================================================
+
+==================================================
+
+==================================================
+FAILURE: CR543861.1 (Worker 1)
+==================================================
+
+==================================================
+
+==================================================
+FAILURE: AE016853.1 (Worker 0)
+==================================================
+
+==================================================
+
+==================================================
+FAILURE: CR543861.1 (Worker 1)
+==================================================
+
+==================================================
+
+==================================================
+FAILURE: CM000913.1 (Worker 0)
+==================================================
+
+==================================================

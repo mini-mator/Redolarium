@@ -1,0 +1,210 @@
+Genome,MIBiG_ID,Ground_Truth_Class,Category,Status,Predicted_BGC_ID,Overlap_Percent
+CP007155.1,BGC0000002,Polyketide,Out-of-Scope Control,True Positive,BGC_41,98.1%
+BN001304.1,BGC0000013,Polyketide,Negative Control (Eukaryota),True Positive,BGC_01,100.0%
+HF679027.1,BGC0000030,Polyketide,Negative Control (Eukaryota),True Positive,BGC_02,100.0%
+BN001301.1,BGC0000037,Polyketide,Negative Control (Eukaryota),True Positive,BGC_01,100.0%
+AL645882.2,BGC0000038,Polyketide,In-Scope Positive,True Positive,BGC_21,100.0%
+CP002271.1,BGC0000044,Polyketide,Out-of-Scope Control,False Negative,None,0.0%
+AM420293.1,BGC0000055,Polyketide|Saccharide,Out-of-Scope Control,True Positive,BGC_04,100.0%
+BA000030.3,BGC0000059,Polyketide,In-Scope Positive,True Positive,BGC_03,100.0%
+BN001302.1,BGC0000107,Polyketide,Negative Control (Eukaryota),True Positive,BGC_06,100.0%
+CM000174.1,BGC0000129,Polyketide,Negative Control (Eukaryota),True Positive,BGC_07,100.0%
+CP000850.1,BGC0000137,Polyketide,Out-of-Scope Control,True Positive,BGC_07,87.1%
+CP000667.1,BGC0000142,Polyketide,Out-of-Scope Control,True Positive,BGC_14,100.0%
+CP000667.1,BGC0000150,NRP|Polyketide,Out-of-Scope Control,True Positive,BGC_13,100.0%
+AM238664.2,BGC0000151,Polyketide|Saccharide,In-Scope Positive,True Positive,BGC_04,100.0%
+EQ962655.1,BGC0000154,Polyketide,Negative Control (Eukaryota),True Positive,BGC_05,80.7%
+CH476602.1,BGC0000160,Polyketide,Negative Control (Eukaryota),True Positive,BGC_01,100.0%
+CH476594.1,BGC0000161,Polyketide,Negative Control (Eukaryota),True Positive,BGC_01,81.0%
+AM746676.1,BGC0000179,Polyketide,Out-of-Scope Control,True Positive,BGC_15,100.0%
+CP001614.2,BGC0000185,Polyketide,Out-of-Scope Control,True Positive,BGC_03,100.0%
+CP000085.1,BGC0000186,NRP|Polyketide,Out-of-Scope Control,True Positive,BGC_09,100.0%
+FN667741.1,BGC0000189,Polyketide,Out-of-Scope Control,False Negative,None,0.0%
+AL645882.2,BGC0000194,Polyketide,In-Scope Positive,True Positive,BGC_12,100.0%
+BX470251.1,BGC0000196,Polyketide,Out-of-Scope Control,False Negative,None,0.0%
+GG770539.1,BGC0000212,Polyketide,In-Scope Positive,True Positive,BGC_14,100.0%
+CP000667.1,BGC0000241,Polyketide|Saccharide,Out-of-Scope Control,True Positive,BGC_06,67.3%
+AP009493.1,BGC0000282,Polyketide,In-Scope Positive,True Positive,BGC_04,100.0%
+CP001157.1,BGC0000284,Polyketide,Out-of-Scope Control,True Positive,BGC_07,100.0%
+AE004091.2,BGC0000287,NRP,In-Scope Positive,True Positive,BGC_07,100.0%
+CH476597.1,BGC0000292,NRP,Negative Control (Eukaryota),True Positive,BGC_06,100.0%
+DS027698.1,BGC0000293,NRP,Negative Control (Eukaryota),True Positive,BGC_04,100.0%
+GG657746.1,BGC0000300,NRP,In-Scope Positive,True Positive,BGC_10,100.0%
+ABYX02000001.1,BGC0000306,NRP,In-Scope Positive,True Positive,BGC_21,100.0%
+CP002120.1,BGC0000308,NRP,Out-of-Scope Control,False Negative,None,0.0%
+AL009126.3,BGC0000309,NRP,In-Scope Positive,True Positive,BGC_10,100.0%
+AL645882.2,BGC0000315,NRP,In-Scope Positive,True Positive,BGC_11,95.3%
+AL645882.2,BGC0000324,NRP,In-Scope Positive,True Positive,BGC_29,100.0%
+AL645882.2,BGC0000325,NRP,In-Scope Positive,True Positive,BGC_04,100.0%
+AM238664.2,BGC0000327,NRP,In-Scope Positive,True Positive,BGC_10,81.1%
+AM260480.1,BGC0000330,NRP,Out-of-Scope Control,True Positive,BGC_03,100.0%
+CP000850.1,BGC0000333,NRP,Out-of-Scope Control,True Positive,BGC_26,100.0%
+QEPI01000018.1,BGC0000334,NRP,Negative Control (Eukaryota),False Negative,None,0.0%
+CT573326.1,BGC0000344,NRP,In-Scope Positive,False Negative,None,0.0%
+AM420293.1,BGC0000349,NRP,Out-of-Scope Control,True Positive,BGC_16,100.0%
+CR543861.1,BGC0000352,NRP,Out-of-Scope Control,True Positive,BGC_06,100.0%
+CM000174.1,BGC0000355,NRP,Negative Control (Eukaryota),True Positive,BGC_06,100.0%
+AM920431.1,BGC0000357,NRP,Negative Control (Eukaryota),True Positive,BGC_03,100.0%
+CP000088.1,BGC0000359,NRP,Out-of-Scope Control,True Positive,BGC_06,100.0%
+AP008955.1,BGC0000367,NRP,In-Scope Positive,True Positive,BGC_07,100.0%
+AP008957.1,BGC0000371,NRP,Out-of-Scope Control,True Positive,BGC_09,100.0%
+CM000171.1,BGC0000372,NRP,Negative Control (Eukaryota),True Positive,BGC_05,100.0%
+CM000913.1,BGC0000373,NRP,In-Scope Positive,False Negative,None,0.0%
+AE017333.1,BGC0000381,NRP,In-Scope Positive,True Positive,BGC_02,100.0%
+CP024901.1,BGC0000383,NRP|Polyketide,Out-of-Scope Control,True Positive,BGC_11,100.0%
+CP000086.1,BGC0000386,NRP,Out-of-Scope Control,True Positive,BGC_06,100.0%
+CP001630.1,BGC0000392,NRP,Out-of-Scope Control,True Positive,BGC_07,100.0%
+CP000113.1,BGC0000393,NRP|Polyketide,Out-of-Scope Control,True Positive,BGC_13,100.0%
+CP000076.1,BGC0000399,NRP,In-Scope Positive,False Negative,None,0.0%
+CP003355.1,BGC0000402,NRP,In-Scope Positive,True Positive,BGC_05,100.0%
+CP000076.1,BGC0000413,NRP,In-Scope Positive,False Negative,None,0.0%
+CP000431.1,BGC0000417,NRP,Out-of-Scope Control,True Positive,BGC_09,100.0%
+CP008953.1,BGC0000419,NRP|Saccharide,Out-of-Scope Control,True Positive,BGC_26,100.0%
+AM920436.1,BGC0000420,NRP,Negative Control (Eukaryota),True Positive,BGC_15,84.5%
+FN554889.1,BGC0000423,NRP,In-Scope Positive,True Positive,BGC_35,100.0%
+CP002039.1,BGC0000424,NRP,Out-of-Scope Control,True Positive,BGC_01,100.0%
+CP000117.1,BGC0000427,NRP,Out-of-Scope Control,True Positive,BGC_09,100.0%
+CP007203.2,BGC0000430,NRP|Polyketide,Out-of-Scope Control,True Positive,BGC_12,100.0%
+DS999644.1,BGC0000431,NRP,In-Scope Positive,True Positive,BGC_04,100.0%
+AE016853.1,BGC0000435,NRP,In-Scope Positive,False Negative,None,0.0%
+CP000075.1,BGC0000437,NRP,In-Scope Positive,True Positive,BGC_10,100.0%
+BN001305.1,BGC0000442,NRP,Negative Control (Eukaryota),True Positive,BGC_04,100.0%
+CP001614.2,BGC0000451,NRP,Out-of-Scope Control,False Negative,None,0.0%
+AP008955.1,BGC0000452,NRP,In-Scope Positive,True Positive,BGC_05,100.0%
+AE016796.2,BGC0000460,NRP,Out-of-Scope Control,True Positive,BGC_01,100.0%
+FO704550.1,BGC0000464,NRP,Out-of-Scope Control,True Positive,BGC_10,100.0%
+FN667742.1,BGC0000465,NRP,Out-of-Scope Control,True Positive,BGC_12,100.0%
+CP003614.1,BGC0000471,RiPP,Out-of-Scope Control,True Positive,BGC_03,100.0%
+AP009493.1,BGC0000496,RiPP,In-Scope Positive,True Positive,BGC_19,100.0%
+CP001700.1,BGC0000501,RiPP,Out-of-Scope Control,True Positive,BGC_15,100.0%
+AM420293.1,BGC0000513,RiPP,Out-of-Scope Control,True Positive,BGC_26,100.0%
+CP000557.1,BGC0000515,RiPP,In-Scope Positive,True Positive,BGC_01,100.0%
+GG657757.1,BGC0000518,RiPP,In-Scope Positive,True Positive,BGC_33,100.0%
+NZ_DS999645.1,BGC0000546,RiPP,In-Scope Positive,False Negative,None,0.0%
+AL645882.2,BGC0000551,RiPP,In-Scope Positive,True Positive,BGC_23,100.0%
+NZ_DS999644.1,BGC0000553,RiPP,In-Scope Positive,True Positive,BGC_15,100.0%
+NZ_DS999644.1,BGC0000554,RiPP,In-Scope Positive,True Positive,BGC_13,100.0%
+NZ_DS999644.1,BGC0000578,RiPP,In-Scope Positive,True Positive,BGC_12,100.0%
+NZ_CM000951.1,BGC0000579,RiPP,In-Scope Positive,True Positive,BGC_26,100.0%
+AP009493.1,BGC0000583,RiPP,In-Scope Positive,True Positive,BGC_35,100.0%
+NC_003888.3,BGC0000595,RiPP,In-Scope Positive,False Negative,None,0.0%
+NZ_GG657756.1,BGC0000596,RiPP,In-Scope Positive,False Negative,None,0.0%
+NZ_GG753626.1,BGC0000597,RiPP,In-Scope Positive,False Negative,None,0.0%
+AL009126.3,BGC0000601,RiPP,In-Scope Positive,True Positive,BGC_01,100.0%
+AE016877.1,BGC0000612,RiPP,In-Scope Positive,True Positive,BGC_11,100.0%
+CP000560.1,BGC0000616,RiPP,In-Scope Positive,True Positive,BGC_13,100.0%
+AP009493.1,BGC0000658,Terpene,In-Scope Positive,True Positive,BGC_12,100.0%
+AM420293.1,BGC0000659,Terpene,Out-of-Scope Control,True Positive,BGC_22,100.0%
+AL645882.2,BGC0000660,Terpene,In-Scope Positive,True Positive,BGC_13,100.0%
+AP009493.1,BGC0000662,Terpene,In-Scope Positive,True Positive,BGC_26,69.7%
+AL645882.2,BGC0000663,Terpene,In-Scope Positive,True Positive,BGC_24,100.0%
+AP009493.1,BGC0000664,Terpene,In-Scope Positive,True Positive,BGC_38,100.0%
+BA000030.3,BGC0000678,Terpene,In-Scope Positive,True Positive,BGC_20,100.0%
+BA000030.3,BGC0000683,Terpene,In-Scope Positive,True Positive,BGC_01,100.0%
+BN001301.1,BGC0000684,Polyketide,Negative Control (Eukaryota),True Positive,BGC_04,100.0%
+CP023699.1,BGC0000703,Saccharide,In-Scope Positive,True Positive,BGC_11,94.8%
+AP009493.1,BGC0000724,Saccharide,In-Scope Positive,True Positive,BGC_32,50.8%
+AE004091.2,BGC0000725,Saccharide,In-Scope Positive,False Negative,None,0.0%
+CM000914.1,BGC0000826,Alkaloid,In-Scope Positive,True Positive,BGC_11,95.0%
+CP000850.1,BGC0000827,Alkaloid,Out-of-Scope Control,True Positive,BGC_13,85.5%
+AE014075.1,BGC0000836,Other,In-Scope Positive,True Positive,BGC_04,100.0%
+CM000914.1,BGC0000841,Other,In-Scope Positive,True Positive,BGC_10,100.0%
+CM000913.1,BGC0000843,Other,In-Scope Positive,False Negative,None,0.0%
+AP009493.1,BGC0000848,Other,In-Scope Positive,True Positive,BGC_39,100.0%
+AL645882.2,BGC0000849,Other,In-Scope Positive,True Positive,BGC_21,100.0%
+CP000113.1,BGC0000871,Other,Out-of-Scope Control,True Positive,BGC_03,100.0%
+FR845719.1,BGC0000893,NRP,In-Scope Positive,True Positive,BGC_08,100.0%
+AM420293.1,BGC0000902,Polyketide,Out-of-Scope Control,True Positive,BGC_05,100.0%
+AL645882.2,BGC0000910,Other,In-Scope Positive,True Positive,BGC_09,100.0%
+AP009493.1,BGC0000911,Other,In-Scope Positive,True Positive,BGC_05,100.0%
+AP009493.1,BGC0000912,Other,In-Scope Positive,True Positive,BGC_20,100.0%
+AE004091.2,BGC0000922,Other,In-Scope Positive,False Negative,None,0.0%
+HE971709.1,BGC0000927,Other,In-Scope Positive,False Negative,None,0.0%
+AL645882.2,BGC0000940,Other,In-Scope Positive,True Positive,BGC_10,100.0%
+AP009493.1,BGC0000941,Other,In-Scope Positive,True Positive,BGC_28,100.0%
+AE016879.1,BGC0000942,Other,In-Scope Positive,True Positive,BGC_02,100.0%
+CR626927.1,BGC0000948,Other,In-Scope Positive,False Negative,None,0.0%
+BN001305.1,BGC0000959,NRP|Polyketide,Negative Control (Eukaryota),True Positive,BGC_02,100.0%
+CP000085.1,BGC0000961,NRP|Polyketide,Out-of-Scope Control,True Positive,BGC_07,100.0%
+CP000086.1,BGC0000964,NRP|Polyketide,Out-of-Scope Control,True Positive,BGC_05,100.0%
+GG657742.1,BGC0000996,NRP|Polyketide,In-Scope Positive,True Positive,BGC_09,100.0%
+CP000667.1,BGC0001006,NRP|Polyketide,Out-of-Scope Control,True Positive,BGC_15,100.0%
+CP000850.1,BGC0001007,Polyketide|NRP,Out-of-Scope Control,True Positive,BGC_24,100.0%
+CP000113.1,BGC0001025,NRP|Polyketide,Out-of-Scope Control,True Positive,BGC_14,100.0%
+CP003355.1,BGC0001033,NRP|Polyketide,In-Scope Positive,True Positive,BGC_04,100.0%
+CP000667.1,BGC0001041,NRP|Polyketide,Out-of-Scope Control,True Positive,BGC_04,96.6%
+AP009493.1,BGC0001043,NRP|Polyketide,In-Scope Positive,True Positive,BGC_09,100.0%
+FN667742.1,BGC0001054,NRP|Polyketide,Out-of-Scope Control,True Positive,BGC_07,100.0%
+AL645882.2,BGC0001063,NRP|Polyketide,In-Scope Positive,True Positive,BGC_17,100.0%
+CP000560.1,BGC0001090,NRP|Polyketide,In-Scope Positive,True Positive,BGC_07,100.0%
+CP000560.1,BGC0001095,NRP,In-Scope Positive,True Positive,BGC_07,100.0%
+CP000085.1,BGC0001102,NRP|Polyketide,Out-of-Scope Control,True Positive,BGC_12,100.0%
+CH476594.1,BGC0001122,NRP|Polyketide,Negative Control (Eukaryota),True Positive,BGC_04,100.0%
+BX470251.1,BGC0001128,NRP,Out-of-Scope Control,False Negative,None,0.0%
+FN667742.1,BGC0001132,NRP,Out-of-Scope Control,True Positive,BGC_09,100.0%
+FN667741.1,BGC0001133,NRP,Out-of-Scope Control,True Positive,BGC_04,100.0%
+CP001700.1,BGC0001154,Other,Out-of-Scope Control,True Positive,BGC_07,100.0%
+FN554889.1,BGC0001157,RiPP,In-Scope Positive,True Positive,BGC_22,100.0%
+CM001889.1,BGC0001168,NRP,In-Scope Positive,True Positive,BGC_07,100.0%
+AL645882.2,BGC0001181,Terpene,In-Scope Positive,True Positive,BGC_19,100.0%
+CP000560.1,BGC0001184,Other,In-Scope Positive,True Positive,BGC_14,100.0%
+CP000560.1,BGC0001185,NRP,In-Scope Positive,True Positive,BGC_13,100.0%
+NZ_KN708638.1,BGC0001188,RiPP,In-Scope Positive,True Positive,BGC_20,100.0%
+BBOM01000004.1,BGC0001200,Polyketide,In-Scope Positive,False Negative,None,0.0%
+AM746676.1,BGC0001201,Terpene,Out-of-Scope Control,True Positive,BGC_37,100.0%
+CM000745.1,BGC0001210,RiPP,In-Scope Positive,True Positive,BGC_07,100.0%
+KK106988.1,BGC0001213,Polyketide,In-Scope Positive,True Positive,BGC_04,82.6%
+CP006259.1,BGC0001226,RiPP,In-Scope Positive,True Positive,BGC_02,100.0%
+CP006259.1,BGC0001227,Terpene,In-Scope Positive,True Positive,BGC_06,100.0%
+CP002047.1,BGC0001229,RiPP,In-Scope Positive,True Positive,BGC_39,100.0%
+NZ_CM001889.1,BGC0001283,Polyketide,In-Scope Positive,True Positive,BGC_09,100.0%
+LN831790.1,BGC0001287,Polyketide,In-Scope Positive,True Positive,BGC_11,99.3%
+CM000913.1,BGC0001310,Polyketide,In-Scope Positive,False Negative,None,0.0%
+AM181176.4,BGC0001312,NRP,In-Scope Positive,False Negative,None,0.0%
+BN001302.1,BGC0001399,NRP,Negative Control (Eukaryota),True Positive,BGC_11,100.0%
+AM920436.1,BGC0001404,Polyketide,Negative Control (Eukaryota),True Positive,BGC_05,100.0%
+LIRD01000002.1,BGC0001416,NRP,In-Scope Positive,True Positive,BGC_04,100.0%
+KZ195572.1,BGC0001438,Polyketide|Saccharide,In-Scope Positive,True Positive,BGC_14,100.0%
+KZ195574.1,BGC0001439,Polyketide|Saccharide,In-Scope Positive,True Positive,BGC_26,93.6%
+BN001302.1,BGC0001515,NRP,Negative Control (Eukaryota),True Positive,BGC_01,65.5%
+BA000030.3,BGC0001552,RiPP,In-Scope Positive,True Positive,BGC_30,100.0%
+NC_007355.1,BGC0001554,Other,Negative Control (Archaea),False Negative,None,0.0%
+BA000030.3,BGC0001587,Other,In-Scope Positive,True Positive,BGC_29,100.0%
+BX470251.1,BGC0001736,NRP,Out-of-Scope Control,False Negative,None,0.0%
+FN667742.1,BGC0001757,Other,Out-of-Scope Control,False Negative,None,0.0%
+FR845719.1,BGC0001801,NRP,In-Scope Positive,True Positive,BGC_04,100.0%
+CP000113.1,BGC0001831,Polyketide,Out-of-Scope Control,True Positive,BGC_27,100.0%
+FN667741.1,BGC0001872,Polyketide,Out-of-Scope Control,True Positive,BGC_14,100.0%
+AM920431.1,BGC0001882,Polyketide,Negative Control (Eukaryota),False Negative,None,0.0%
+CP000088.1,BGC0001889,RiPP,Out-of-Scope Control,True Positive,BGC_04,100.0%
+BX470251.1,BGC0002020,Saccharide|NRP,Out-of-Scope Control,False Negative,None,0.0%
+AE004091.2,BGC0002037,NRP,In-Scope Positive,True Positive,BGC_10,100.0%
+CP000075.1,BGC0002060,Polyketide,In-Scope Positive,True Positive,BGC_14,100.0%
+FN554889.1,BGC0002089,NRP,In-Scope Positive,True Positive,BGC_18,100.0%
+AL645882.2,BGC0002127,Polyketide,In-Scope Positive,True Positive,BGC_07,100.0%
+AL645882.2,BGC0002128,Other,In-Scope Positive,True Positive,BGC_28,100.0%
+FN667741.1,BGC0002134,Other,Out-of-Scope Control,True Positive,BGC_03,100.0%
+CP000076.1,BGC0002152,Other,In-Scope Positive,False Negative,None,0.0%
+DS027698.1,BGC0002162,Terpene,Negative Control (Eukaryota),True Positive,BGC_05,100.0%
+CH476594.1,BGC0002271,NRP,Negative Control (Eukaryota),True Positive,BGC_06,100.0%
+CH476597.1,BGC0002273,NRP,Negative Control (Eukaryota),True Positive,BGC_01,100.0%
+BX470251.1,BGC0002286,NRP,Out-of-Scope Control,False Negative,None,0.0%
+LN831790.1,BGC0002289,RiPP,In-Scope Positive,True Positive,BGC_07,100.0%
+CT573326.1,BGC0002331,Other,In-Scope Positive,False Negative,None,0.0%
+CH476597.1,BGC0002348,NRP,Negative Control (Eukaryota),True Positive,BGC_08,100.0%
+CP007155.1,BGC0002354,RiPP,Out-of-Scope Control,True Positive,BGC_22,100.0%
+FN554889.1,BGC0002367,NRP,In-Scope Positive,True Positive,BGC_03,100.0%
+CP001157.1,BGC0002433,NRP,Out-of-Scope Control,True Positive,BGC_05,100.0%
+AE004091.2,BGC0002489,Other,In-Scope Positive,True Positive,BGC_16,100.0%
+CP000113.1,BGC0002492,NRP,Out-of-Scope Control,True Positive,BGC_10,100.0%
+CP008953.1,BGC0002566,Other,Out-of-Scope Control,True Positive,BGC_03,100.0%
+FN554889.1,BGC0002568,Other,In-Scope Positive,True Positive,BGC_06,89.4%
+AE016853.1,BGC0002570,NRP|Polyketide,In-Scope Positive,False Negative,None,0.0%
+FR845719.1,BGC0002578,Other,In-Scope Positive,True Positive,BGC_14,93.1%
+AE004091.2,BGC0002645,Other,In-Scope Positive,False Negative,None,0.0%
+AP009493.1,BGC0002673,Polyketide|Alkaloid,In-Scope Positive,True Positive,BGC_35,100.0%
+NZ_ML974127.1,BGC0002703,RiPP,Negative Control (Archaea),True Positive,BGC_06,100.0%
+CP024901.1,BGC0002713,NRP,Out-of-Scope Control,True Positive,BGC_06,100.0%
+CP024901.1,BGC0002715,NRP|Polyketide,Out-of-Scope Control,True Positive,BGC_13,100.0%
+CP024901.1,BGC0002716,NRP,Out-of-Scope Control,True Positive,BGC_17,100.0%
+CH476597.1,BGC0002736,Terpene,Negative Control (Eukaryota),True Positive,BGC_08,100.0%

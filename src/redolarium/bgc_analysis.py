@@ -202,6 +202,18 @@ def classify_bgc_by_domains(cluster_hits, domain_hits):
         return "Terpene"
     elif "PF06316" in cluster_domains or "PF00582" in cluster_domains:
         return "Aromatic / Phenazine"
+    elif "PF00534" in cluster_domains or "PF00535" in cluster_domains:
+        return "Saccharide"
+    elif "PF03088" in cluster_domains:
+        return "Alkaloid"
+    elif "PF06339" in cluster_domains:
+        return "Ectoine"
+    elif "PF03728" in cluster_domains:
+        return "Butyrolactone"
+    elif "PF00264" in cluster_domains:
+        return "Melanin"
+    elif "PF00505" in cluster_domains:
+        return "Nucleoside"
     elif "PF00196" in cluster_domains or "PF00765" in cluster_domains or "PF03006" in cluster_domains or "PF07968" in cluster_domains or "PF08660" in cluster_domains or "PF01338" in cluster_domains:
         # Fallback for regulatory/toxin/quorum-sensing islands that form protoclusters
         return "Other"
@@ -395,12 +407,12 @@ def run_antismash_submodule(query_gb, out_dir, logger):
             "-v", f"{wsl_out}:/output",
             "antismash/standalone:latest",
             gb_file, "--output-dir", "/output",
-            "--cb-general", "--cb-knowncluster", "--cb-subclusters", "--asf"
+            "--taxon", "bacteria"
         ]
         try:
             logger.info(f"Executing: {' '.join(cmd)}")
             _win_flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
-            res = safe_subprocess_run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=600, stdin=subprocess.DEVNULL, creationflags=_win_flags)
+            res = safe_subprocess_run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=7200, stdin=subprocess.DEVNULL, creationflags=_win_flags)
             logger.info("antiSMASH run completed successfully via Docker submodule.")
             return parse_antismash_output(antismash_out, logger, query_gb)
         except Exception as e:
@@ -411,12 +423,12 @@ def run_antismash_submodule(query_gb, out_dir, logger):
     if antismash_cmd:
         cmd = [
             antismash_cmd, query_gb, "--output-dir", antismash_out,
-            "--cb-general", "--cb-knowncluster", "--cb-subclusters", "--asf"
+            "--taxon", "bacteria"
         ]
         try:
             logger.info(f"Executing: {' '.join(cmd)}")
             _win_flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
-            res = safe_subprocess_run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=600, stdin=subprocess.DEVNULL, creationflags=_win_flags)
+            res = safe_subprocess_run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=7200, stdin=subprocess.DEVNULL, creationflags=_win_flags)
             return parse_antismash_output(antismash_out, logger, query_gb)
         except Exception as e:
             logger.warning(f"Could not invoke local antiSMASH command: {e}")

@@ -183,8 +183,9 @@ def find_housekeeping_gene(record):
                 continue
                 
             for name, aliases in HOUSEKEEPING_GENES.items():
-                # Strictly enforce exact gene symbol match for MLSA markers, removing fuzzy string guessing on the product
-                if gene == name:
+                # Allow exact gene name OR exact matching against curated aliases (e.g. product names)
+                # This ensures we strictly find the 7 MLSA genes without drifting, even if 'gene' qualifier is missing.
+                if gene == name or gene in aliases or product in aliases:
                     return name, trans
     return None, None
 
@@ -721,7 +722,7 @@ def fetch_blast_references_ncbi(query_record, query_org, logger, limit=50, no_do
     blast_record = local_blast_record
     
     # Tier 2: Remote BLAST Expansion
-    if len(local_refs) < limit:
+    if len(local_refs) < limit and not no_download:
         logger.info(f"Tier 2 Gate: Local references ({len(local_refs)}) below target {limit}. Triggering remote BLAST expansion...")
         remote_refs, search_space_exhausted = db_manager.run_remote_blast_expansion(
             program, query_seq, local_refs, limit, query_record, logger, email=email
@@ -851,12 +852,11 @@ def find_specific_marker_gene(record, target_name):
     for feat in record.features:
         if feat.type == "CDS":
             gene = feat.qualifiers.get("gene", [""])[0].lower()
+            product = feat.qualifiers.get("product", [""])[0].lower()
             trans = feat.qualifiers.get("translation", [""])[0]
             if not trans:
                 continue
-                
-            # Strictly enforce exact gene symbol match
-            if gene == target_lower:
+            if gene == target_lower or gene in aliases or product in aliases:
                 return target_name, trans
     return None
 

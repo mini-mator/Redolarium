@@ -69,10 +69,12 @@ jobs:
           zip -r ../../redolarium_results_${{ github.event.client_payload.job_id }}.zip .
           cd ../../
           
-      - name: Upload to transfer.sh
+      - name: Upload to tmpfiles.org
         id: upload
         run: |
-          URL=$(curl -s --upload-file redolarium_results_${{ github.event.client_payload.job_id }}.zip https://transfer.sh/redolarium_results.zip)
+          RESPONSE=$(curl -s -F "file=@redolarium_results_${{ github.event.client_payload.job_id }}.zip" https://tmpfiles.org/api/v1/upload)
+          echo "Response: $RESPONSE"
+          URL=$(echo $RESPONSE | jq -r .data.url | sed 's/tmpfiles.org\//tmpfiles.org\/dl\//')
           echo "RESULT_URL=$URL" >> $GITHUB_ENV
           echo "Result uploaded to $URL"
           

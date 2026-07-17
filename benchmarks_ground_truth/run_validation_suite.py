@@ -40,7 +40,10 @@ def verify_code_state():
             old_hash = f.read().strip()
         if old_hash != current_hash:
             if os.path.exists(RESULTS_DIR):
-                shutil.rmtree(RESULTS_DIR)
+                if os.name == "nt":
+                    os.system(f'rmdir /s /q "{RESULTS_DIR}"')
+                else:
+                    os.system(f'rm -rf "{RESULTS_DIR}"')
             os.makedirs(RESULTS_DIR, exist_ok=True)
             with open(HASH_FILE, "w") as f:
                 f.write(current_hash)
@@ -53,8 +56,9 @@ def verify_code_state():
 
 def run_genome(worker_id, row, shared_status):
     acc = row["Genome_Accession"]
+    category = row.get("Category", "Unknown")
     gbk_path = os.path.join(DATA_DIR, "genomes", f"{acc}.gbk")
-    out_dir = os.path.join(RESULTS_DIR, acc)
+    out_dir = os.path.join(RESULTS_DIR, category, acc)
     
     if not os.path.exists(gbk_path):
         shared_status[worker_id] = f"[red]Missing file for {acc}[/red]"
