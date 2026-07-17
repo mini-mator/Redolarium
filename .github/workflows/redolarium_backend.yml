@@ -48,13 +48,14 @@ jobs:
             python -c "import sys; sys.path.insert(0, 'src'); from redolarium.main import download_genbank_from_ncbi; import os; download_genbank_from_ncbi('$QUERY_ACC', '$EMAIL', 'workspace/input'); os.rename(os.path.join('workspace/input', '$QUERY_ACC.gb'), 'workspace/input/query.gbk')"
           else
             echo "Downloading query from $QUERY_URL"
-            curl -s -L "$QUERY_URL" -o workspace/input/query.gbk.gz
+            curl -s -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$QUERY_URL" -o workspace/input/query.gbk.gz
             gunzip workspace/input/query.gbk.gz
           fi
           
       - name: Download Reference Sequences
         env:
           REF_ACC: ${{ github.event.client_payload.ref_acc }}
+          REF_URL: ${{ github.event.client_payload.ref_url }}
           EMAIL: ${{ github.event.client_payload.email }}
         run: |
           if [ -n "$REF_ACC" ]; then
@@ -68,6 +69,12 @@ jobs:
                 python -c "import sys; sys.path.insert(0, 'src'); from redolarium.main import download_genbank_from_ncbi; download_genbank_from_ncbi('$acc', '$EMAIL', 'workspace/references')"
               fi
             done
+          elif [ -n "$REF_URL" ]; then
+            echo "Downloading references from $REF_URL"
+            curl -s -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$REF_URL" -o workspace/references/references.zip.gz
+            gunzip workspace/references/references.zip.gz
+            unzip workspace/references/references.zip -d workspace/references/
+            rm workspace/references/references.zip
           fi
           
       - name: Execute Redolarium Pipeline
