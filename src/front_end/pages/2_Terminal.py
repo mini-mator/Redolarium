@@ -196,7 +196,7 @@ else:
                                         steps = jobs_data["jobs"][0].get("steps", [])
                                         
                                         # Render steps
-                                        steps_md = "#### Pipeline Stages:\\n"
+                                        steps_md = "#### Pipeline Stages:\n"
                                         for step in steps:
                                             name = step.get("name", "Unknown Step")
                                             # Skip GitHub internal setup steps to keep UI clean
@@ -208,13 +208,13 @@ else:
                                             
                                             if status == "completed":
                                                 if conclusion == "success":
-                                                    steps_md += f"- [x] {name}\\n"
+                                                    steps_md += f"- [x] {name}\n"
                                                 else:
-                                                    steps_md += f"- [ ] **FAILED**: {name}\\n"
+                                                    steps_md += f"- [ ] **FAILED**: {name}\n"
                                             elif status == "in_progress":
-                                                steps_md += f"- [ ] **(In Progress...)** {name}\\n"
+                                                steps_md += f"- [ ] **(In Progress...)** {name}\n"
                                             else:
-                                                steps_md += f"- [ ] {name}\\n"
+                                                steps_md += f"- [ ] {name}\n"
                                         
                                         steps_placeholder.markdown(steps_md)
                 except Exception as e:
