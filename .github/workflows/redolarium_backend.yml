@@ -40,7 +40,18 @@ jobs:
           QUERY_URL: ${{ github.event.client_payload.query_url }}
         run: |
           echo "Downloading query from $QUERY_URL"
-          curl -s -L "$QUERY_URL" -o workspace/input/query.gbk
+          python -c "
+          import urllib.request, re, sys
+          url = sys.argv[1]
+          if 'tmpfiles.org' in url:
+              req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+              html = urllib.request.urlopen(req).read().decode('utf-8')
+              match = re.search(r'class=\"download\" href=\"([^\"]+)\"', html)
+              if match:
+                  url = match.group(1)
+          print('Real URL:', url)
+          urllib.request.urlretrieve(url, 'workspace/input/query.gbk')
+          " "$QUERY_URL"
           
       - name: Execute Redolarium Pipeline
         env:

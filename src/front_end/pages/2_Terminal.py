@@ -145,84 +145,100 @@ else:
     
     status_placeholder = st.empty()
     steps_placeholder = st.empty()
+    cloud_terminal_placeholder = st.empty()
     
     # Check for completion via the jobs branch artifact
     import requests
     job_id = st.session_state.job_id
     url = f"https://raw.githubusercontent.com/mini-mator/Redolarium/jobs/job_{job_id}.txt"
     
-    with st.spinner(f"Polling GitHub for Job {job_id}..."):
-        try:
-            r = requests.get(url)
-            if r.status_code == 200:
-                result_url = r.text.strip()
-                status_placeholder.success(f"Job Finished! Found results at {result_url}")
-                
-                # Automatically download and extract
-                st.info("Downloading and extracting results package...")
-                from front_end.utils.execution import download_and_extract_results
-                if download_and_extract_results(result_url, st.session_state.tmp_out_dir):
-                    st.success("Ready!")
-                    if st.button("Proceed to Results Dashboard"):
-                        st.switch_page("pages/3_Results.py")
-                else:
-                    st.error("Failed to extract results package.")
+    try:
+        r = requests.get(url)
+        if r.status_code == 200:
+            result_url = r.text.strip()
+            status_placeholder.success(f"Job Finished! Found results at {result_url}")
+            
+            # Automatically download and extract
+            st.info("Downloading and extracting results package...")
+            from front_end.utils.execution import download_and_extract_results
+            if download_and_extract_results(result_url, st.session_state.tmp_out_dir):
+                st.success("Ready!")
+                if st.button("Proceed to Results Dashboard"):
+                    st.switch_page("pages/3_Results.py")
             else:
-                # If not finished, query GitHub API to get real-time step progress!
-                status_placeholder.info(f"Job {job_id} is running... waiting for completion marker.")
+                st.error("Failed to extract results package.")
+        else:
+            # If not finished, query GitHub API to get real-time step progress!
+            status_placeholder.info(f"Job {job_id} is running... waiting for completion marker.")
+            
+            try:
+                import toml
+                token = ""
+                secrets_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".streamlit", "secrets.toml")
+                if os.path.exists(secrets_path):
+                    with open(secrets_path, "r") as f:
+                        token = toml.load(f).get("GITHUB_TOKEN", "")
                 
-                try:
-                    import toml
-                    token = ""
-                    secrets_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".streamlit", "secrets.toml")
-                    if os.path.exists(secrets_path):
-                        with open(secrets_path, "r") as f:
-                            token = toml.load(f).get("GITHUB_TOKEN", "")
-                    
-                    if token:
-                        headers = {"Accept": "application/vnd.github.v3+json", "Authorization": f"Bearer {token}"}
-                        # Get latest run
-                        runs_req = requests.get("https://api.github.com/repos/mini-mator/Redolarium/actions/runs?per_page=1", headers=headers)
-                        if runs_req.status_code == 200:
-                            runs_data = runs_req.json()
-                            if runs_data.get("workflow_runs"):
-                                latest_run_id = runs_data["workflow_runs"][0]["id"]
-                                
-                                # Get jobs for this run
-                                jobs_req = requests.get(f"https://api.github.com/repos/mini-mator/Redolarium/actions/runs/{latest_run_id}/jobs", headers=headers)
-                                if jobs_req.status_code == 200:
-                                    jobs_data = jobs_req.json()
-                                    if jobs_data.get("jobs"):
-                                        steps = jobs_data["jobs"][0].get("steps", [])
-                                        
-                                        # Render steps
-                                        steps_md = "#### Pipeline Stages:\n"
-                                        for step in steps:
-                                            name = step.get("name", "Unknown Step")
-                                            # Skip GitHub internal setup steps to keep UI clean
-                                            if name in ["Set up job", "Complete job", "Post Checkout Repository"]:
-                                                continue
-                                                
-                                            status = step.get("status")
-                                            conclusion = step.get("conclusion")
+                if token:
+                    headers = {"Accept": "application/vnd.github.v3+json", "Authorization": f"Bearer {token}"}
+                    # Get latest run
+                    runs_req = requests.get("https://api.github.com/repos/mini-mator/Redolarium/actions/runs?per_page=1", headers=headers)
+                    if runs_req.status_code == 200:
+                        runs_data = runs_req.json()
+                        if runs_data.get("workflow_runs"):
+                            latest_run_id = runs_data["workflow_runs"][0]["id"]
+                            
+                            # Get jobs for this run
+                            jobs_req = requests.get(f"https://api.github.com/repos/mini-mator/Redolarium/actions/runs/{latest_run_id}/jobs", headers=headers)
+                            if jobs_req.status_code == 200:
+                                jobs_data = jobs_req.json()
+                                if jobs_data.get("jobs"):
+                                    gh_job_id = jobs_data["jobs"][0]["id"]
+                                    steps = jobs_data["jobs"][0].get("steps", [])
+                                    
+                                    # Render steps
+                                    steps_md = "#### Pipeline Stages:\n"
+                                    for step in steps:
+                                        name = step.get("name", "Unknown Step")
+                                        # Skip GitHub internal setup steps to keep UI clean
+                                        if name in ["Set up job", "Complete job", "Post Checkout Repository", "Post Set up Python 3.10"]:
+                                            continue
                                             
-                                            if status == "completed":
-                                                if conclusion == "success":
-                                                    steps_md += f"- [x] {name}\n"
-                                                else:
-                                                    steps_md += f"- [ ] **FAILED**: {name}\n"
-                                            elif status == "in_progress":
-                                                steps_md += f"- [ ] **(In Progress...)** {name}\n"
-                                            else:
-                                                steps_md += f"- [ ] {name}\n"
+                                        status = step.get("status")
+                                        conclusion = step.get("conclusion")
                                         
-                                        steps_placeholder.markdown(steps_md)
-                except Exception as e:
-                    pass # Silently fallback if API polling fails
-                
-                time.sleep(10)
-                st.rerun()
-        except Exception as e:
-            st.error(f"Polling error: {e}")
+                                        if status == "completed":
+                                            if conclusion == "success":
+                                                steps_md += f"- [x] {name}\n"
+                                            else:
+                                                steps_md += f"- [ ] **FAILED**: {name}\n"
+                                        elif status == "in_progress":
+                                            steps_md += f"- [ ] **(In Progress...)** {name}\n"
+                                        else:
+                                            steps_md += f"- [ ] {name}\n"
+                                    
+                                    steps_placeholder.markdown(steps_md)
+                                    
+                                    # Fetch real-time logs
+                                    logs_req = requests.get(f"https://api.github.com/repos/mini-mator/Redolarium/actions/jobs/{gh_job_id}/logs", headers=headers, allow_redirects=True)
+                                    if logs_req.status_code == 200:
+                                        lines = logs_req.text.split('\n')
+                                        # Filter out gh action timestamps to make it look like a normal terminal
+                                        clean_lines = []
+                                        for line in lines[-200:]:
+                                            import re
+                                            # Remove GitHub timestamp "2026-07-17T09:05:44.3313829Z "
+                                            clean_line = re.sub(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s", "", line)
+                                            clean_lines.append(clean_line)
+                                            
+                                        display_text = "\n".join(clean_lines)
+                                        cloud_terminal_placeholder.markdown(f"<div class='terminal-box'>{display_text}</div>", unsafe_allow_html=True)
+            except Exception as e:
+                pass # Silently fallback if API polling fails
+            
             time.sleep(10)
             st.rerun()
+    except Exception as e:
+        st.error(f"Polling error: {e}")
+        time.sleep(10)
+        st.rerun()
