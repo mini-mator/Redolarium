@@ -157,8 +157,9 @@ def trigger_github_action(state):
     """Triggers the remote GitHub Actions workflow via repository_dispatch."""
     import requests
     import streamlit as st
+    import os
     
-    if not hasattr(state, 'query_file_path') or not os.path.exists(state.query_file_path):
+    if getattr(state, 'query_type', "") != "NCBI Accession ID" and (not hasattr(state, 'query_file_path') or not os.path.exists(state.query_file_path)):
         return False, "Query sequence file is missing."
         
     token = None
