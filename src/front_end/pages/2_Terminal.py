@@ -163,37 +163,37 @@ else:
     if token:
         headers = {"Accept": "application/vnd.github.v3+json", "Authorization": f"Bearer {token}"}
         
-        try:
-            # Poll for the Artifact
-            artifacts_req = requests.get(f"https://api.github.com/repos/mini-mator/Redolarium/actions/artifacts?name=redolarium_results_{job_id}", headers=headers)
-            if artifacts_req.status_code == 200:
-                artifacts_data = artifacts_req.json()
-                if artifacts_data.get("total_count", 0) > 0:
-                    artifact = artifacts_data["artifacts"][0]
-                    if not artifact.get("expired"):
-                        artifact_ready = True
-                        result_url = artifact["archive_download_url"]
-                        status_placeholder.success(f"Job Finished! Downloading Artifact...")
-                        
-                        # Automatically download and extract
-                        st.info("Extracting results package and cleaning up...")
-                        from front_end.utils.execution import download_github_artifact, cleanup_github_jobs_branch
-                        
-                        if download_github_artifact(result_url, token, st.session_state.tmp_out_dir):
-                            cleanup_github_jobs_branch(job_id, token)
-                            st.success("Ready!")
-                            if st.button("Proceed to Results Dashboard"):
-                                st.switch_page("pages/3_Results.py")
-                        else:
-                            st.error("Failed to download or extract results package.")
-        except Exception as e:
-            st.error(f"Error querying artifacts: {e}")
-            
-        if not artifact_ready:
-            # If not finished, query GitHub API to get real-time step progress!
-            status_placeholder.info(f"Job {job_id} is running... waiting for completion marker.")
-            
-            if token:
+        while not artifact_ready:
+            try:
+                # Poll for the Artifact
+                artifacts_req = requests.get(f"https://api.github.com/repos/mini-mator/Redolarium/actions/artifacts?name=redolarium_results_{job_id}", headers=headers)
+                if artifacts_req.status_code == 200:
+                    artifacts_data = artifacts_req.json()
+                    if artifacts_data.get("total_count", 0) > 0:
+                        artifact = artifacts_data["artifacts"][0]
+                        if not artifact.get("expired"):
+                            artifact_ready = True
+                            result_url = artifact["archive_download_url"]
+                            status_placeholder.success(f"Job Finished! Downloading Artifact...")
+                            
+                            # Automatically download and extract
+                            st.info("Extracting results package and cleaning up...")
+                            from front_end.utils.execution import download_github_artifact, cleanup_github_jobs_branch
+                            
+                            if download_github_artifact(result_url, token, st.session_state.tmp_out_dir):
+                                cleanup_github_jobs_branch(job_id, token)
+                                st.success("Ready!")
+                                if st.button("Proceed to Results Dashboard"):
+                                    st.switch_page("pages/3_Results.py")
+                                break # Exit the while loop
+                            else:
+                                st.error("Failed to download or extract results package.")
+                                break
+            except Exception as e:
+                pass # Silently fallback and retry
+                
+            if not artifact_ready:
+                status_placeholder.info(f"Job {job_id} is running... polling GitHub Actions...")
                 try:
                     # Get latest run
                     runs_req = requests.get("https://api.github.com/repos/mini-mator/Redolarium/actions/runs?per_page=1", headers=headers)
@@ -214,7 +214,6 @@ else:
                                     steps_md = "#### Pipeline Stages:\n"
                                     for step in steps:
                                         name = step.get("name", "Unknown Step")
-                                        # Skip GitHub internal setup steps to keep UI clean
                                         if name in ["Set up job", "Complete job", "Post Checkout Repository", "Post Set up Python 3.10"]:
                                             continue
                                             
@@ -237,18 +236,15 @@ else:
                                     logs_req = requests.get(f"https://api.github.com/repos/mini-mator/Redolarium/actions/jobs/{gh_job_id}/logs", headers=headers, allow_redirects=True)
                                     if logs_req.status_code == 200:
                                         lines = logs_req.text.split('\n')
-                                        # Filter out gh action timestamps to make it look like a normal terminal
                                         clean_lines = []
                                         for line in lines[-200:]:
                                             import re
-                                            # Remove GitHub timestamp "2026-07-17T09:05:44.3313829Z "
                                             clean_line = re.sub(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z\s", "", line)
                                             clean_lines.append(clean_line)
                                             
                                         display_text = "\n".join(clean_lines)
                                         cloud_terminal_placeholder.markdown(f"<div class='terminal-box'>{display_text}</div>", unsafe_allow_html=True)
                 except Exception as e:
-                    pass # Silently fallback if API polling fails
-            
-            time.sleep(10)
-            st.rerun()
+                    pass
+                
+                time.sleep(5)
