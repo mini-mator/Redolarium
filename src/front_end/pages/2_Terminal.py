@@ -195,13 +195,18 @@ else:
             if not artifact_ready:
                 status_placeholder.info(f"Job {job_id} is running... polling GitHub Actions...")
                 try:
-                    # Get latest run
-                    runs_req = requests.get("https://api.github.com/repos/mini-mator/Redolarium/actions/runs?per_page=1", headers=headers)
+                    # Get latest runs
+                    runs_req = requests.get("https://api.github.com/repos/mini-mator/Redolarium/actions/runs?per_page=10", headers=headers)
                     if runs_req.status_code == 200:
                         runs_data = runs_req.json()
+                        latest_run_id = None
                         if runs_data.get("workflow_runs"):
-                            latest_run_id = runs_data["workflow_runs"][0]["id"]
-                            
+                            for run in runs_data["workflow_runs"]:
+                                if job_id in run.get("name", "") or job_id in run.get("display_title", ""):
+                                    latest_run_id = run["id"]
+                                    break
+                                    
+                        if latest_run_id:
                             # Get jobs for this run
                             jobs_req = requests.get(f"https://api.github.com/repos/mini-mator/Redolarium/actions/runs/{latest_run_id}/jobs", headers=headers)
                             if jobs_req.status_code == 200:

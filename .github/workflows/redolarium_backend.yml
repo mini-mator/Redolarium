@@ -1,4 +1,5 @@
 name: Redolarium Cloud Compute Pipeline
+run-name: Job ${{ github.event.client_payload.job_id }}
 
 on:
   repository_dispatch:
