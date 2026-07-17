@@ -48,7 +48,8 @@ jobs:
             python -c "import sys; sys.path.insert(0, 'src'); from redolarium.main import download_genbank_from_ncbi; import os; download_genbank_from_ncbi('$QUERY_ACC', '$EMAIL', 'workspace/input'); os.rename(os.path.join('workspace/input', '$QUERY_ACC.gb'), 'workspace/input/query.gbk')"
           else
             echo "Downloading query from $QUERY_URL"
-            curl -s -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$QUERY_URL" -o workspace/input/query.gbk
+            curl -s -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$QUERY_URL" -o workspace/input/query.gbk.gz
+            gunzip workspace/input/query.gbk.gz
           fi
           
       - name: Download Reference Sequences

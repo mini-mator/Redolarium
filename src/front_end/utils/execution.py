@@ -137,13 +137,15 @@ def upload_to_github_jobs_branch(file_path, job_id, token):
     import requests
     import base64
     import os
+    import gzip
     
     try:
         with open(file_path, 'rb') as f:
             content = f.read()
-        
-        b64_content = base64.b64encode(content).decode('utf-8')
-        filename = f"job_{job_id}_query.gbk"
+            
+        compressed_content = gzip.compress(content)
+        b64_content = base64.b64encode(compressed_content).decode('utf-8')
+        filename = f"job_{job_id}_query.gbk.gz"
         url = f"https://api.github.com/repos/mini-mator/Redolarium/contents/{filename}"
         
         headers = {
@@ -276,7 +278,7 @@ def cleanup_github_jobs_branch(job_id, token):
     """Deletes the temporary query file from the jobs branch to keep the repo clean."""
     import requests
     
-    filename = f"job_{job_id}_query.gbk"
+    filename = f"job_{job_id}_query.gbk.gz"
     url = f"https://api.github.com/repos/mini-mator/Redolarium/contents/{filename}?ref=jobs"
     
     headers = {
