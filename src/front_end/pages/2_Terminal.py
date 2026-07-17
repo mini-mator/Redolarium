@@ -181,6 +181,8 @@ else:
                             if download_github_artifact(result_url, token, st.session_state.tmp_out_dir):
                                 cleanup_github_jobs_branch(job_id, token)
                                 st.success("Ready!")
+                                steps_placeholder.empty()
+                                cloud_terminal_placeholder.empty()
                                 if st.button("Proceed to Results Dashboard"):
                                     st.switch_page("pages/3_Results.py")
                                 break # Exit the while loop
