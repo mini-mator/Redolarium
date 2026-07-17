@@ -190,9 +190,14 @@ def trigger_github_action(state):
     if not token:
         return False, "GITHUB_TOKEN is missing in .streamlit/secrets.toml"
         
-    query_url = upload_to_github_jobs_branch(state.query_file_path, state.job_id, token)
-    if not query_url:
-        return False, "Failed to upload query sequence to GitHub"
+    query_url = ""
+    query_acc = ""
+    if getattr(state, 'query_type', "") == "NCBI Accession ID":
+        query_acc = state.query_accession
+    else:
+        query_url = upload_to_github_jobs_branch(state.query_file_path, state.job_id, token)
+        if not query_url:
+            return False, "Failed to upload query sequence to GitHub"
         
     repo = "mini-mator/Redolarium"
     url = f"https://api.github.com/repos/{repo}/dispatches"
@@ -208,6 +213,7 @@ def trigger_github_action(state):
         "client_payload": {
             "job_id": state.job_id,
             "query_url": query_url,
+            "query_acc": query_acc,
             "email": state.email_id,
             "target_bgc": "all" if state.analysis_bgc else "none",
             "run_blast": "true" if state.analysis_query_vs_ref else "false",
