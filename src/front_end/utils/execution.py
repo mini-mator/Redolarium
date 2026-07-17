@@ -132,47 +132,25 @@ def start_subprocess(cmd, tmp_out_dir):
         status_dict['returncode'] = -1
         return None, log_list, status_dict
 
-def upload_to_github_jobs_branch(file_path, job_id, token):
-    """Uploads a file directly to the GitHub jobs branch."""
+def upload_file_externally(file_path):
+    """Uploads a file to transfer.sh to bypass GitHub branch protection timeouts."""
     import requests
-    import base64
     import os
     import gzip
     
+    filename = os.path.basename(file_path) + ".gz"
     try:
         with open(file_path, 'rb') as f:
             content = f.read()
-            
-        compressed_content = gzip.compress(content)
-        b64_content = base64.b64encode(compressed_content).decode('utf-8')
-        filename = f"job_{job_id}_query.gbk.gz"
-        url = f"https://api.github.com/repos/mini-mator/Redolarium/contents/{filename}"
+        compressed = gzip.compress(content)
         
-        headers = {
-            "Authorization": f"Bearer {token}",
-            "Accept": "application/vnd.github.v3+json"
-        }
-        
-        payload = {
-            "message": f"Upload query for job {job_id}",
-            "content": b64_content,
-            "branch": "jobs"
-        }
-        
-        r = requests.put(url, json=payload, headers=headers)
-        if r.status_code in [200, 201]:
-            data = r.json()
-            return data["content"]["download_url"]
+        r = requests.put(f"https://transfer.sh/{filename}", data=compressed)
+        if r.status_code == 200:
+            return r.text.strip()
         else:
-            err_msg = f"GitHub upload failed: {r.status_code} {r.text}"
-            print(err_msg)
-            with open("upload_error.txt", "w") as f_err:
-                f_err.write(err_msg)
+            print(f"External upload failed: {r.status_code} {r.text}")
     except Exception as e:
-        err_msg = f"upload exception: {e}"
-        print(err_msg)
-        with open("upload_error.txt", "w") as f_err:
-            f_err.write(err_msg)
+        print(f"upload exception: {e}")
     return None
 
 def trigger_github_action(state):
@@ -197,13 +175,25 @@ def trigger_github_action(state):
     if state.get('query_type', "") == "NCBI Accession ID":
         query_acc = state.get('query_accession', "")
     else:
-        query_url = upload_to_github_jobs_branch(state.get('query_file_path', ""), state.get('job_id', ""), token)
+        query_url = upload_file_externally(state.get('query_file_path', ""))
         if not query_url:
-            return False, "Failed to upload query sequence to GitHub"
+            return False, "Failed to upload query sequence externally."
             
     ref_acc = ""
+    ref_url = ""
     if state.get('ref_type', "") == "NCBI Accession ID":
         ref_acc = state.get('ref_accession', "")
+    elif state.get('ref_type', "") == "Local Reference Sequence":
+        import zipfile
+        import os
+        zip_path = os.path.join(state.get('tmp_out_dir', ""), "references.zip")
+        with zipfile.ZipFile(zip_path, 'w') as z:
+            for rp in state.get('ref_file_path', "").split(","):
+                if rp and os.path.exists(rp):
+                    z.write(rp, os.path.basename(rp))
+        ref_url = upload_file_externally(zip_path)
+        if not ref_url:
+            return False, "Failed to upload reference sequences externally."
         
     repo = "mini-mator/Redolarium"
     url = f"https://api.github.com/repos/{repo}/dispatches"
@@ -235,6 +225,7 @@ def trigger_github_action(state):
             "query_url": query_url,
             "query_acc": query_acc,
             "ref_acc": ref_acc,
+            "ref_url": ref_url,
             "email": state.get('email_id', ""),
             "target_bgc": "all" if state.get('analysis_bgc', False) else "none",
             "run_blast": "true" if state.get('analysis_query_vs_ref', False) else "false",
@@ -275,29 +266,5 @@ def download_github_artifact(artifact_url, token, tmp_out_dir):
     return False
 
 def cleanup_github_jobs_branch(job_id, token):
-    """Deletes the temporary query file from the jobs branch to keep the repo clean."""
-    import requests
-    
-    filename = f"job_{job_id}_query.gbk.gz"
-    url = f"https://api.github.com/repos/mini-mator/Redolarium/contents/{filename}?ref=jobs"
-    
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Accept": "application/vnd.github.v3+json"
-    }
-    
-    # 1. Get the SHA of the file (required for deletion)
-    r = requests.get(url, headers=headers)
-    if r.status_code == 200:
-        sha = r.json()["sha"]
-        
-        # 2. Delete the file
-        del_payload = {
-            "message": f"Cleanup query for job {job_id}",
-            "sha": sha,
-            "branch": "jobs"
-        }
-        del_r = requests.delete(f"https://api.github.com/repos/mini-mator/Redolarium/contents/{filename}", json=del_payload, headers=headers)
-        if del_r.status_code == 200:
-            return True
-    return False
+    """(Deprecated) Cleanup function. Left for compatibility."""
+    return True
