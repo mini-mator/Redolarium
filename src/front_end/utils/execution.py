@@ -206,16 +206,25 @@ def trigger_github_action(state):
         return False, str(e)
 
 def download_and_extract_results(url, tmp_out_dir):
-    """Downloads a zip file from transfer.sh and extracts it."""
+    """Downloads a zip file from transfer.sh or tmpfiles.org and extracts it."""
     import requests
     import zipfile
     import io
+    import re
     try:
+        # Handle tmpfiles.org indirect download links
+        if "tmpfiles.org" in url:
+            html_req = requests.get(url)
+            match = re.search(r'class="download" href="([^"]+)"', html_req.text)
+            if match:
+                url = match.group(1)
+                
         r = requests.get(url, stream=True)
         if r.status_code == 200:
             z = zipfile.ZipFile(io.BytesIO(r.content))
             z.extractall(tmp_out_dir)
             return True
         return False
-    except Exception:
+    except Exception as e:
+        print(f"Error extracting zip: {e}")
         return False
